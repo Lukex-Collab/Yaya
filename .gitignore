@@ -1,7 +1,6 @@
 node_modules/
 test-results/
-*.png
-screenshot*.png
+screenshot-*.png
 final*.png
 merge-*.png
 anim-*.png
