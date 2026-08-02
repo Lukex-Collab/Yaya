@@ -307,7 +307,7 @@ renderTodayHero(ok){
 },
 
 renderNewsFeed(){
-  const f=$('cal-news-feed');if(!f)return;f.innerHTML='';
+  const f=document.getElementById('cal-news-feed');console.log('news-feed found:',!!f);if(!f)return;f.innerHTML='';
   this.womenNews.forEach(n=>{const c=document.createElement('div');c.className='cal-ncard';
     c.innerHTML='<div class="cal-nemoji">'+n.emoji+'</div><div class="cal-nbody"><div class="cal-nhead">'+n.headline+'</div><div class="cal-nsnippet">'+n.snippet+'</div><span class="cal-ntag '+n.tag+'">'+n.tagLabel+'</span></div>';
     f.appendChild(c)});

@@ -243,7 +243,7 @@ input{font-family:inherit}
 .fullchat-msgs::-webkit-scrollbar{display:none}
 
 /* Calendar */
-.cal-body{padding:8px 16px 20px!important;display:flex;flex-direction:column;gap:14px}
+.cal-body{padding:8px 16px 20px!important;overflow-y:auto!important;display:block!important}
 .cal-mcard{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--sh)}
 .cal-mhead{font-size:14px;font-weight:600;text-align:center;margin-bottom:8px}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
@@ -256,7 +256,7 @@ input{font-family:inherit}
 .cal-cell.head{font-size:11px;color:var(--ink2);padding:4px 0;cursor:default}
 .cal-cell.head:active{transform:none}
 
-.cal-tcard{background:linear-gradient(135deg,#FFF9F0,#FFF0E0);border-radius:var(--r);padding:20px;box-shadow:var(--sh);border-left:4px solid var(--go)}
+.cal-tcard{margin-top:14px;background:linear-gradient(135deg,#FFF9F0,#FFF0E0);border-radius:var(--r);padding:20px;box-shadow:var(--sh);border-left:4px solid var(--go)}
 .cal-tbadge{font-size:12px;font-weight:600;color:var(--go2);margin-bottom:12px}
 .cal-thero{font-size:44px;text-align:center;margin-bottom:6px;line-height:1}
 .cal-tname{font-size:20px;font-weight:700;text-align:center;margin-bottom:2px}
@@ -264,10 +264,9 @@ input{font-family:inherit}
 .cal-tdesc{font-size:14px;line-height:1.7;margin:0 0 12px}
 .cal-tquote{font-size:13px;line-height:1.6;color:var(--go2);font-style:italic;padding-top:10px;border-top:1px dashed rgba(255,179,71,.4)}
 
-.cal-news-sect{flex:1;min-height:0;display:flex;flex-direction:column}
+.cal-news-sect{margin-top:14px}
 .cal-news-t{font-size:15px;font-weight:700;margin-bottom:10px}
-.cal-news-feed{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
-.cal-news-feed::-webkit-scrollbar{display:none}
+.cal-news-feed{display:flex;flex-direction:column;gap:10px}
 .cal-ncard{background:var(--card);border-radius:var(--rs);padding:14px 16px;box-shadow:var(--sh);display:flex;gap:12px;align-items:flex-start}
 .cal-nemoji{font-size:28px;flex:0 0 auto;line-height:1}
 .cal-nbody{flex:1;min-width:0}
