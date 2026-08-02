@@ -22,6 +22,9 @@ import (
 	"github.com/lingpal/platform/internal/dailytopic"
 	"github.com/lingpal/platform/internal/nostalgia"
 	"github.com/lingpal/platform/internal/core"
+	"github.com/lingpal/platform/internal/publicfeed"
+	"github.com/lingpal/platform/internal/voiceclone"
+	"github.com/lingpal/platform/internal/yayaletter"
 	"github.com/lingpal/platform/internal/core/middleware"
 	sched "github.com/lingpal/platform/internal/core/scheduler"
 	"github.com/lingpal/platform/internal/dream"
@@ -207,6 +210,18 @@ func main() {
 	// Nostalgia (怀旧引擎/那年的今天)
 	nostalgiaH := nostalgia.NewHandler(pool)
 	nostalgiaH.RegisterRoutes(auth)
+
+	// VoiceClone (声音克隆 Chatterbox TTS)
+	vcloneH := voiceclone.NewHandler(pool, "")
+	vcloneH.RegisterRoutes(auth)
+
+	// YayaLetter (牙牙每周来信)
+	ylH := yayaletter.NewHandler(pool, deepseekClient)
+	ylH.RegisterRoutes(auth)
+
+	// PublicFeed (公共内容广场 + 公众号内容源)
+	pfeedH := publicfeed.NewHandler(pool)
+	pfeedH.RegisterRoutes(auth)
 
 	// World (灵伴世界 3D宠物探索)
 	worldH := world.NewHandler(pool)

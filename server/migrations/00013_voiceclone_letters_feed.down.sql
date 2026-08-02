@@ -1,0 +1,5 @@
+ALTER TABLE journals DROP COLUMN IF EXISTS comments;
+ALTER TABLE journals DROP COLUMN IF EXISTS likes;
+DROP TABLE IF EXISTS weekly_letters;
+DROP TABLE IF EXISTS voice_models;
+DROP TABLE IF EXISTS voice_samples;
