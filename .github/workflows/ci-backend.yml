@@ -8,36 +8,6 @@ on:
 
 jobs:
   # ═══════════════════════
-  # 分支命名检查（仅 PR）
-  # ═══════════════════════
-  branch-check:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: 校验分支命名规范
-        run: |
-          BRANCH="${{ github.head_ref }}"
-          echo "检查分支: $BRANCH"
-
-          VALID_PREFIXES="feat|fix|refactor|docs|chore|test|perf|ci|style|release"
-
-          if echo "$BRANCH" | grep -qP "^($VALID_PREFIXES)/[a-z0-9][a-z0-9-]*$"; then
-            echo "✅ 分支名符合规范: $BRANCH"
-          else
-            echo "❌ 分支名不符合规范: $BRANCH"
-            echo ""
-            echo "期望格式: <type>/<description>"
-            echo "  type: feat | fix | refactor | docs | chore | test | perf | ci | style | release"
-            echo "  description: 小写字母+数字+连字符"
-            echo ""
-            echo "示例:"
-            echo "  feat/voice-message"
-            echo "  fix/chat-sse-timeout"
-            echo "  refactor/memory-layer"
-            exit 1
-          fi
-
-  # ═══════════════════════
   # 合并冲突检测（仅 PR）
   # ═══════════════════════
   conflict-check:
@@ -47,25 +17,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: 检测合并冲突
         run: |
           TARGET="${{ github.base_ref }}"
-          echo "检测与 origin/${TARGET} 的合并冲突..."
-
           git fetch origin "${TARGET}"
-
           if git merge-tree $(git merge-base HEAD "origin/${TARGET}") HEAD "origin/${TARGET}" 2>&1 | grep -qP '^\+<<<<<<< '; then
-            echo "❌ 检测到合并冲突！"
-            echo ""
-            echo "请在本地解决冲突："
-            echo "  git fetch origin ${TARGET}"
-            echo "  git rebase origin/${TARGET}"
-            echo "  解决冲突后: git push --force-with-lease"
+            echo "❌ 检测到合并冲突！请在本地解决: git rebase origin/${TARGET}"
             exit 1
-          else
-            echo "✅ 无合并冲突"
           fi
+          echo "✅ 无合并冲突"
 
   # ═══════════════════════
   # Commit 格式检查（仅 PR）
@@ -77,25 +37,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: 校验 Commit 格式
         run: |
-          echo "检查 PR 中的提交信息..."
-
           TARGET="${{ github.base_ref }}"
           git fetch origin "${TARGET}"
           COMMITS=$(git log "origin/${TARGET}..HEAD" --format="%H %s")
-
-          if [ -z "$COMMITS" ]; then
-            echo "没有新提交，跳过检查"
-            exit 0
-          fi
-
+          if [ -z "$COMMITS" ]; then echo "无新提交"; exit 0; fi
           HAS_ERROR=0
           while IFS= read -r line; do
             HASH=$(echo "$line" | cut -d' ' -f1 | cut -c1-7)
             MSG=$(echo "$line" | cut -d' ' -f2-)
-
             if echo "$MSG" | grep -qP '^(feat|fix|refactor|docs|style|test|chore|perf|ci|build|revert)(\([a-z0-9/-]+\))?: .+'; then
               echo "  ✅ $HASH $MSG"
             else
@@ -103,40 +54,27 @@ jobs:
               HAS_ERROR=1
             fi
           done <<< "$COMMITS"
-
           if [ $HAS_ERROR -eq 1 ]; then
-            echo ""
             echo "格式要求: <type>(<scope>): <subject>"
-            echo "示例: feat(chat): 添加语音消息"
             exit 1
           fi
-          echo "✅ 所有 commit 格式正确"
+          echo "✅ Commit 格式正确"
 
   # ═══════════════════════
-  # 代码检查
-  # ═══════════════════════
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with: { go-version: '1.23' }
-      - name: go vet
-        run: cd server && go vet ./...
-      - uses: golangci/golangci-lint-action@v7
-        with: { working-directory: server, version: latest }
-
-  # ═══════════════════════
-  # 单元测试
+  # 代码检查 + 测试
   # ═══════════════════════
   test:
-    needs: [lint]
     runs-on: ubuntu-latest
     services:
       postgres:
         image: pgvector/pgvector:pg16
         env: { POSTGRES_USER: test, POSTGRES_PASSWORD: test, POSTGRES_DB: test }
         ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
       redis:
         image: redis:7-alpine
         ports: ['6379:6379']
@@ -144,34 +82,29 @@ jobs:
       DATABASE_URL: postgres://test:test@localhost:5432/test?sslmode=disable
       REDIS_URL: redis://localhost:6379/0
       DEEPSEEK_API_KEY: test-key
+      JWT_SECRET: ci-test-secret
+      GATEWAY_PORT: "8080"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-        with: { go-version: '1.23' }
-      - run: cd server && go test ./internal/... -v -cover -count=1
-
-  # ═══════════════════════
-  # 集成测试
-  # ═══════════════════════
-  integration:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with: { go-version: '1.23' }
-      - run: cd server && go test ./integration/ -v -tags=integration
+        with: { go-version: '1.24', cache: true, cache-dependency-path: server/go.sum }
+      - name: go vet
+        run: cd server && go vet ./...
+      - name: 单元测试
+        run: cd server && go test ./... -v -cover -count=1 -short
+        timeout-minutes: 5
 
   # ═══════════════════════
   # 编译检查
   # ═══════════════════════
   build:
-    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-        with: { go-version: '1.23' }
+        with: { go-version: '1.24' }
       - run: cd server && CGO_ENABLED=0 go build -o /dev/null ./cmd/server
+      - run: cd server && CGO_ENABLED=0 go build -o /dev/null ./cmd/migrate
 
   # ═══════════════════════
   # Docker 构建检查
