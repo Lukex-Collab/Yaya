@@ -342,3 +342,11 @@ input{font-family:inherit}
 .mood-pop-head{font-size:16px;font-weight:700;color:#fff;margin-bottom:16px}
 .mood-pop-row{display:flex;justify-content:space-between;width:100%;max-width:280px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.15);font-size:13px;color:rgba(255,255,255,.9)}
 .mood-pop-close{margin-top:20px;padding:10px 40px;border-radius:20px;background:var(--co);color:#fff;font-size:14px;font-weight:600;border:0;cursor:pointer}
+
+/* Hair wash mini calendar */
+.hair-mini-cal{display:flex;gap:4px;margin-top:12px;flex-wrap:wrap}
+.hair-day{width:36px;height:44px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;background:var(--card);box-shadow:var(--sh);gap:1px}
+.hair-day.wash{background:#4a90d9;color:#fff;font-weight:600}
+.hair-day.today{border:2px solid #4a90d9}
+.hair-day .hd-date{font-weight:600}
+.hair-day .hd-icon{font-size:13px}

@@ -339,7 +339,8 @@ renderWeather(){
 renderHealth(){
   const h=this.health;const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
   s('hs-steps',h.steps.toLocaleString());s('hs-hr',h.hr);s('hs-sleep',h.sleep);
-  const bars=document.getElementById('hw-bars');if(!bars)return;bars.innerHTML='';
+  // 步数柱状图
+  const bars=document.getElementById('hw-bars');if(bars){bars.innerHTML='';
   const days=['一','二','三','四','五','六','日'];const max=Math.max(...h.weekSteps,1000);
   h.weekSteps.forEach((st,i)=>{
     const col=document.createElement('div');col.style.cssText='flex:1;display:flex;flex-direction:column;align-items:center;gap:4px';
@@ -347,7 +348,20 @@ renderHealth(){
     bar.textContent=st>=1000?Math.round(st/1000)+'k':'';col.appendChild(bar);
     const lbl=document.createElement('div');lbl.className='hw-bar-day';lbl.textContent=days[i];col.appendChild(lbl);
     bars.appendChild(col);
-  });
+  })}
+  // 洗头日历(未来7天)
+  const hc=document.getElementById('hair-mini-cal');if(hc){hc.innerHTML='';
+  const now=new Date();const wDays=['日','一','二','三','四','五','六'];
+  const washDays=[1,3,5,7,9,11]; // 隔天洗: 8/1洗了, 下次8/3,8/5,8/7...
+  for(let i=0;i<7;i++){
+    const d=new Date(now.getTime()+i*86400000);
+    const dom=d.getDate(),wdi=d.getDay();
+    const isWash=washDays.includes(dom);
+    const isToday=i===0;
+    const div=document.createElement('div');div.className='hair-day'+(isWash?' wash':'')+(isToday?' today':'');
+    div.innerHTML='<span class="hd-date">'+dom+'</span><span class="hd-icon">'+(isWash?'💧':'·')+'</span>';
+    hc.appendChild(div);
+  }}
 },
 bindHandbookSubtabs(){
   document.querySelectorAll('.hb-stab').forEach(b=>{b.onclick=()=>{

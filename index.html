@@ -141,6 +141,7 @@
       <!-- 健康Tab -->
       <div class="hb-panel" id="hb-panel-health">
         <div class="hb-panel-inner">
+          <!-- 身体数据 -->
           <div class="health-summary">
             <div class="health-stat">
               <span class="hs-emoji">🚶</span>
@@ -158,6 +159,8 @@
               <span class="hs-label">昨晚睡眠</span>
             </div>
           </div>
+
+          <!-- 经期追踪 -->
           <div class="health-period-card" id="health-period">
             <div class="hp-head">🩸 经期追踪</div>
             <div class="hp-body">
@@ -167,6 +170,31 @@
             </div>
             <div class="hp-tip">💡 卵泡期精力充沛，适合运动和社交</div>
           </div>
+
+          <!-- 美甲健康 -->
+          <div class="health-period-card" style="border-left:4px solid #e85d75;">
+            <div class="hp-head">💅 美甲健康</div>
+            <div class="hp-body">
+              <div class="hp-row"><span>上次美甲</span><span class="hp-val">7月23日 · 10天前</span></div>
+              <div class="hp-row"><span>当前状态</span><span class="hp-val">轻微脱落</span></div>
+              <div class="hp-row"><span>建议下次</span><span class="hp-val">8月13日 · 还有11天</span></div>
+            </div>
+            <div class="hp-tip" style="color:#e85d75;">💡 甲缘有些干燥，记得涂指缘油哦～</div>
+          </div>
+
+          <!-- 洗头日历 -->
+          <div class="health-period-card" style="border-left:4px solid #4a90d9;">
+            <div class="hp-head">💆‍♀️ 洗头日历</div>
+            <div class="hp-body">
+              <div class="hp-row"><span>上次洗头</span><span class="hp-val">8月1日 · 昨天</span></div>
+              <div class="hp-row"><span>发质类型</span><span class="hp-val">细软发 · 偏油</span></div>
+              <div class="hp-row"><span>建议频率</span><span class="hp-val">隔天一次</span></div>
+            </div>
+            <div class="hp-tip" style="color:#4a90d9;">💡 下次洗头建议：8月3日（明天），记得用护发素哦～</div>
+            <div class="hair-mini-cal" id="hair-mini-cal"></div>
+          </div>
+
+          <!-- 本周步数 -->
           <div class="health-weekly">
             <div class="hw-head">📊 本周步数</div>
             <div class="hw-bars" id="hw-bars"></div>
