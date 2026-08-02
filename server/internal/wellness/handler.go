@@ -5,9 +5,9 @@ import (
 	"github.com/lingpal/platform/internal/core/response"
 )
 
-type Handler struct{ svc *Service }
+type Handler struct{ svc *Service; challenges *ChallengeService }
 
-func NewHandler(svc *Service) *Handler { return &Handler{svc: svc} }
+func NewHandler(svc *Service) *Handler { return &Handler{svc: svc, challenges: NewChallengeService(svc.pool)} }
 
 func (h *Handler) RegisterRoutes(rg *gin.RouterGroup) {
 	rg.POST("/wellness/checkin", h.Checkin)
@@ -17,6 +17,30 @@ func (h *Handler) RegisterRoutes(rg *gin.RouterGroup) {
 	rg.GET("/wellness/gratitude", h.GetGratitudes)
 	rg.GET("/wellness/report", h.GetReport)
 	rg.GET("/wellness/care-status", h.GetCareStatus)
+	// 挑战
+	rg.GET("/wellness/challenges", h.GetChallenges)
+	rg.POST("/wellness/challenge/:id", h.CheckInChallenge)
+	// 步数
+	rg.GET("/wellness/steps", h.GetSteps)
+	rg.POST("/wellness/steps", h.UpdateSteps)
+}
+
+func (h *Handler) GetChallenges(c *gin.Context) {
+	response.OK(c, h.challenges.GetActiveChallenges(c.Request.Context(), c.GetString("user_id")))
+}
+func (h *Handler) CheckInChallenge(c *gin.Context) {
+	result, _ := h.challenges.CheckInChallenge(c.Request.Context(), c.GetString("user_id"), c.Param("id"))
+	response.OK(c, result)
+}
+func (h *Handler) GetSteps(c *gin.Context) {
+	steps, _ := h.challenges.GetTodaySteps(c.Request.Context(), c.GetString("user_id"))
+	response.OK(c, steps)
+}
+func (h *Handler) UpdateSteps(c *gin.Context) {
+	var req struct{ Steps int `json:"steps" binding:"required"` }
+	if err := c.ShouldBindJSON(&req); err != nil { response.BadRequest(c, "steps required"); return }
+	result, _ := h.challenges.UpdateSteps(c.Request.Context(), c.GetString("user_id"), req.Steps)
+	response.OK(c, result)
 }
 
 func (h *Handler) Checkin(c *gin.Context) {
