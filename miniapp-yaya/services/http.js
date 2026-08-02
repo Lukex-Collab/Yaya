@@ -1,8 +1,10 @@
-// services/http.js — 统一 HTTP 客户端 (对接 Go 后端 API)
-// 封装: JWT token管理 · 自动重试 · 错误处理 · 响应拦截
-const app = getApp();
+// services/http.js — 统一 HTTP 客户端
+// 注意: getApp() 不放在顶层, 避免模块加载时序问题
+const BASE_URL = 'https://api.lingpal.com';
 
-const BASE_URL = 'https://api.lingpal.com'; // 生产域名，开发时可改为 localhost
+function getAppSafe() {
+  try { return getApp(); } catch(e) { return { globalData: {} }; }
+}
 
 /**
  * 通用请求 (带 JWT)
@@ -57,7 +59,7 @@ const http = {
       success(res) {
         if (res.data?.code === 0 && res.data?.data?.token) {
           wx.setStorageSync('token', res.data.data.token);
-          app.globalData.userInfo = res.data.data.user;
+          getAppSafe().globalData.userInfo = res.data.data.user;
           app.globalData.isLogin = true;
           resolve(res.data.data);
         } else {
