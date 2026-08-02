@@ -54,7 +54,7 @@ type NewsItem struct {
 
 // GetPlaza 获取社区广场
 func (s *Service) GetPlaza(ctx context.Context, userID string) (*CommunityFeed, error) {
-	// 在线灵伴（随机生成模拟社区）
+	_ = s.pool // not needed for plaza generation
 	online := s.generateOnlinePets()
 
 	// 活跃事件
