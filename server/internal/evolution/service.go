@@ -13,12 +13,14 @@ import (
 type Service struct{ pool *pgxpool.Pool }
 
 func NewService(pool *pgxpool.Pool) *Service {
-	pool.Exec(context.Background(),
-		`CREATE TABLE IF NOT EXISTS pet_evolution_history (
+	if pool != nil {
+		pool.Exec(context.Background(),
+			`CREATE TABLE IF NOT EXISTS pet_evolution_history (
 			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 			user_id UUID REFERENCES users(id),
 			from_stage VARCHAR(32), to_stage VARCHAR(32),
 			created_at TIMESTAMPTZ DEFAULT now())`)
+	}
 	return &Service{pool: pool}
 }
 

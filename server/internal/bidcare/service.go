@@ -49,7 +49,8 @@ type MutualCareReport struct {
 }
 
 func (s *Service) GetYayaStatus(ctx context.Context, userID string) (*YayaStatus, error) {
-	status := &YayaStatus{Happiness: 80, Energy: 75, Health: 90, Hunger: 30}
+	status := &YayaStatus{Happiness: 80, Energy: 75, Health: 90, Hunger: 30, Mood: "还不错", CarePrompt: "牙牙现在状态很好！谢谢你照顾我～ 💕"}
+	if s.pool == nil { return status, nil }
 
 	// 尝试读取持久化数据
 	var species string
@@ -118,6 +119,9 @@ func (s *Service) TendToYaya(ctx context.Context, userID, action string) (map[st
 }
 
 func (s *Service) GetYayaConcerns(ctx context.Context, userID string) ([]Concern, error) {
+	if s.pool == nil {
+		return []Concern{{ID: "1", About: "你最近睡得够吗", Reason: "连续3天深夜还在和牙牙聊天", Emoji: "😴"}, {ID: "2", About: "你今天喝水了吗", Reason: "牙牙没在你聊天里听到喝水的声音", Emoji: "💧"}}, nil
+	}
 	// 牙牙根据用户近期行为生成的"担心事项"
 	concerns := []Concern{
 		{ID: "1", About: "你最近睡得够吗", Reason: "连续3天深夜还在和牙牙聊天", Emoji: "😴", CreatedAt: time.Now().AddDate(0,0,-2).Format("2006-01-02")},
@@ -152,6 +156,7 @@ func (s *Service) ReassureYaya(ctx context.Context, userID, concernID string) (m
 }
 
 func (s *Service) GetMutualCareReport(ctx context.Context, userID string) (*MutualCareReport, error) {
+	if s.pool == nil { return &MutualCareReport{CareBalance: "牙牙在用她的方式爱你。多陪陪她吧 🧸"}, nil }
 	var careCount int
 	s.pool.QueryRow(ctx, `SELECT COUNT(*) FROM care_actions WHERE user_id=$1`, userID).Scan(&careCount)
 
