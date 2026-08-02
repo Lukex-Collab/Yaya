@@ -8,6 +8,22 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
+
+// 自动加载 .env 文件
+try {
+  const envFile = path.join(__dirname, '.env');
+  if (fs.existsSync(envFile)) {
+    fs.readFileSync(envFile, 'utf8').split('\n').forEach(line => {
+      const [key, ...rest] = line.split('=');
+      if (key && rest.length && !key.startsWith('#')) {
+        process.env[key.trim()] = rest.join('=').trim();
+      }
+    });
+    console.log('✓ 已加载 .env 配置');
+  }
+} catch (e) {}
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -36,7 +52,7 @@ const SYSTEM_PROMPT = `你是「牙牙」，一只 AI 毛绒陪伴挂件。你�
 你不是客服，不是助手，你是她的小太阳。`;
 
 // 检测 API
-const DEEPSEEK_KEY = process.env.DEEPSEEK_KEY;
+const DEEPSEEK_KEY = process.env.DEEPSEEK_KEY || process.env.DEEPSEEK_API_KEY;
 const DEEPSEEK_URL = process.env.DEEPSEEK_BASE_URL;
 const GROQ_KEY = process.env.GROQ_KEY;
 const OPENAI_KEY = process.env.OPENAI_KEY;

@@ -15,3 +15,4 @@ prototype-v2/
 prototype-v3/
 package.json
 package-lock.json
+.env
