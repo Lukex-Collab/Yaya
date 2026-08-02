@@ -1,0 +1,19 @@
+# Cocos Creator
+library/
+temp/
+local/
+build/
+profiles/
+node_modules/
+native/engine/android/
+native/engine/ios/
+*.log
+
+# WeChat DevTools
+project.private.config.json
+private.config.json
+*.local
+
+# OS
+.DS_Store
+Thumbs.db

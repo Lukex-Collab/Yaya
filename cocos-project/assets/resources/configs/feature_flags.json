@@ -1,0 +1,13 @@
+﻿{
+  "_comment": "Feature flags — 全部关闭，世界先行",
+  "behavior": false,
+  "dialogue": false,
+  "voice": false,
+  "emotion": false,
+  "memory": false,
+  "ritual": false,
+  "health": false,
+  "journal": false,
+  "social": false,
+  "safety": false
+}
