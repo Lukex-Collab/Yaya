@@ -1,0 +1,53 @@
+<!-- pages/profile/profile.wxml — 我的页面 -->
+<view class="profile-container">
+
+  <!-- 牙牙档案卡片 -->
+  <view class="profile-header yaya-gradient-bg">
+    <view class="profile-card">
+      <view class="yaya-info">
+        <text class="yaya-big-emoji">🧸</text>
+        <view class="yaya-details">
+          <text class="yaya-name">牙牙</text>
+          <text class="yaya-days">陪伴 {{companionDays}} 天 · 默契度 {{intimacyScore}}%</text>
+          <view class="level-bar">
+            <view class="level-fill" style="width: {{levelProgress}}%;"></view>
+          </view>
+          <text class="level-label">{{currentLevel.name}}</text>
+        </view>
+      </view>
+      <view class="growth-link" bindtap="viewGrowth">查看成长记录 →</view>
+    </view>
+  </view>
+
+  <!-- 设置列表 -->
+  <view class="settings-section">
+    <t-cell-group>
+      <t-cell title="设备管理" leftIcon="bluetooth" arrow bindtap="goPage" data-page="/pages/safety/safety"></t-cell>
+      <t-cell title="记忆管理" leftIcon="bookmark" arrow bindtap="goPage" data-page="/pages/memory/memory"></t-cell>
+      <t-cell title="情绪报告" leftIcon="chart-pie" arrow bindtap="goPage" data-page="/pages/emotion/emotion"></t-cell>
+      <t-cell title="成就墙" leftIcon="star" arrow bindtap="goPage" data-page="/pages/achievement/achievement"></t-cell>
+    </t-cell-group>
+  </view>
+
+  <view class="settings-section">
+    <t-cell-group>
+      <t-cell title="牙牙人设" leftIcon="user-setting" arrow note="{{personalityTrait}}"></t-cell>
+      <t-cell title="通知设置" leftIcon="notification" arrow note="已开启"></t-cell>
+      <t-cell title="健康设置" leftIcon="heart" arrow></t-cell>
+      <t-cell title="隐私设置" leftIcon="lock-on" arrow></t-cell>
+    </t-cell-group>
+  </view>
+
+  <view class="settings-section">
+    <t-cell-group>
+      <t-cell title="关于牙牙" leftIcon="info-circle" arrow></t-cell>
+      <t-cell title="意见反馈" leftIcon="chat-message" arrow></t-cell>
+      <t-cell title="给牙牙打分" leftIcon="thumb-up" arrow></t-cell>
+    </t-cell-group>
+  </view>
+
+  <!-- 底部版本 -->
+  <view class="version-info">
+    <text>牙牙 v1.0.0 · 用柔软守护你的每一天</text>
+  </view>
+</view>

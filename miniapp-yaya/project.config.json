@@ -1,0 +1,27 @@
+{
+  "description": "牙牙（yaya）AI 守护玩偶",
+  "packOptions": {
+    "ignore": [
+      { "type": "file", "value": ".eslintrc.js" }
+    ]
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "coverView": true,
+    "showShadowRootInWxmlPanel": true,
+    "nodeModules": true,
+    "lazyCodeLoading": "requiredComponents"
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.8.0",
+  "appid": "{{YOUR_APPID}}",
+  "projectname": "yaya-miniapp",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "cloud": {
+    "env": "yaya-d5gf9yfw20986839f"
+  }
+}

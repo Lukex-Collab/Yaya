@@ -1,0 +1,50 @@
+/* pages/profile/profile.wxss */
+.profile-container {
+  min-height: 100vh;
+  background: #FFF8F0;
+}
+.profile-header {
+  padding: 48rpx 32rpx 48rpx;
+}
+.profile-card {
+  background: rgba(255,255,255,0.85);
+  border-radius: 32rpx;
+  padding: 36rpx;
+  backdrop-filter: blur(20rpx);
+}
+.yaya-info {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+.yaya-big-emoji { font-size: 80rpx; }
+.yaya-details { flex: 1; }
+.yaya-name { font-size: 36rpx; font-weight: 700; color: #5C3D2E; display: block; }
+.yaya-days { font-size: 24rpx; color: #9B8B8B; display: block; margin-top: 4rpx; }
+.level-bar {
+  height: 8rpx;
+  background: rgba(244,160,181,0.2);
+  border-radius: 4rpx;
+  margin-top: 16rpx;
+  overflow: hidden;
+}
+.level-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #F4A0B5, #FF8FA3);
+  border-radius: 4rpx;
+  transition: width 0.5s ease;
+}
+.level-label { font-size: 22rpx; color: #FF8FA3; margin-top: 6rpx; display: block; }
+.growth-link {
+  text-align: right;
+  font-size: 26rpx;
+  color: #FF8FA3;
+  margin-top: 20rpx;
+}
+.settings-section { margin: 16rpx 24rpx; }
+.version-info {
+  text-align: center;
+  padding: 40rpx;
+  font-size: 22rpx;
+  color: #D4A8D6;
+}

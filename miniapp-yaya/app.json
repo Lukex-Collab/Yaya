@@ -1,0 +1,60 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/world/world",
+    "pages/journal/journal",
+    "pages/profile/profile",
+    "pages/chat/chat",
+    "pages/journal-detail/journal-detail",
+    "pages/world-explore/world-explore",
+    "pages/world-pet/world-pet",
+    "pages/health/health",
+    "pages/safety/safety",
+    "pages/achievement/achievement",
+    "pages/memory/memory",
+    "pages/emotion/emotion"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FFF8F0",
+    "navigationBarTitleText": "灵伴",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF8F0"
+  },
+  "tabBar": {
+    "color": "#9B8B8B",
+    "selectedColor": "#F4A0B5",
+    "backgroundColor": "#FFF8F0",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "牙牙",
+        "iconPath": "images/tab-yaya.png",
+        "selectedIconPath": "images/tab-yaya-active.png"
+      },
+      {
+        "pagePath": "pages/world/world",
+        "text": "世界",
+        "iconPath": "images/tab-world.png",
+        "selectedIconPath": "images/tab-world-active.png"
+      },
+      {
+        "pagePath": "pages/journal/journal",
+        "text": "手账",
+        "iconPath": "images/tab-journal.png",
+        "selectedIconPath": "images/tab-journal-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tab-profile.png",
+        "selectedIconPath": "images/tab-profile-active.png"
+      }
+    ]
+  },
+  "usingComponents": {},
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

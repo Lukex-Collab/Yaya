@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS yaya_concerns;
+DROP TABLE IF EXISTS care_actions;
+DROP TABLE IF EXISTS yaya_care_status;
+DROP TABLE IF EXISTS time_capsules;
+DROP TABLE IF EXISTS captured_moments;
+DROP TABLE IF EXISTS dreams;
+DROP TABLE IF EXISTS attachment_deltas;
+DROP TABLE IF EXISTS attachment_scores;
+DROP TABLE IF EXISTS attachment_checkins;
+DROP TABLE IF EXISTS yaya_interactions;
+DROP TABLE IF EXISTS soulmate_pairs;
+DROP TABLE IF EXISTS pair_codes;
+DROP TABLE IF EXISTS tts_history;
+DROP TABLE IF EXISTS user_tts_voice;

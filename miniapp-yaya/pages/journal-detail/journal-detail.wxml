@@ -1,0 +1,23 @@
+<!-- 日记详情页 -->
+<view class="detail-container">
+  <view class="detail-card yaya-glass" wx:if="{{journal}}">
+    <view class="detail-header">
+      <text class="detail-emoji">{{journal.emoji || '📖'}}</text>
+      <text class="detail-date">{{journal.date}}</text>
+    </view>
+    <text class="detail-title">{{journal.title}}</text>
+    <view class="detail-divider"></view>
+    <text class="detail-content">{{journal.content}}</text>
+    <view class="detail-meta">
+      <text class="detail-emotion">{{journal.emotion === 'happy' ? '😊 开心' : journal.emotion === 'sad' ? '😢 难过' : journal.emotion === 'calm' ? '😌 平静' : '💭'}}</text>
+      <text class="detail-words">{{journal.wordCount || 0}}字</text>
+    </view>
+    <view class="detail-actions">
+      <t-button variant="outline" size="small" icon="share" bindtap="shareJournal">分享</t-button>
+      <t-button variant="outline" size="small" icon="delete" bindtap="deleteJournal" style="margin-left: 16rpx;">删除</t-button>
+    </view>
+  </view>
+  <view class="loading-card" wx:else>
+    <text>加载中...</text>
+  </view>
+</view>

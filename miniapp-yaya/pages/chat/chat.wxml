@@ -1,0 +1,97 @@
+<!-- pages/chat/chat.wxml — AI 对话页 -->
+<view class="chat-container">
+
+  <!-- 消息列表 -->
+  <scroll-view
+    class="chat-messages"
+    scroll-y
+    scroll-into-view="{{scrollToId}}"
+    scroll-with-animation
+    enhanced
+    show-scrollbar="{{false}}"
+  >
+    <!-- 欢迎卡片 -->
+    <view class="welcome-card" wx:if="{{messages.length === 0}}">
+      <view class="welcome-emoji">🧸</view>
+      <text class="welcome-title">和牙牙聊天吧</text>
+      <text class="welcome-desc">牙牙会认真听你说的每一句话</text>
+      <view class="quick-chips">
+        <view class="chip" wx:for="{{quickPrompts}}" wx:key="*this"
+              bindtap="sendQuickPrompt" data-text="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 对话气泡 -->
+    <view
+      class="message-row {{item.role === 'user' ? 'msg-user' : 'msg-yaya'}}"
+      wx:for="{{messages}}"
+      wx:key="_id"
+      id="msg-{{index}}"
+    >
+      <!-- 牙牙头像 -->
+      <view class="msg-avatar" wx:if="{{item.role === 'assistant'}}">
+        <text class="avatar-emoji">🧸</text>
+      </view>
+
+      <!-- 气泡 -->
+      <view class="msg-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-yaya'}}">
+        <!-- 情绪标签 -->
+        <text class="msg-emotion" wx:if="{{item.emotion && item.role === 'assistant'}}">
+          {{item.emotion === 'happy' ? '😊' : item.emotion === 'sad' ? '😢' : item.emotion === 'anxious' ? '😰' : item.emotion === 'excited' ? '🎉' : item.emotion === 'tired' ? '😴' : '💭'}}
+        </text>
+        <text class="msg-text" user-select>{{item.content}}</text>
+
+        <!-- 流式输出光标 -->
+        <text class="stream-cursor" wx:if="{{item.isStreaming}}">|</text>
+      </view>
+
+      <!-- 用户头像 -->
+      <view class="msg-avatar" wx:if="{{item.role === 'user'}}">
+        <text class="avatar-emoji">👤</text>
+      </view>
+    </view>
+
+    <!-- 加载指示器 -->
+    <view class="thinking-indicator" wx:if="{{isThinking}}">
+      <view class="thinking-avatar">🧸</view>
+      <view class="thinking-bubble">
+        <view class="typing-dots">
+          <view class="dot"></view>
+          <view class="dot"></view>
+          <view class="dot"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部占位 -->
+    <view style="height: 160rpx;"></view>
+  </scroll-view>
+
+  <!-- 输入区域 -->
+  <view class="input-area safe-area-bottom">
+    <view class="input-row">
+      <text class="input-emoji-btn" bindtap="showEmotionPicker">😊</text>
+      <textarea
+        class="chat-input"
+        value="{{inputText}}"
+        placeholder="和牙牙说点什么吧..."
+        placeholder-style="color: #9B8B8B;"
+        maxlength="500"
+        auto-height
+        show-confirm-bar="{{false}}"
+        bindinput="onInput"
+        bindconfirm="sendText"
+        cursor-spacing="12"
+        adjust-position="{{true}}"
+      ></textarea>
+      <view class="send-btn {{inputText ? 'active' : ''}}" bindtap="sendText">
+        <text>发送</text>
+      </view>
+    </view>
+    <view class="input-hint">
+      <text>💡 牙牙喜欢听你说日常小事</text>
+    </view>
+  </view>
+</view>

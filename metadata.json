@@ -1,0 +1,6 @@
+{
+  "name": "牙牙 (Yaya) AI守护玩偶",
+  "description": "统一AI陪伴平台：牙牙(AI守护玩偶) + 灵伴世界(3D宠物探索)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

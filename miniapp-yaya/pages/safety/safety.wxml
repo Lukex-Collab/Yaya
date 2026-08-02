@@ -1,0 +1,22 @@
+<!-- 守护中心 -->
+<view class="safety-container">
+  <view class="safety-status-card {{safetyStatus}}">
+    <text class="safety-icon">{{safetyStatus === 'safe' ? '🟢' : safetyStatus === 'alert' ? '🔴' : '⚪'}}</text>
+    <text class="safety-title">{{safetyStatus === 'safe' ? '一切安全' : safetyStatus === 'alert' ? '⚠️ 检测到异常' : '未连接硬件'}}</text>
+    <text class="safety-desc">{{safetyStatus === 'safe' ? '牙牙正在守护你的家' : safetyStatus === 'alert' ? '请检查门窗状况' : '请绑定牙牙硬件以开启守护'}}</text>
+  </view>
+  <view class="safety-section yaya-card">
+    <text class="section-title">🚪 门窗状态</text>
+    <view class="door-item"><text>前门</text><t-tag theme="success" size="small">安全</t-tag></view>
+    <view class="door-item"><text>窗户</text><t-tag theme="success" size="small">安全</t-tag></view>
+    <text class="mock-hint">* Demo 模式：使用模拟数据</text>
+  </view>
+  <view class="safety-section yaya-card">
+    <text class="section-title">📋 告警记录</text>
+    <view wx:if="{{logs.length === 0}}" style="text-align:center;padding:40rpx;color:#9B8B8B;">暂无告警记录 🎉</view>
+    <view class="log-item" wx:for="{{logs}}" wx:key="_id">
+      <text class="log-time">{{item.createdAt}}</text>
+      <text class="log-detail">{{item.eventType}}</text>
+    </view>
+  </view>
+</view>

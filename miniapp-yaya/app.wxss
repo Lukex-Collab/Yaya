@@ -1,0 +1,130 @@
+// app.wxss — 牙牙全局样式（品牌调性）
+/* ═══════════════════════════════════
+   牙牙（yaya）全局样式
+   品牌关键词: 圆润 / 柔软 / 潮玩 / 不幼稚 / 温暖
+   ═══════════════════════════════════ */
+
+/* 自定义 CSS 变量 */
+page {
+  --yaya-pink: #F4A0B5;
+  --yaya-pink-light: #F7B8C4;
+  --yaya-coral: #FF8FA3;
+  --yaya-cream: #FFF8F0;
+  --yaya-purple: #D4A8D6;
+  --yaya-brown: #5C3D2E;
+  --yaya-gray: #9B8B8B;
+  --yaya-green: #7BC67E;
+  --yaya-orange: #FFB347;
+  --yaya-white: #FFFFFF;
+  --yaya-shadow: rgba(244, 160, 181, 0.15);
+
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-round: 999px;
+
+  --font-title: 'PingFang SC', -apple-system, sans-serif;
+  --font-body: 'PingFang SC', -apple-system, sans-serif;
+  --font-fun: 'PingFang SC', -apple-system, sans-serif;
+
+  background-color: var(--yaya-cream);
+  font-family: var(--font-body);
+  font-size: 28rpx;
+  color: var(--yaya-brown);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── 通用圆角卡片 ── */
+.yaya-card {
+  background: var(--yaya-white);
+  border-radius: var(--radius-lg);
+  padding: 32rpx;
+  margin: 24rpx;
+  box-shadow: 0 4rpx 24rpx var(--yaya-shadow);
+}
+
+/* ── 主按钮 ── */
+.yaya-btn {
+  background: linear-gradient(135deg, var(--yaya-pink), var(--yaya-coral));
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-round);
+  padding: 20rpx 48rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 143, 163, 0.3);
+  transition: all 0.2s ease;
+}
+.yaya-btn:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+/* ── 次级按钮 ── */
+.yaya-btn-outline {
+  background: transparent;
+  color: var(--yaya-pink);
+  border: 2rpx solid var(--yaya-pink);
+  border-radius: var(--radius-round);
+  padding: 18rpx 44rpx;
+  font-size: 28rpx;
+}
+
+/* ── 页面标题 ── */
+.yaya-page-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--yaya-brown);
+  letter-spacing: 2rpx;
+}
+
+/* ── 渐变背景 ── */
+.yaya-gradient-bg {
+  background: linear-gradient(180deg, #F4A0B5 0%, #D4A8D6 50%, #FFF8F0 100%);
+}
+
+/* ── 毛玻璃效果 ── */
+.yaya-glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  border: 1rpx solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-lg);
+}
+
+/* ── 安全色状态 ── */
+.yaya-safe { color: var(--yaya-green); }
+.yaya-alert { color: var(--yaya-orange); }
+.yaya-danger { color: #FF4D4F; }
+
+/* ── 弹性布局工具 ── */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 文字省略 ── */
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── 安全区域 ── */
+.safe-area-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}

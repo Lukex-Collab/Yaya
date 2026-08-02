@@ -1,0 +1,27 @@
+<!-- 记忆管理 -->
+<view class="memory-container">
+  <view class="memory-header yaya-card">
+    <text class="memory-count">牙牙记住了 {{memories.length}} 件事</text>
+    <text class="memory-hint">左滑可以删除，长按可以锁定重要记忆</text>
+  </view>
+  <view class="memory-list">
+    <view class="memory-item" wx:for="{{memories}}" wx:key="_id"
+          bindlongpress="toggleLock" data-id="{{item._id}}" data-locked="{{item.isLocked}}">
+      <view class="memory-type">
+        <t-tag size="small" theme="{{item.type === 'fact' ? 'primary' : item.type === 'preference' ? 'success' : item.type === 'event' ? 'warning' : 'default'}}">
+          {{item.type === 'fact' ? '事实' : item.type === 'preference' ? '偏好' : item.type === 'event' ? '事件' : item.type === 'emotion' ? '情绪' : '健康'}}
+        </t-tag>
+        <text class="memory-locked" wx:if="{{item.isLocked}}">🔒</text>
+      </view>
+      <text class="memory-content">{{item.content}}</text>
+      <view class="memory-meta">
+        <text class="memory-importance">重要度: {{'⭐'.repeat(Math.ceil(item.importance/2))}}</text>
+        <text class="memory-time">{{item.createdAt || ''}}</text>
+      </view>
+      <view class="memory-delete" bindtap="deleteMemory" data-id="{{item._id}}">删除</view>
+    </view>
+  </view>
+  <view wx:if="{{memories.length === 0}}" style="text-align:center;padding:80rpx;color:#9B8B8B;">
+    还没有记忆～和牙牙聊聊你自己吧 🧸
+  </view>
+</view>

@@ -1,0 +1,11 @@
+# golangci-lint 配置 — 灵伴平台 (golangci-lint v2)
+version: "2"
+
+linters:
+  default: standard
+  disable:
+    - errcheck      # 大量未检查返回值
+    - staticcheck   # SA5011/QF1012 需逐个评估
+    - unused        # 预留方法/字段
+
+# v2 formatters 默认不启用，不配置即为空
