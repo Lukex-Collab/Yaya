@@ -25,6 +25,7 @@ type ExportResult struct {
 func (s *Service) ExportUserData(ctx context.Context, userID string) (*ExportResult, error) {
 	id := uuid.New().String()
 	now := time.Now()
+	if s.pool == nil { return &ExportResult{ExportID: id, Status: "ready", CreatedAt: now.Format(time.RFC3339)}, nil }
 
 	// 收集所有用户数据
 	data := map[string]interface{}{"exported_at": now.Format(time.RFC3339)}

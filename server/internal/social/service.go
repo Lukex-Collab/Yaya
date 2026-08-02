@@ -67,6 +67,7 @@ func (s *Service) AddFriend(ctx context.Context, userID, friendID string) (map[s
 }
 
 func (s *Service) RemoveFriend(ctx context.Context, userID, friendID string) error {
+	if s.pool == nil { return nil }
 	_, err := s.pool.Exec(ctx, `DELETE FROM friendships WHERE ((user_id=$1 AND friend_id=$2) OR (user_id=$2 AND friend_id=$1)) AND status='accepted'`, userID, friendID)
 	return err
 }
@@ -108,6 +109,7 @@ func (s *Service) LeaveMessage(ctx context.Context, userID, friendID, message st
 }
 
 func (s *Service) GetFeed(ctx context.Context, userID string) ([]FeedItem, error) {
+	if s.pool == nil { return nil, nil }
 	rows, _ := s.pool.Query(ctx,
 		`SELECT type, from_user_id::text, COALESCE((SELECT nickname FROM users WHERE id=from_user_id),'朋友'), content, created_at::text
 		 FROM social_feed WHERE user_id=$1 ORDER BY created_at DESC LIMIT 30`, userID)

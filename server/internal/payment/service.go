@@ -174,6 +174,7 @@ func (s *Service) ActivateSubscription(ctx context.Context, userID, planCode, or
 
 // GetUserSubscription 查询当前订阅
 func (s *Service) GetUserSubscription(ctx context.Context, userID string) (*Subscription, error) {
+	if s.pool == nil { return nil, fmt.Errorf("not connected") }
 	var sub Subscription
 	err := s.pool.QueryRow(ctx,
 		`SELECT id, plan, status, COALESCE(auto_renew,false), start_at, expires_at

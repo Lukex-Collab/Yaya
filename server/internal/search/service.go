@@ -26,6 +26,7 @@ type SearchResponse struct {
 }
 
 func (s *Service) SearchAll(ctx context.Context, userID, query string) (*SearchResponse, error) {
+	if s.pool == nil { return &SearchResponse{Query: query}, nil }
 	resp := &SearchResponse{Query: query}
 	like := "%" + query + "%"
 
@@ -76,6 +77,7 @@ func (s *Service) SearchAll(ctx context.Context, userID, query string) (*SearchR
 }
 
 func (s *Service) GetSuggestions(ctx context.Context, userID string) ([]string, error) {
+	if s.pool == nil { return nil, nil }
 	rows, _ := s.pool.Query(ctx,
 		`SELECT DISTINCT LEFT(content,50) FROM journals WHERE user_id=$1 ORDER BY created_at DESC LIMIT 5`, userID)
 	if rows == nil { return nil, nil }

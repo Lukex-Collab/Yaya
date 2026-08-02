@@ -141,6 +141,7 @@ func (s *Service) SendCarePush(ctx context.Context, userID, content string) {
 
 // UnreadCount 未读消息数
 func (s *Service) UnreadCount(ctx context.Context, userID string) (int, error) {
+	if s.pool == nil { return 0, nil }
 	var count int
 	err := s.pool.QueryRow(ctx,
 		`SELECT COUNT(*) FROM push_messages WHERE user_id=$1 AND is_read=false`, userID).Scan(&count)

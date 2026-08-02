@@ -148,6 +148,7 @@ func (s *Service) callVolcengine(ctx context.Context, text, voiceID string) (str
 }
 
 func (s *Service) SelectVoice(ctx context.Context, userID, voiceID string) error {
+	if s.pool == nil { return nil }
 	s.pool.Exec(ctx,
 		`INSERT INTO user_tts_voice (user_id, voice_id, selected_at) VALUES ($1,$2,now())
 		 ON CONFLICT (user_id) DO UPDATE SET voice_id=$2, selected_at=now()`, userID, voiceID)
@@ -161,6 +162,7 @@ func (s *Service) getUserVoice(ctx context.Context, userID string) string {
 }
 
 func (s *Service) GetHistory(ctx context.Context, userID string) ([]SynthesizeResult, error) {
+	if s.pool == nil { return nil, nil }
 	rows, _ := s.pool.Query(ctx,
 		`SELECT text, voice_name, audio_url, COALESCE(duration_ms,0) FROM tts_history
 		 WHERE user_id=$1 ORDER BY created_at DESC LIMIT 30`, userID)

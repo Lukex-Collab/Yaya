@@ -98,6 +98,7 @@ func (e *AutonomousEngine) generateLogsForPet(rng *rand.Rand, seed int, species 
 
 // GetTodayActivity 获取用户宠物今天的活动记录
 func (e *AutonomousEngine) GetTodayActivity(ctx context.Context, userID string) ([]BehaviorLog, error) {
+	if e.pool == nil { return nil, nil }
 	rows, err := e.pool.Query(ctx,
 		`SELECT action, emoji, COALESCE(location,''), created_at
 		 FROM pet_activity_logs WHERE user_id=$1 AND created_at::date = CURRENT_DATE

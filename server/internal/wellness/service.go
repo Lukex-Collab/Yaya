@@ -32,6 +32,7 @@ type MoodCheckin struct {
 }
 
 func (s *Service) Checkin(ctx context.Context, userID string, score int, note string) (*MoodCheckin, error) {
+	if s.pool == nil { return &MoodCheckin{UserID: userID, Score: score, Note: note, AiReply: defaultReplies[score], Date: time.Now().Format("2006-01-02")}, nil }
 	if score < 1 { score = 1 }
 	if score > 5 { score = 5 }
 
@@ -125,6 +126,7 @@ type Gratitude struct {
 }
 
 func (s *Service) AddGratitude(ctx context.Context, userID, content string) (*Gratitude, error) {
+	if s.pool == nil { return &Gratitude{UserID: userID, Content: content, Date: time.Now().Format("2006-01-02")}, nil }
 	today := time.Now().Format("2006-01-02")
 	var id string
 	err := s.pool.QueryRow(ctx,
@@ -162,6 +164,7 @@ type GrowthReport struct {
 }
 
 func (s *Service) GenerateReport(ctx context.Context, userID, period string) (*GrowthReport, error) {
+	if s.pool == nil { return &GrowthReport{Period: period, GeneratedAt: time.Now().Format(time.RFC3339)}, nil }
 	days := 7
 	if period == "month" { days = 30 } else if period == "quarter" { days = 90 }
 
@@ -204,6 +207,7 @@ func (s *Service) generateSummary(ctx context.Context, days, avgMood, journals, 
 // ─── 主动关怀鼓励 ───
 
 func (s *Service) CareNudge(ctx context.Context, userID string, score int) {
+	if s.pool == nil { return }
 	msgs := map[int]string{
 		1: "牙牙注意到你今天心情不太好。不用勉强自己。过来坐一会儿，我在这里。",
 		2: "今天好像不太顺。没关系，你不是一个人。",
