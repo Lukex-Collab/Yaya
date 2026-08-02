@@ -4,6 +4,7 @@ module.exports = {
   pet: null,      // {x, z, rot, state, ai:false}  ai=true 时宠物 AI 由 behavior 模块接管
   world: null,    // world.buildWorld() 的返回值
   cam: null,      // Camera 实例
+  overlay: null,  // TextOverlay 实例（对话气泡用）
   W: 0,
   H: 0,
   dpr: 1

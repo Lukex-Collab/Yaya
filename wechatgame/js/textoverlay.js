@@ -34,9 +34,9 @@ TextOverlay.prototype.attach = function (gl, w, h, dpr) {
   this.h = h;
   this.dpr = dpr || 1;
   try {
-    var wx = (typeof wx !== 'undefined') ? wx : ((typeof window !== 'undefined' && window.wx) || null);
-    if (!wx || !wx.createCanvas) { this._warn('no wx.createCanvas'); return false; }
-    var canvas = wx.createCanvas();
+    var wxx = (typeof wx !== 'undefined') ? wx : ((typeof window !== 'undefined' && window.wx) || null);
+    if (!wxx || !wxx.createCanvas) { this._warn('no wx.createCanvas'); return false; }
+    var canvas = wxx.createCanvas();
     var ctx = canvas.getContext ? canvas.getContext('2d') : null;
     if (!ctx || typeof ctx.fillRect !== 'function') { this._warn('2d canvas unavailable'); return false; }
     canvas.width = w;
@@ -108,7 +108,17 @@ TextOverlay.prototype.draw = function (gl) {
     this._upload(gl);
     this.dirty = false;
   }
+  if (!this._proj) this._proj = GL.mat4.create();
+  GL.mat4.ortho(this._proj, 0, this.w, this.h, 0, -1, 1);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.disable(gl.DEPTH_TEST);
+  gl.disable(gl.CULL_FACE);
+  gl.useProgram(this.prog.program);
+  gl.uniformMatrix4fv(this.prog.uProj, false, this._proj);
   this.quad.draw(this.prog, 1);
+  gl.enable(gl.DEPTH_TEST);
+  gl.disable(gl.BLEND);
 };
 
 // ---- 内部 ----

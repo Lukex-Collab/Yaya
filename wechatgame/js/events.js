@@ -14,6 +14,8 @@ var EVENTS = {
   DIALOGUE_SHOW: 'dialogue:show',        // {text, emo, lineId, duration}
   DIALOGUE_HIDE: 'dialogue:hide',
   EMOTION_CHANGE: 'emotion:change',      // {emotion, level}
+  VOICE_COMMAND: 'voice:command',         // {intent, raw}
+  BIND_DONE: 'bind:done',                 // {petId, first, speciesId}
   PERF_GRADE_CHANGED: 'perf:grade',      // {grade}
   FEATURE_ENABLED: 'feature:enabled',    // {featureId}
   FEATURE_DISABLED: 'feature:disabled'   // {featureId}

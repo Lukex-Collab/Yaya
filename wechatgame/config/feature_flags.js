@@ -6,9 +6,9 @@ module.exports = {
   emotion: true,
   ritual: true,
   voice: false,
-  memory: false,
+  memory: true,
   health: false,
-  journal: false,
+  journal: true,
   social: false,
   safety: false
 };

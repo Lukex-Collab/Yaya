@@ -31,7 +31,15 @@ var INTERACTABLES = [
   { id: 'lamp_ne',  type: 'lamp',     label: '路灯', x: 6, z: 6, r: 1.0 },
   { id: 'lamp_nw',  type: 'lamp',     label: '路灯', x: -6, z: 6, r: 1.0 },
   { id: 'lamp_se',  type: 'lamp',     label: '路灯', x: 6, z: -6, r: 1.0 },
-  { id: 'lamp_sw',  type: 'lamp',     label: '路灯', x: -6, z: -6, r: 1.0 }
+  { id: 'lamp_sw',  type: 'lamp',     label: '路灯', x: -6, z: -6, r: 1.0 },
+  // 外围区域地标（位置与 buildWorld 内 at() 摆放一致）
+  { id: 'windmill',  type: 'windmill',  label: '风车',   x: 12.1, z: 7.0, r: 1.6 },
+  { id: 'rock_zn',   type: 'rocks',     label: '苔藓巨石', x: -4, z: 14, r: 1.4 },
+  { id: 'lighthouse', type: 'lighthouse', label: '灯塔', x: -14.7, z: 8.5, r: 1.6 },
+  { id: 'crystal',   type: 'crystal',   label: '发光水晶', x: -13.9, z: -8.0, r: 1.4 },
+  { id: 'tent',      type: 'tent',      label: '帐篷',   x: 0, z: -15, r: 1.4 },
+  { id: 'moonstone1', type: 'moonstone', label: '月光石', x: 10.0, z: -8.7, r: 1.0 },
+  { id: 'moonstone2', type: 'moonstone', label: '月光石', x: 12.5, z: -4.3, r: 1.0 }
 ];
 
 function getZone(x, z) {
