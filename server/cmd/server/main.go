@@ -18,7 +18,6 @@ import (
 	"github.com/lingpal/platform/internal/chat"
 	"github.com/lingpal/platform/internal/core"
 	"github.com/lingpal/platform/internal/core/middleware"
-	"github.com/lingpal/platform/internal/core/response"
 	sched "github.com/lingpal/platform/internal/core/scheduler"
 	"github.com/lingpal/platform/internal/health"
 	"github.com/lingpal/platform/internal/journal"
@@ -28,9 +27,20 @@ import (
 	"github.com/lingpal/platform/internal/ritual"
 	"github.com/lingpal/platform/internal/safety"
 	"github.com/lingpal/platform/internal/user"
+	"github.com/lingpal/platform/internal/voice"
+	"github.com/lingpal/platform/pkg/realtime"
 
 	_ "github.com/joho/godotenv/autoload"
 )
+
+// @title 牙牙(Yaya) AI守护玩偶 API
+// @version 1.0.0
+// @description 灵伴平台 — AI陪伴产品后端服务
+// @contact.name 牙牙开发团队
+// @host localhost:8080
+// @BasePath /api/v1
+
+var startTime = time.Now()
 
 func main() {
 	cfg := core.Load()
@@ -45,59 +55,77 @@ func main() {
 	defer pool.Close()
 	slog.Info("connected to PostgreSQL")
 
-	// Redis
+	// Redis (optional — degrades gracefully if unavailable)
 	rdb, err := core.NewRedisClient(cfg.RedisURL)
-	if err != nil {
-		slog.Error("failed to connect to Redis", "error", err)
-		os.Exit(1)
+	redisOK := err == nil
+	if !redisOK {
+		slog.Warn("Redis unavailable — running without cache/events/rate-limiting", "error", err)
+	} else {
+		defer rdb.Close()
+		slog.Info("connected to Redis")
 	}
-	defer rdb.Close()
-	slog.Info("connected to Redis")
 
-	// DeepSeek Client (openai-go SDK)
+	// DeepSeek Client
 	deepseekClient := openai.NewClient(
 		option.WithAPIKey(cfg.DeepSeekAPIKey),
 		option.WithBaseURL(cfg.DeepSeekBaseURL),
 	)
 
-	// Gin 路由
+	// ── Gin Engine ──
 	r := gin.New()
+	r.Use(middleware.RequestID())
+	r.Use(middleware.Telemetry())
 	r.Use(middleware.Logger())
 	r.Use(middleware.CORS())
 	r.Use(middleware.RateLimit(100))
 	r.Use(gin.Recovery())
 
-	// 健康检查
-	r.GET("/health", func(c *gin.Context) {
-		response.OK(c, gin.H{
-			"status":  "healthy",
+	// ── 健康检查器 ──
+	hc := middleware.NewHealthChecker()
+	hc.Register("database", func() error { return pool.Ping(ctx) })
+	if redisOK {
+		hc.Register("redis", func() error { return rdb.Ping(ctx).Err() })
+	}
+	r.GET("/health", hc.GinHandler("1.0.0", startTime))
+	r.GET("/health/live", middleware.LivenessHandler)
+	r.GET("/health/ready", middleware.ReadinessHandler)
+
+	// ── 文档 + 静态资源 ──
+	r.Static("/uploads", "./uploads")
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"name":    "牙牙(Yaya) AI守护玩偶",
 			"version": "1.0.0",
-			"modules": []string{"chat", "memory", "journal", "ritual", "health", "achievement", "safety", "payment", "push", "admin"},
+			"docs":    "/health",
+			"api":     "/api/v1",
+			"ws":      "/ws",
 		})
 	})
 
-	// API v1
+	// ═══════════ API v1 ═══════════
 	v1 := r.Group("/api/v1")
 
 	// ---- 无需认证 ----
 	userSvc := user.NewService(pool, cfg.JWTSecret, cfg.JWTExpireHours)
 	userH := user.NewHandler(userSvc)
 	userH.RegisterPublicRoutes(v1)
-
-	// 支付回调（无需认证）
-	v1.POST("/payment/callback", func(c *gin.Context) {})
+	v1.POST("/payment/callback", func(c *gin.Context) {}) // 微信支付回调
 
 	// ---- 需要认证 ----
 	auth := v1.Group("")
 	auth.Use(middleware.Auth(cfg.JWTSecret))
 
-	// User (protected)
+	// User
 	userH.RegisterRoutes(auth)
 
-	// Chat
+	// Chat (with subscription guard)
 	chatSvc := chat.NewService(cfg.DeepSeekAPIKey, cfg.DeepSeekBaseURL, pool, rdb)
+	chatSvc.SetPipeline(chat.NewChatPipeline(pool, rdb, deepseekClient))
 	chatH := chat.NewHandler(chatSvc)
-	chatH.RegisterRoutes(auth)
+	subGuard := middleware.NewSubscriptionGuard(pool)
+	chatAuth := auth.Group("")
+	chatAuth.Use(subGuard.ChatQuota())
+	chatH.RegisterRoutes(chatAuth)
 
 	// Memory
 	memorySvc := memory.NewService(pool, rdb, deepseekClient)
@@ -133,29 +161,45 @@ func main() {
 	paymentH := payment.NewHandler(pool)
 	paymentH.RegisterRoutes(auth)
 
-	// Push Notifications
+	// Push
 	pushH := push.NewHandler(pool, deepseekClient)
 	pushH.RegisterRoutes(auth)
 
-	// Admin Dashboard
+	// Voice
+	voiceH := voice.NewHandler(pool, cfg.DeepSeekAPIKey, cfg.DeepSeekBaseURL)
+	voiceH.RegisterRoutes(auth)
+
+	// Admin
 	adminH := admin.NewHandler(pool)
 	adminH.RegisterRoutes(auth)
 
-	// 定时调度器（Cron: 推送/记忆衰减/陪伴天数/成就）
-	if rdb != nil {
+	// ═══════════ WebSocket ═══════════
+	ws := r.Group("/ws")
+	ws.Use(middleware.Auth(cfg.JWTSecret))
+	ws.GET("", realtime.GlobalHub.UpgradeHandler)
+	realtime.GlobalHub.OnConnect = func(userID string) {
+		slog.Info("user connected via WebSocket", "user_id", userID)
+	}
+	realtime.GlobalHub.OnDisconnect = func(userID string) {
+		slog.Info("user disconnected", "user_id", userID)
+	}
+
+	// ═══════════ 定时调度器 ═══════════
+	if redisOK {
 		s := sched.New(pool, rdb)
 		go s.Start(context.Background())
 	}
 
-	// 启动服务器
-	srv := &http.Server{
-		Addr:    ":" + cfg.GatewayPort,
-		Handler: r,
-	}
+	// ═══════════ 启动 ═══════════
+	srv := &http.Server{Addr: ":" + cfg.GatewayPort, Handler: r}
 
 	go func() {
-		slog.Info("lingpal gateway starting", "port", cfg.GatewayPort, "version", "1.0.0")
-		slog.Info("API docs: http://localhost:" + cfg.GatewayPort + "/health")
+		slog.Info("🚀 牙牙(Yaya) API Gateway starting",
+			"port", cfg.GatewayPort,
+			"version", "1.0.0",
+			"health", "http://localhost:"+cfg.GatewayPort+"/health",
+			"ws", "ws://localhost:"+cfg.GatewayPort+"/ws",
+		)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			slog.Error("gateway failed", "error", err)
 			os.Exit(1)
@@ -171,5 +215,5 @@ func main() {
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	srv.Shutdown(shutdownCtx)
-	slog.Info("server stopped")
+	slog.Info("server stopped — 牙牙在，就不孤单 🧸")
 }
