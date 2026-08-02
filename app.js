@@ -51,15 +51,8 @@ womenHistory:{
   '8-15':{name:'武則天',year:'690',emoji:'👑',desc:'中国历史上唯一的女皇帝。她开创殿试、打破门阀、大力发展科举，证明了女性也可以执掌天下。',quote:'「权力从不自动给予，它必须被争取。」'},
 },
 
-womenNews:[
-  {emoji:'🏆',tag:'sport',tagLabel:'体育',headline:'中国女篮亚洲杯夺冠，时隔12年重返巅峰',snippet:'2025年女篮亚洲杯决赛中，中国女篮73-71战胜日本，韩旭获MVP。这是中国女篮第12次夺得亚洲杯冠军。'},
-  {emoji:'⚖️',tag:'rights',tagLabel:'权益',headline:'全国多省份将辅助生殖纳入医保',snippet:'截至目前已有北京、上海等15个省市将试管婴儿等辅助生殖技术纳入医保报销，减轻女性生育负担。'},
-  {emoji:'💼',tag:'biz',tagLabel:'商业',headline:'女性CEO占比创新高：2025年全球女性CEO比例达10.6%',snippet:'《财富》500强榜单显示，2025年女性CEO数量达到53位，较十年前翻倍。中国有7位女性企业家进入全球富豪榜前100。'},
-  {emoji:'🔬',tag:'science',tagLabel:'科技',headline:'颜宁团队再发Nature：破解疼痛传导的分子机制',snippet:'深圳医学科学院创始院长颜宁教授团队在Nature发表研究，为开发无成瘾性止痛药提供了全新靶点。'},
-  {emoji:'📋',tag:'rights',tagLabel:'权益',headline:'最高法发布新一批反家暴典型案例',snippet:'最高人民法院发布8起反家庭暴力典型案例，明确人身安全保护令可在线申请，24小时内作出裁定。'},
-  {emoji:'🛡',tag:'rights',tagLabel:'权益',headline:'杭州率先试点"女性安全出行"智能公交系统',snippet:'该系统在夜间线路配备一键报警、实时位置共享和AI安全监控，已覆盖23条公交线，投诉下降67%。'},
-],
-
+womenNews:[{"emoji":"🔬","tag":"science","tagLabel":"科技","headline":"王虹教授破解百年数学难题，成为首位获AMS科尔奖的中国女性","snippet":"北京大学数学科学学院王虹教授与合作者完全解决了困扰数学界近百年的Kakeya猜想，获得2026年美国数学学会科尔奖，是该奖项设立以来首位中国女性得主。"},{"emoji":"🏆","tag":"sport","tagLabel":"体育","headline":"中国女篮亚洲杯夺冠，时隔12年重返巅峰","snippet":"2025年女篮亚洲杯决赛中，中国女篮73-71战胜日本，韩旭获MVP。这是中国女篮第12次夺得亚洲杯冠军。"},{"emoji":"⚖️","tag":"rights","tagLabel":"权益","headline":"全国多省份将辅助生殖纳入医保","snippet":"截至目前已有北京、上海等15个省市将试管婴儿等辅助生殖技术纳入医保报销，减轻女性生育负担。"},{"emoji":"💼","tag":"biz","tagLabel":"商业","headline":"女性CEO占比创新高：全球女性CEO比例达10.6%","snippet":"《财富》500强榜单显示，女性CEO数量达到53位，较十年前翻倍。中国有7位女性企业家进入全球富豪榜前100。"},{"emoji":"📋","tag":"rights","tagLabel":"权益","headline":"最高法发布新一批反家暴典型案例","snippet":"最高人民法院发布8起反家庭暴力典型案例，明确人身安全保护令可在线申请，24小时内作出裁定。"},{"emoji":"🎬","tag":"culture","tagLabel":"文化","headline":"贾玲新片全球票房突破5亿美元，亚洲女导演新纪录","snippet":"继《热辣滚烫》后贾玲第二部导演作品在全球取得超5亿美元票房，成为亚洲票房最高的女导演。"},{"emoji":"🛡","tag":"rights","tagLabel":"权益","headline":"杭州率先试点\"女性安全出行\"智能系统","snippet":"夜间线路配备一键报警和AI安全监控，已覆盖23条公交线，试点期间骚扰投诉下降67%。"},{"emoji":"🎓","tag":"science","tagLabel":"科技","headline":"颜宁团队再发Nature：破解疼痛传导分子机制","snippet":"深圳医学科学院创始院长颜宁教授团队在Nature发表研究，为开发无成瘾性止痛药提供全新靶点。"},{"emoji":"🗳️","tag":"rights","tagLabel":"权益","headline":"新修订《妇女权益保障法》实施两周年：反性骚扰条款成效显著","snippet":"新法实施两年来全国法院受理职场性骚扰案件同比下降31%，企业防治机制逐步完善。"},{"emoji":"🌍","tag":"science","tagLabel":"科技","headline":"中国女航天员王亚平完成第三次太空行走","snippet":"神舟二十号任务中王亚平完成个人第三次太空行走，累计出舱时长超过12小时，刷新中国女性纪录。"}]
+,
 mockReplyPool:{default:['嗯，我记着了。要不要帮你写进日记？','累的时候不用逞强，我一直都在。','好的～有什么想说的随时找我。',"那你早点休息，我陪着你。"],tired:['听起来你今天好累。先去洗澡吧？','你今天辛苦了。我在呢。'],happy:['哇！太好了！我也替你开心～','这个好消息我要记下来！'],sad:['听起来你有点难过。想聊聊吗？','没关系，我在呢。'],scared:['你要不要先走到人多的地方？','需要我帮你打电话给妈妈吗？']},
 replyIdx:0,
 mockReply(text){
@@ -269,7 +262,7 @@ switchTab(t){this.state.tab=t;$$('.tab-btn').forEach(b=>b.classList.toggle('acti
 
 bindNavigation(){$('btn-gear').onclick=()=>this.openPage('settings');$('btn-blackboard').onclick=()=>this.openPopover();$('btn-cal-expand').onclick=()=>{this.closePopover();this.openPage('calendar')};$$('.pg-back').forEach(b=>b.onclick=()=>this.closePage())},
 
-openPage(p){if(this.state.page===p)return;this.state.page=p;const el=$('pg-'+p);if(el){el.classList.add('open');if(p==='fullchat')this.syncChat()}},
+openPage(p){if(this.state.page===p)return;this.state.page=p;const el=$('pg-'+p);if(el){el.classList.add('open');if(p==='fullchat')this.syncChat();if(p==='calendar')this.renderNewsFeed()}},
 closePage(){if(!this.state.page)return;$('pg-'+this.state.page).classList.remove('open');this.state.page=null},
 syncChat(){const s=$('drawer-msgs'),d=$('fullchat-msgs');if(s&&d){d.innerHTML=s.innerHTML;d.scrollTop=d.scrollHeight}},
 
