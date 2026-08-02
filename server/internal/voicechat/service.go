@@ -59,6 +59,7 @@ func (s *Service) GenerateRoomToken(ctx context.Context, userID string) (string,
 }
 
 func (s *Service) GetCallStatus(ctx context.Context, userID string) (*CallStatus, error) {
+	if s.pool == nil { return &CallStatus{IsOnline: true, CanCall: true, YayaMood: "ready", Message: "牙牙在线 📞"}, nil }
 	status := &CallStatus{
 		IsOnline: true, YayaMood: "ready",
 		CanCall: true,
@@ -100,6 +101,7 @@ func (s *Service) InitiateCall(ctx context.Context, userID string) (map[string]i
 }
 
 func (s *Service) EndCall(ctx context.Context, userID string) error {
+	if s.pool == nil { return nil }
 	s.pool.Exec(ctx,
 		`UPDATE voice_calls SET status='ended', ended_at=now(),
 		 duration_ms = EXTRACT(EPOCH FROM (now()-started_at))*1000

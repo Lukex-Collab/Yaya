@@ -35,6 +35,7 @@ type FeedResponse struct {
 
 // GetPublicFeed 获取公共内容流
 func (s *Service) GetPublicFeed(ctx context.Context, page int) (*FeedResponse, error) {
+	if s.pool == nil { return &FeedResponse{}, nil }
 	if page < 1 { page = 1 }
 
 	rows, _ := s.pool.Query(ctx,

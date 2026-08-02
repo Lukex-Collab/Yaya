@@ -21,6 +21,7 @@ import (
 	"github.com/lingpal/platform/internal/chat"
 	"github.com/lingpal/platform/internal/dailytopic"
 	"github.com/lingpal/platform/internal/nostalgia"
+	"github.com/lingpal/platform/internal/onboarding"
 	"github.com/lingpal/platform/internal/core"
 	"github.com/lingpal/platform/internal/publicfeed"
 	"github.com/lingpal/platform/internal/voiceclone"
@@ -210,6 +211,10 @@ func main() {
 	// Nostalgia (怀旧引擎/那年的今天)
 	nostalgiaH := nostalgia.NewHandler(pool)
 	nostalgiaH.RegisterRoutes(auth)
+
+	// Onboarding (新用户7天引导)
+	obH := onboarding.NewHandler(pool)
+	obH.RegisterRoutes(auth)
 
 	// VoiceClone (声音克隆 Chatterbox TTS)
 	vcloneH := voiceclone.NewHandler(pool, "")

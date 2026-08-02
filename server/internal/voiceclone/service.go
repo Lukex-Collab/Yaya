@@ -134,6 +134,7 @@ func (s *Service) Synthesize(ctx context.Context, userID, text, voiceID string) 
 
 // CheckCloneStatus 检查克隆训练状态
 func (s *Service) CheckCloneStatus(ctx context.Context, userID string) (map[string]interface{}, error) {
+	if s.pool == nil { return map[string]interface{}{"status":"none","samples_needed":3}, nil }
 	var status string
 	err := s.pool.QueryRow(ctx,
 		`SELECT COALESCE(status,'none') FROM voice_models WHERE user_id=$1 ORDER BY created_at DESC LIMIT 1`, userID,

@@ -34,6 +34,7 @@ type MemoryStats struct {
 }
 
 func (s *Service) GetTodayInHistory(ctx context.Context, userID string) (*MemoryHighlight, error) {
+	if s.pool == nil { return &MemoryHighlight{Title: "还没有历史回忆", Emoji: "✨", YayaComment: "每一天都在创造新的回忆 💫"}, nil }
 	today := time.Now()
 	// 查找过去年份的今天
 	for yearsAgo := 1; yearsAgo <= 2; yearsAgo++ {
@@ -94,6 +95,7 @@ func (s *Service) GetTimeline(ctx context.Context, userID string) ([]MemoryHighl
 }
 
 func (s *Service) GetStats(ctx context.Context, userID string) (*MemoryStats, error) {
+	if s.pool == nil { return &MemoryStats{TopEmotion: "happy"}, nil }
 	stats := &MemoryStats{}
 	s.pool.QueryRow(ctx, `SELECT COUNT(DISTINCT created_at::date) FROM messages WHERE user_id=$1`, userID).Scan(&stats.TotalDays)
 	s.pool.QueryRow(ctx, `SELECT COUNT(*) FROM messages WHERE user_id=$1 AND role='user'`, userID).Scan(&stats.TotalConversations)
