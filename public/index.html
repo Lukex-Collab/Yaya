@@ -1440,31 +1440,83 @@ function interactYaya() {
   setTimeout(() => tag.style.transform = 'scale(1)', 300);
 }
 
-// Send Chat Message
+// ═══ Auth + API ═══
+let _token = '';
+
+async function ensureToken() {
+  if (!_token) {
+    try {
+      const res = await fetch('/api/v1/auth/wechat/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: 'dev', nickname: '牙牙的朋友' })
+      });
+      const data = await res.json();
+      _token = data.data?.token || data.token || '';
+    } catch(e) { console.warn('login fallback'); }
+  }
+  return _token;
+}
+
+// Send Chat Message → Go Backend SSE Stream
 async function sendChatMessage() {
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   if (!text) return;
-
   input.value = '';
   appendChatMsg('user', text);
 
   try {
-    const res = await fetch('/api/v1/chat', {
+    const t = await ensureToken();
+    const res = await fetch('/api/v1/chat/send', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: text, nickname: '昭' })
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + t },
+      body: JSON.stringify({ content: text })
     });
-    const data = await res.json();
-    const reply = data.data?.reply || '牙牙一直在听着呢～';
-    appendChatMsg('yaya', reply);
+
+    if (!res.ok) throw new Error('API error');
+
+    // SSE streaming
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '', fullReply = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n\n');
+      buffer = lines.pop() || '';
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const evt = JSON.parse(line.slice(6));
+            if (evt.content) { fullReply += evt.content; appendChatMsg('yaya', evt.content, true); }
+            if (evt.done) { finalizeYayaMsg(fullReply); }
+            if (evt.error) { appendChatMsg('yaya', '牙牙信号不太好...再说一遍？🥺'); }
+          } catch(e) {}
+        }
+      }
+    }
   } catch (err) {
+    console.error('chat error:', err);
     appendChatMsg('yaya', '牙牙刚刚信号晃了一下，能再讲一遍吗？🧸');
   }
 }
 
-function appendChatMsg(role, text) {
+let _streamingMsg = null;
+let _streamingText = '';
+
+function appendChatMsg(role, text, isStreaming = false) {
   const stream = document.getElementById('chat-stream');
+
+  if (isStreaming && _streamingMsg) {
+    // Append to existing streaming bubble
+    _streamingText += text;
+    _streamingMsg.querySelector('.chat-bubble').textContent = _streamingText;
+    stream.scrollTop = stream.scrollHeight;
+    return;
+  }
+
   const div = document.createElement('div');
   div.className = `chat-msg ${role}`;
   div.innerHTML = `
@@ -1473,6 +1525,17 @@ function appendChatMsg(role, text) {
   `;
   stream.appendChild(div);
   stream.scrollTop = stream.scrollHeight;
+
+  // Track streaming message for token-by-token updates
+  if (isStreaming && role === 'yaya') {
+    _streamingMsg = div;
+    _streamingText = text;
+  }
+}
+
+function finalizeYayaMsg() {
+  _streamingMsg = null;
+  _streamingText = '';
 }
 
 // World Exploration

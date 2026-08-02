@@ -1048,7 +1048,7 @@ function addSectionLine(slide, x, y, w) {
 
   // Milestone targets
   s.addText("本轮达成目标", {
-    x: 0.6, y: 3.8, w: 8, h: 0.4,
+    x: 0.6, y: 3.65, w: 8, h: 0.4,
     fontSize: 16, fontFace: FONT.heading, color: C.white, bold: true,
   });
 
@@ -1064,7 +1064,7 @@ function addSectionLine(slide, x, y, w) {
     text: t,
     options: { bullet: true, breakLine: j < targets.length - 1, fontSize: 11, fontFace: FONT.body, color: C.grayLt, paraSpaceAfter: 4 },
   })), {
-    x: 0.45, y: 4.2, w: 9.1, h: 1.1,
+    x: 0.45, y: 4.3, w: 9.1, h: 1.0,
   });
 })();
 
@@ -1093,7 +1093,7 @@ function addSectionLine(slide, x, y, w) {
 
   // Subtitle
   s.addText("用AI温暖每一位独居女孩的日常", {
-    x: 0.5, y: 2.8, w: 9, h: 0.6,
+    x: 0.5, y: 3.0, w: 9, h: 0.6,
     fontSize: 18, fontFace: FONT.heading, color: C.pink, align: "center",
     charSpacing: 2,
   });
