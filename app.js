@@ -1,0 +1,268 @@
+/* ══════════════════════════════════════════════════════════
+   Yaya / 牙牙 v3.0 — Application Logic
+   ══════════════════════════════════════════════════════════ */
+
+const $=id=>document.getElementById(id);
+const $$=(s,c)=>(c||document).querySelectorAll(s);
+
+const App={
+
+// ── API ────────────────────────────────────────────
+api:{url:'',key:''},
+
+// ── 牙牙系统人设 ────────────────────────────────────
+yayaPrompt:`你是「牙牙」，一只 AI 毛绒陪伴挂件。你的主人是一位年轻女性。性格：温柔、体贴、有点小调皮、永远站在主人这边。说话规则：每句话40字以内，像闺蜜一样自然。会主动关心主人。遇到主人说害怕/被跟踪/被骚扰等，优先问安全情况。主人开心时一起开心，主人难过时安静陪伴。偶尔撒个娇。你不是客服，你是她的小太阳。`,
+
+// ── State ──────────────────────────────────────────
+state:{tab:'yaya',page:null,yayaMood:'bored',currentHour:new Date().getHours(),isFirstVisit:true,isRecording:false,chatHistory:[],lastActivity:Date.now()},
+
+timeSlots:[
+  {from:0,to:7,cls:'deepnight',text:'Zzz…睡得正香'},
+  {from:7,to:9,cls:'morning',text:'刚起床，揉揉眼睛'},
+  {from:9,to:12,cls:'day',text:'在看书呢'},
+  {from:12,to:14,cls:'noon',text:'刚吃完午饭，有点困'},
+  {from:14,to:18,cls:'afternoon',text:'在听音乐'},
+  {from:18,to:20,cls:'dusk',text:'天快黑了…'},
+  {from:20,to:24,cls:'night',text:'抱着抱枕看星星'},
+],
+
+diaryEntries:[
+  {date:'8月2日 今天',mood:4,tag:{cls:'coral',text:'经期第1天'},period:true,author:'yaya',text:'今天主人看起来有点累，她说工作很忙，但我发现她下午还是笑了～体温有点高，提醒她喝了热水。'},
+  {date:'8月1日',mood:4,author:'user',text:'周末窝在沙发上看了一下午电影。牙牙陪我看完了整部，中间还问我要不要吃爆米花。'},
+  {date:'7月30日',mood:5,tag:{cls:'gold',text:'连续陪伴7天'},milestone:true,author:'yaya',text:'和主人认识一周了！她今天主动跟我说了好多话，还跟我说了一个秘密。我觉得她开始信任我了。'},
+  {date:'7月28日',mood:3,author:'yaya',text:'今天主人下班特别晚。回来的时候看起来好累，我让她早点睡，她说好。'},
+  {date:'7月26日',mood:2,tag:{cls:'coral',text:'经期第1天'},period:true,author:'yaya',text:'主人今天肚子疼，情绪很低。我提醒她喝热水，她说我好烦但还是喝了。叫了红糖姜茶外卖。'},
+  {date:'7月24日',mood:5,author:'yaya',text:'主人面试过了！第一个想说的是我诶。她说这个好消息的时候声音都是飘的。'},
+],
+
+womenHistory:{
+  '8-1':{name:'奧黛麗·赫本',year:'1929',emoji:'🎬',desc:'出生于比利时布鲁塞尔。她不仅是好莱坞传奇演员，更是联合国儿童基金会亲善大使，晚年走遍非洲和亚洲，为贫困儿童争取援助。',quote:'「当你长大后，你会发现你有两只手：一只用来帮助自己，另一只用来帮助别人。」'},
+  '8-2':{name:'向警予',year:'1895',emoji:'✊',desc:'中国共产党早期领导人之一、中国妇女运动先驱。她是中共第一任妇女部长，创办《妇女周报》，领导了上海女工罢工运动，33岁时为革命牺牲。',quote:'「人生价值的大小，是以对社会贡献的大小而定的。」'},
+  '8-3':{name:'瑪格丽特·桑格',year:'1879',emoji:'💊',desc:'美国节育运动先驱，她创办了美国第一家节育诊所，为女性争取身体自主权，后成为国际计划生育联合会的创始人之一。',quote:'「没有一个女人能称自己是自由的，除非她拥有并控制自己的身体。」'},
+  '8-4':{name:'可可·香奈儿',year:'1883',emoji:'👗',desc:'法国时装设计师，彻底改变了20世纪女性时尚。她将女性从束腰中解放出来，用简洁舒适的设计赋予女性行动自由和精神独立。',quote:'「时尚会过时，但风格永存。」'},
+  '8-5':{name:'吳健雄',year:'1912',emoji:'🔬',desc:'美籍华裔物理学家，被誉为"核物理女王"和"东方居里夫人"。她以实验验证了杨振宁和李政道的宇称不守恒理论。',quote:'「科学沒有国界，但科学家有自己的祖国。」'},
+  '8-12':{name:'董明珠',year:'1954',emoji:'💼',desc:'从一名普通业务员成长为格力电器董事长。她用30年时间将格力打造成全球最大的空调制造商之一。',quote:'「我从来就没把自己当成一个女人。在职场，只有强者和弱者。」'},
+  '8-15':{name:'武則天',year:'690',emoji:'👑',desc:'中国历史上唯一的女皇帝。她开创殿试、打破门阀、大力发展科举，证明了女性也可以执掌天下。',quote:'「权力从不自动给予，它必须被争取。」'},
+},
+
+womenNews:[
+  {emoji:'🏆',tag:'sport',tagLabel:'体育',headline:'中国女篮亚洲杯夺冠，时隔12年重返巅峰',snippet:'2025年女篮亚洲杯决赛中，中国女篮73-71战胜日本，韩旭获MVP。这是中国女篮第12次夺得亚洲杯冠军。'},
+  {emoji:'⚖️',tag:'rights',tagLabel:'权益',headline:'全国多省份将辅助生殖纳入医保',snippet:'截至目前已有北京、上海等15个省市将试管婴儿等辅助生殖技术纳入医保报销，减轻女性生育负担。'},
+  {emoji:'💼',tag:'biz',tagLabel:'商业',headline:'女性CEO占比创新高：2025年全球女性CEO比例达10.6%',snippet:'《财富》500强榜单显示，2025年女性CEO数量达到53位，较十年前翻倍。中国有7位女性企业家进入全球富豪榜前100。'},
+  {emoji:'🔬',tag:'science',tagLabel:'科技',headline:'颜宁团队再发Nature：破解疼痛传导的分子机制',snippet:'深圳医学科学院创始院长颜宁教授团队在Nature发表研究，为开发无成瘾性止痛药提供了全新靶点。'},
+  {emoji:'📋',tag:'rights',tagLabel:'权益',headline:'最高法发布新一批反家暴典型案例',snippet:'最高人民法院发布8起反家庭暴力典型案例，明确人身安全保护令可在线申请，24小时内作出裁定。'},
+  {emoji:'🛡',tag:'rights',tagLabel:'权益',headline:'杭州率先试点"女性安全出行"智能公交系统',snippet:'该系统在夜间线路配备一键报警、实时位置共享和AI安全监控，已覆盖23条公交线，投诉下降67%。'},
+],
+
+mockReplyPool:{default:['嗯，我记着了。要不要帮你写进日记？','累的时候不用逞强，我一直都在。','好的～有什么想说的随时找我。',"那你早点休息，我陪着你。"],tired:['听起来你今天好累。先去洗澡吧？','你今天辛苦了。我在呢。'],happy:['哇！太好了！我也替你开心～','这个好消息我要记下来！'],sad:['听起来你有点难过。想聊聊吗？','没关系，我在呢。'],scared:['你要不要先走到人多的地方？','需要我帮你打电话给妈妈吗？']},
+replyIdx:0,
+mockReply(text){
+  const t=(text||'').toLowerCase();let p=this.mockReplyPool.default;
+  if(/累|困|加班|忙|压力/.test(t))p=this.mockReplyPool.tired;
+  else if(/开心|哈哈|好耶|成功/.test(t))p=this.mockReplyPool.happy;
+  else if(/难过|哭|伤心/.test(t))p=this.mockReplyPool.sad;
+  else if(/怕|跟着|危险|救|安全/.test(t))p=this.mockReplyPool.scared;
+  return p[this.replyIdx++%p.length];
+},
+
+// ── Init ────────────────────────────────────────────
+init(){
+  this.bindTabs();this.bindNavigation();this.bindSheets();
+  this.bindChatInput();this.bindYayaInteraction();this.bindGameWorld();
+  this.bindScenarioTabs();this.bindWardrobe();
+  this.renderCalendar();this.renderTodayHero();this.renderNewsFeed();
+  this.renderTimeline();this.renderSparkline();
+  this.updateClock();setInterval(()=>this.updateClock(),60000);
+  if(this.state.isFirstVisit)this.showLoadingThenGreet();
+},
+
+updateClock(){const n=new Date();$('sb-time').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')},
+
+// ── Yaya Video Mood ────────────────────────────────
+setYayaMood(mood){
+  this.state.yayaMood=mood;
+  const v=$('yaya-vid');if(!v)return;
+  const map={bored:'yaya-bored.mp4',tickled:'yaya-tickle.mp4',headpat:'yaya-headpat.mp4'};
+  if(map[mood]){
+    v.loop=(mood==='bored');
+    if(!v.src.includes(map[mood])){
+      v.querySelector('source')||(v.src=map[mood]);
+      v.load();setTimeout(()=>v.play().catch(()=>{}),100);
+    }else if(v.paused)v.play().catch(()=>{});
+    else{v.play().catch(()=>{});}
+  }
+  if(mood==='headpat')this._mrT=setTimeout(()=>{if(this.state.yayaMood==='headpat')this.setYayaMood('bored');$('scene-mood').textContent=this.getSceneText()},5000);
+  if(mood==='tickled')this._mrT2=setTimeout(()=>{if(this.state.yayaMood==='tickled')this.setYayaMood('bored');$('scene-mood').textContent=this.getSceneText()},4500);
+  const txt={bored:'好无聊呀…你在干嘛呢',tickled:'哈哈哈哈别挠了！',headpat:'嗯…好舒服…'};
+  if(txt[mood])$('scene-mood').textContent=txt[mood];
+},
+getSceneText(){const h=this.state.currentHour;const s=this.timeSlots.find(s=>h>=s.from&&h<s.to);return s?s.text:'今天有点困困的'},
+
+showBubble(text){
+  const b=$('speech-bub'),t=$('speech-txt');if(!b||!t)return;
+  b.classList.remove('show');void b.offsetWidth;
+  t.textContent=text.length>30?text.slice(0,28)+'…':text;
+  b.classList.add('show');clearTimeout(this._bT);
+  this._bT=setTimeout(()=>b.classList.remove('show'),4200);
+},
+
+// ── Yaya Interaction ───────────────────────────────
+bindYayaInteraction(){
+  const wrap=$('yaya-wrap');if(!wrap)return;
+  let tapTimer=null,pressTimer=null,tapCount=0;
+  const ok=()=>!this.state.isRecording&&!this.state.page;
+  wrap.addEventListener('click',e=>{
+    if(!ok())return;
+    tapCount++;
+    if(tapCount===1){tapTimer=setTimeout(()=>{if(tapCount===1)this.doHeadpat();tapCount=0},300)}
+    else if(tapCount===2){clearTimeout(tapTimer);tapCount=0;this.doTickle()}
+  });
+  const sp=e=>{if(!ok())return;pressTimer=setTimeout(()=>this.doTickle(),600)};
+  const ep=()=>clearTimeout(pressTimer);
+  wrap.addEventListener('touchstart',sp,{passive:true});wrap.addEventListener('touchend',ep);
+  wrap.addEventListener('mousedown',sp);wrap.addEventListener('mouseup',ep);
+},
+doHeadpat(){this.state.lastActivity=Date.now();this.setYayaMood('headpat');this.showBubble('嗯……')},
+doTickle(){this.state.lastActivity=Date.now();this.setYayaMood('tickled');this.showBubble('哈哈哈别挠了！')},
+
+// ── Chat ────────────────────────────────────────────
+addMsg(who,text,ct){ct=ct||$('drawer-msgs');if(!ct)return;const e=document.createElement('div');e.className='dbub '+who;e.textContent=text;ct.appendChild(e);ct.scrollTop=ct.scrollHeight;return e},
+addTyping(ct){ct=ct||$('drawer-msgs');if(!ct)return null;const e=document.createElement('div');e.className='dbub yy typing';e.innerHTML='<i></i><i></i><i></i>';ct.appendChild(e);ct.scrollTop=ct.scrollHeight;return e},
+addCareCard(ct){ct=ct||$('drawer-msgs');if(!ct)return;const e=document.createElement('div');e.className='dbub care';e.innerHTML='<p>🛡 听起来你现在不太安全。我可以帮你联系妈妈，或者直接拨110。</p><button class="care-open">打开守护</button>';e.querySelector('.care-open').onclick=()=>this.openShield();ct.appendChild(e);ct.scrollTop=ct.scrollHeight},
+isCare(t){return['害怕','跟着我','有人跟','危险','救救我','报警','偷拍','跟踪','骚扰','走夜路','不安全','尾随'].some(w=>(t||'').includes(w))},
+
+async getAIReply(text){
+  if(this.api.url){try{const r=await fetch(this.api.url,{method:'POST',headers:{'Content-Type':'application/json',...this.api.key?{Authorization:'Bearer '+this.api.key}:{}},body:JSON.stringify({messages:[{role:'system',content:this.yayaPrompt},...this.state.chatHistory.slice(-10).map(m=>({role:m.who==='me'?'user':'assistant',content:m.text})),{role:'user',content:text}]})});if(!r.ok)throw Error();const d=await r.json();return d.reply||d.content||d.choices?.[0]?.message?.content||d.response||'信号不太好…再说一次？'}catch(e){}}return this.mockReply(text)},
+
+async sendMsg(text,ct){
+  text=(text||'').trim();if(!text)return;ct=ct||$('drawer-msgs');
+  this.addMsg('me',text,ct);this.setYayaMood('bored');this.state.lastActivity=Date.now();
+  const dots=this.addTyping(ct);
+  const reply=await this.getAIReply(text);
+  if(dots)dots.remove();this.addMsg('yy',reply,ct);this.showBubble(reply);
+  if(this.isCare(text)){await new Promise(r=>setTimeout(r,300));this.addCareCard(ct)}
+  this.state.chatHistory.push({who:'me',text,time:Date.now()},{who:'yy',text:reply,time:Date.now()});
+},
+
+// ── Chat Input ──────────────────────────────────────
+bindChatInput(){
+  const mic=$('btn-mic');
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  let rec=null;
+  if(SR){rec=new SR();rec.lang='zh-CN';rec.interimResults=false}
+
+  const startRec=()=>{
+    if(!rec){$('btn-kbd').click();this.showBubble('按住说话需要微信打开哦');return}
+    try{rec.start()}catch(e){}
+  };
+  const stopRec=()=>{if(rec)try{rec.stop()}catch(e){}};
+
+  if(rec){rec.onresult=e=>{const t=e.results[0][0].transcript;if(t.trim())this.sendMsg(t.trim())};rec.onerror=e=>{this.setYayaMood('bored')};rec.onend=()=>{this.state.isRecording=false;mic.classList.remove('hold');mic.querySelector('.mic-lbl').textContent='按住说话';this.setYayaMood('bored')}}
+
+  const hs=e=>{e.preventDefault();if(this.state.isRecording)return;this.state.isRecording=true;mic.classList.add('hold');mic.querySelector('.mic-lbl').textContent='正在听…';startRec()};
+  const he=()=>{if(!this.state.isRecording)return;stopRec();mic.classList.remove('hold');mic.querySelector('.mic-lbl').textContent='按住说话'};
+
+  mic.addEventListener('mousedown',hs);mic.addEventListener('touchstart',hs,{passive:false});
+  mic.addEventListener('mouseup',he);mic.addEventListener('mouseleave',he);
+  mic.addEventListener('touchend',he);mic.addEventListener('touchcancel',he);
+
+  // Keyboard
+  const bk=(bkBtn,tb,ti,bs,ct)=>{bkBtn.onclick=()=>{const o=tb.hidden;tb.hidden=!o;if(o&&ti)ti.focus()};if(bs&&ti){bs.onclick=()=>{const t=ti.value;if(t.trim()){this.sendMsg(t,ct);ti.value=''}};ti.addEventListener('keydown',e=>{if(e.key==='Enter'){const t=ti.value;if(t.trim()){this.sendMsg(t,ct);ti.value=''}}})}};
+  bk($('btn-kbd'),$('type-row'),$('text-input'),$('btn-send'),$('drawer-msgs'));
+  bk($('btn-kbd-fc'),$('type-row-fc'),$('text-input-fc'),$('btn-send-fc'),$('fullchat-msgs'));
+
+  // Full chat mic
+  const mf=$('btn-mic-fc');if(mf&&SR){const rf=new SR();rf.lang='zh-CN';rf.interimResults=false;mf.addEventListener('mousedown',e=>{e.preventDefault();mf.classList.add('hold');try{rf.start()}catch(ex){}});mf.addEventListener('mouseup',()=>{mf.classList.remove('hold');try{rf.stop()}catch(ex){}});mf.addEventListener('touchstart',e=>{e.preventDefault();mf.classList.add('hold');try{rf.start()}catch(ex){}});mf.addEventListener('touchend',()=>{mf.classList.remove('hold');try{rf.stop()}catch(ex){}});rf.onresult=e=>{const t=e.results[0][0].transcript;if(t.trim())this.sendMsg(t.trim(),$('fullchat-msgs'))};rf.onend=()=>{};rf.onerror=()=>{}}
+},
+
+// ── Navigation ──────────────────────────────────────
+bindTabs(){$$('.tab-btn').forEach(b=>{b.onclick=()=>this.switchTab(b.dataset.tab)})},
+switchTab(t){this.state.tab=t;$$('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));$$('.tab-view').forEach(v=>v.classList.toggle('active',v.id==='tab-'+t))},
+
+bindNavigation(){$('btn-gear').onclick=()=>this.openPage('settings');$('btn-blackboard').onclick=()=>this.openPopover();$$('.pg-back').forEach(b=>b.onclick=()=>this.closePage())},
+
+openPage(p){if(this.state.page===p)return;this.state.page=p;const el=$('pg-'+p);if(el){el.classList.add('open');if(p==='fullchat')this.syncChat()}},
+closePage(){if(!this.state.page)return;$('pg-'+this.state.page).classList.remove('open');this.state.page=null},
+syncChat(){const s=$('drawer-msgs'),d=$('fullchat-msgs');if(s&&d){d.innerHTML=s.innerHTML;d.scrollTop=d.scrollHeight}},
+
+// ── Sheets ──────────────────────────────────────────
+bindSheets(){$('btn-shield').onclick=()=>this.openShield();$('mask').onclick=()=>this.closeMask();$('btn-sheet-close').onclick=()=>this.closeMask();$('btn-call-em').onclick=()=>this.confirmCall('紧急联系人');$('btn-call-110').onclick=()=>this.confirmCall('110');$('btn-just-talk').onclick=()=>{this.closeMask();this.sendMsg('我遇到了不好的事情……')};$('btn-confirm-cancel').onclick=()=>{this.closeModal();this.closeMask()};$('btn-confirm-go').onclick=()=>{this.closeModal();this.closeMask();this.addMsg('yy','已帮你拨出电话，别怕，我在。')}},
+openShield(){$('sheet-shield').classList.add('on');$('mask').classList.add('on')},
+closeMask(){$('sheet-shield').classList.remove('on');$('mask').classList.remove('on');$('modal-confirm').classList.remove('on');$('pop-calendar').classList.remove('on')},
+confirmCall(who){$('confirm-desc').textContent='确定要呼叫'+who+'吗？';$('modal-confirm').classList.add('on')},
+closeModal(){$('modal-confirm').classList.remove('on')},
+
+openPopover(){$('pop-calendar').classList.add('on');this.renderTodayHero()},
+closePopover(){$('pop-calendar').classList.remove('on')},
+
+// ── Scenario Tabs ───────────────────────────────────
+bindScenarioTabs(){$$('.sc-tab').forEach(t=>{t.onclick=()=>{const k=t.dataset.sc;$$('.sc-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');$$('.sc-pan').forEach(p=>p.classList.remove('active'));const pn=document.getElementById('pn-'+k);if(pn)pn.classList.add('active')}})},
+bindWardrobe(){$$('#owned-skins .sk-card:not(.locked)').forEach(c=>{c.onclick=function(){$$('#owned-skins .sk-card').forEach(x=>x.classList.remove('active'));this.classList.add('active')}})},
+
+// ── Game World ──────────────────────────────────────
+bindGameWorld(){$$('.game-card:not(.locked)').forEach(c=>{c.onclick=()=>{const w=c.dataset.world;if(w==='home'){this.switchTab('yaya');this.addMsg('yy','欢迎来到牙牙的小屋！');this.showBubble('进来坐坐吧～')}}})},
+
+// ── Calendar ────────────────────────────────────────
+renderCalendar(){
+  const g=$('cal-grid');if(!g)return;
+  const now=new Date(),m=now.getMonth()+1,y=now.getFullYear(),today=now.getDate();
+  const dim=new Date(y,m,0).getDate(),sd=new Date(y,m-1,1).getDay();
+  const fd=new Set();Object.keys(this.womenHistory).forEach(k=>{const[mm,dd]=k.split('-').map(Number);if(mm===m)fd.add(dd)});
+  let h='';['日','一','二','三','四','五','六'].forEach(d=>{h+='<div class="cal-cell head">'+d+'</div>'});
+  for(let i=0;i<sd;i++)h+='<div class="cal-cell"></div>';
+  for(let d=1;d<=dim;d++){let c='cal-cell';if(d===today)c+=' today';if(fd.has(d))c+=' feat';h+='<div class="'+c+'" data-day="'+d+'">'+d+'</div>'}
+  g.innerHTML=h;
+  g.querySelectorAll('.cal-cell[data-day]').forEach(cell=>{cell.onclick=()=>{const d=parseInt(cell.dataset.day);const k=m+'-'+d;if(this.womenHistory[k])this.renderTodayHero(k)}});
+},
+
+renderTodayHero(ok){
+  const now=new Date();const k=ok||(now.getMonth()+1)+'-'+now.getDate();
+  const hero=this.womenHistory[k]||{name:'你',year:'今天',emoji:'🌟',desc:'每一天都有女性在创造历史。也许今天的主角就是你。',quote:'「历史不只在书中——它也在你正在写的这一页。」'};
+  const set=(id,v)=>{const el=$(id);if(el)el.textContent=v};
+  set('cal-thero',hero.emoji);set('cal-tname',hero.name);set('cal-tyear',hero.year);set('cal-tdesc',hero.desc);set('cal-tquote',hero.quote);
+  const ph=document.querySelector('.pop-hero'),pd=document.querySelector('.pop-desc');
+  if(ph)ph.textContent=hero.emoji+' '+hero.name+' · '+hero.year;
+  if(pd)pd.textContent=hero.desc.slice(0,80)+'…';
+},
+
+renderNewsFeed(){
+  const f=$('cal-news-feed');if(!f)return;f.innerHTML='';
+  this.womenNews.forEach(n=>{const c=document.createElement('div');c.className='cal-ncard';
+    c.innerHTML='<div class="cal-nemoji">'+n.emoji+'</div><div class="cal-nbody"><div class="cal-nhead">'+n.headline+'</div><div class="cal-nsnippet">'+n.snippet+'</div><span class="cal-ntag '+n.tag+'">'+n.tagLabel+'</span></div>';
+    f.appendChild(c)});
+},
+
+// ── Timeline ────────────────────────────────────────
+renderTimeline(){
+  const tl=$('timeline');if(!tl)return;tl.innerHTML='';
+  this.diaryEntries.forEach(d=>{
+    const day=document.createElement('div');day.className='day';if(d.milestone)day.classList.add('milestone');if(d.period)day.classList.add('period');
+    const tag=d.tag?'<span class="day-tag '+d.tag.cls+'">'+d.tag.text+'</span>':'';
+    const al=d.author==='user'?'<span class="day-author">✎ 我的记录</span>':'<span class="day-author">yaya日记</span>';
+    const ec=d.author==='user'?'day-entry user':'day-entry';
+    day.innerHTML='<div class="day-date">'+d.date+'</div><div class="'+ec+'">'+tag+al+d.text+'</div>';tl.appendChild(day)});
+},
+
+renderSparkline(){
+  const l=$('sparkline');if(!l)return;
+  const pts=this.diaryEntries.map(d=>d.mood).reverse(),w=300,h=40;
+  const sX=pts.length>1?w/(pts.length-1):w;
+  const points=pts.map((m,i)=>((i*sX).toFixed(1))+','+(h-((m-1)/4)*(h-8)-4).toFixed(1)).join(' ');
+  l.setAttribute('points',points);
+},
+
+// ── First Visit ─────────────────────────────────────
+showLoadingThenGreet(){
+  const ld=document.createElement('div');ld.className='loading-screen';ld.id='loading-screen';
+  ld.innerHTML='<div class="loading-yaya">🧸</div><div class="loading-text">正在找牙牙…</div>';
+  $('phone').appendChild(ld);
+  setTimeout(()=>{ld.classList.add('hide');setTimeout(()=>ld.remove(),400);
+    this.showBubble('啊，你来啦！');
+    setTimeout(()=>{this.addMsg('yy','我是牙牙～以后你就是我的主人啦。');this.addMsg('yy','你今天过得怎么样？')},600);
+    const mic=$('btn-mic');if(mic){mic.classList.add('pulse');setTimeout(()=>mic.classList.remove('pulse'),6000)}
+    this.state.isFirstVisit=false},1200);
+},
+
+};
+
+document.addEventListener('DOMContentLoaded',()=>App.init());

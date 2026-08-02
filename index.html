@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>牙牙 Yaya</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="phone" id="phone">
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span class="sb-time" id="sb-time">9:41</span>
+    <span class="sb-status" id="sb-status"><span class="dot online"></span> 牙牙在线</span>
+    <button class="sb-gear" id="btn-gear">⚙️</button>
+  </div>
+
+  <!-- MAIN AREA -->
+  <div class="main-area" id="main-area">
+
+    <!-- TAB: 牙牙 -->
+    <div class="tab-view active" id="tab-yaya">
+      <div class="scene" id="scene">
+        <div class="scene-sky"></div>
+        <div class="scene-overlay"></div>
+        <div class="scene-floor"></div>
+        <button class="sc-icon blk" id="btn-blackboard">📋</button>
+        <button class="sc-icon shd" id="btn-shield">🛡</button>
+        <div class="yaya-wrap" id="yaya-wrap">
+          <video class="yaya-vid" id="yaya-vid" src="yaya-bored.mp4" autoplay loop muted playsinline></video>
+          <div class="speech-bub" id="speech-bub"><span id="speech-txt"></span></div>
+        </div>
+        <p class="scene-mood" id="scene-mood">今天有点困困的</p>
+      </div>
+      <div class="chat-drawer" id="chat-drawer">
+        <div class="drawer-grip" id="drawer-grip"><span></span></div>
+        <div class="drawer-msgs" id="drawer-msgs"></div>
+      </div>
+      <div class="input-row"><div class="input-bar">
+        <button class="btn-mic" id="btn-mic"><span class="mic-icon">🎤</span><span class="mic-lbl">按住说话</span></button>
+        <button class="btn-kbd" id="btn-kbd">⌨️</button>
+      </div></div>
+      <div class="type-row" id="type-row" hidden>
+        <input type="text" id="text-input" placeholder="和牙牙说点什么…" autocomplete="off">
+        <button id="btn-send">发送</button>
+      </div>
+    </div>
+
+    <!-- TAB: 游戏 -->
+    <div class="tab-view" id="tab-game">
+      <div class="game-scroll">
+        <div class="game-sect">
+          <div class="game-sect-t">🌟 yaya世界</div>
+          <p class="game-sect-d">在另一个世界，牙牙有自己的小房子、朋友和冒险故事…</p>
+          <div class="game-grid">
+            <div class="game-card" data-world="home"><span class="gw-i">🏠</span><span class="gw-n">牙牙的小屋</span><span class="gw-s">可进入</span></div>
+            <div class="game-card locked"><span class="gw-i">🌳</span><span class="gw-n">森林探险</span><span class="gw-s">🔒 陪伴30天解锁</span></div>
+            <div class="game-card locked"><span class="gw-i">🎪</span><span class="gw-n">朋友派对</span><span class="gw-s">🔒 默契度★★★解锁</span></div>
+            <div class="game-card locked"><span class="gw-i">🌙</span><span class="gw-n">梦境旅行</span><span class="gw-s">🔒 写满30篇日记解锁</span></div>
+          </div>
+        </div>
+        <div class="game-sect">
+          <div class="game-sect-t">👗 牙牙的衣橱</div>
+          <div class="ward-mini"><video src="yaya-bored.mp4" autoplay loop muted playsinline class="ward-mini-vid"></video></div>
+          <div class="ward-lab">已拥有</div>
+          <div class="ward-row" id="owned-skins">
+            <div class="sk-card active"><span>🧸</span><small>默认</small></div>
+            <div class="sk-card"><span>🌸</span><small>樱花</small></div>
+            <div class="sk-card"><span>⭐</span><small>星星</small></div>
+            <div class="sk-card locked"><span>🔒</span><small>神秘</small></div>
+          </div>
+          <div class="ward-lab" style="margin-top:14px">实体娃衣商店</div>
+          <div class="ward-ban"><span>买实体衣服 → 扫码解锁小程序同款虚拟装扮</span><button>去看看</button></div>
+          <div class="ward-lab" style="margin-top:14px">虚拟装扮商店</div>
+          <div class="ward-row">
+            <div class="sk-card shop"><span>🌈</span><small>¥12</small></div>
+            <div class="sk-card shop"><span>🦋</span><small>¥12</small></div>
+            <div class="sk-card shop"><span>🌙</span><small>¥18</small></div>
+            <div class="sk-card shop"><span>🎀</span><small>¥8</small></div>
+          </div>
+        </div>
+        <div class="game-sect">
+          <div class="game-sect-t">⚡ 芽芽能量</div>
+          <div class="energy-wrap">
+            <div class="energy-head"><span>今日剩余</span><span class="energy-num">47 / 50 次</span></div>
+            <div class="energy-track"><div class="energy-fill" style="width:94%"></div></div>
+            <button class="energy-btn">购买能量包 · ¥9 / 100次</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: 手账 -->
+    <div class="tab-view" id="tab-handbook">
+      <div class="hb-scroll">
+        <div class="spark-card">
+          <div class="spark-head"><span>这两周的情绪</span><span class="spark-hint">点开看详情</span></div>
+          <svg class="spark-svg" viewBox="0 0 300 48" preserveAspectRatio="none">
+            <polyline id="sparkline" fill="none" stroke="var(--coral)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          </svg>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="yaya"><span class="tab-ico">🏠</span><span class="tab-l">牙牙</span></button>
+    <button class="tab-btn" data-tab="game"><span class="tab-ico">🎮</span><span class="tab-l">游戏</span></button>
+    <button class="tab-btn" data-tab="handbook"><span class="tab-ico">📖</span><span class="tab-l">手账</span></button>
+  </nav>
+
+  <!-- PAGES (hidden until opened) -->
+  <div class="fullpage" id="pg-settings">
+    <div class="pg-head"><button class="pg-back">← 返回</button><span class="pg-title">设置</span><span></span></div>
+    <div class="pg-body">
+      <div class="set-grp"><div class="set-grp-t">设备</div>
+        <div class="set-r"><span>牙牙连接状态</span><span class="set-v ok">● 已连接</span></div>
+        <div class="set-r"><span>电量</span><span class="set-v">87%</span></div>
+        <div class="set-r"><span>固件版本</span><span class="set-v">v1.2.0</span></div>
+      </div>
+      <div class="set-grp"><div class="set-grp-t">牙牙人设</div>
+        <div class="set-r"><span>名字</span><span class="set-v">牙牙</span></div>
+        <div class="set-r"><span>性格</span><span class="set-v">温柔 + 活泼</span></div>
+        <div class="set-r"><span>语音</span><span class="set-v">女声 · 软萌</span></div>
+      </div>
+      <div class="set-grp hl"><div class="set-grp-t">⚡ 芽芽能量</div>
+        <div class="set-r"><span>剩余次数</span><span class="set-v">47 次</span></div>
+        <div class="set-r"><span>每天免费</span><span class="set-v">5 次</span></div>
+        <button class="set-btn">购买能量包 · ¥9 / 100次</button>
+      </div>
+      <div class="set-grp"><div class="set-grp-t">关系成长</div>
+        <div class="set-r"><span>陪伴天数</span><span class="set-v">23 天</span></div>
+        <div class="set-r"><span>默契度</span><span class="set-v">★★★☆</span></div>
+        <div class="set-r"><span>已解锁互动</span><span class="set-v">3 / 7</span></div>
+      </div>
+      <div class="set-grp"><div class="set-grp-t">记忆管理</div><div class="set-r arr"><span>查看 / 删除牙牙记住的内容</span></div></div>
+      <div class="set-grp"><div class="set-grp-t">通知</div>
+        <div class="set-r"><span>经期提醒</span><span class="set-v ok">🔔 开启</span></div>
+        <div class="set-r"><span>喝水提醒</span><span class="set-v off">🔕 关闭</span></div>
+        <div class="set-r"><span>每日关心推送</span><span class="set-v ok">🔔 开启</span></div>
+      </div>
+      <div class="set-grp"><div class="set-grp-t">关于</div>
+        <div class="set-r arr"><span>牙牙的故事</span></div>
+        <div class="set-r"><span>版本号</span><span class="set-v">v1.2.0</span></div>
+        <div class="set-r arr"><span>帮助与反馈</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fullpage" id="pg-fullchat">
+    <div class="pg-head"><button class="pg-back">← 主页</button><span class="pg-title">和牙牙的对话</span><span></span></div>
+    <div class="pg-body chat-body"><div class="fullchat-msgs" id="fullchat-msgs"></div></div>
+    <div class="input-row"><div class="input-bar">
+      <button class="btn-mic" id="btn-mic-fc"><span class="mic-icon">🎤</span><span class="mic-lbl">按住说话</span></button>
+      <button class="btn-kbd" id="btn-kbd-fc">⌨️</button>
+    </div></div>
+    <div class="type-row" id="type-row-fc" hidden>
+      <input type="text" id="text-input-fc" placeholder="和牙牙说点什么…" autocomplete="off">
+      <button id="btn-send-fc">发送</button>
+    </div>
+  </div>
+
+  <div class="fullpage" id="pg-calendar">
+    <div class="pg-head"><button class="pg-back">← 返回</button><span class="pg-title">女子日历</span><span></span></div>
+    <div class="pg-body cal-body">
+      <div class="cal-mcard"><div class="cal-mhead">2026 年 8 月</div><div class="cal-grid" id="cal-grid"></div></div>
+      <div class="cal-tcard" id="cal-tcard">
+        <div class="cal-tbadge">📅 历史上的今天</div>
+        <div class="cal-thero" id="cal-thero"></div>
+        <div class="cal-tname" id="cal-tname"></div>
+        <div class="cal-tyear" id="cal-tyear"></div>
+        <p class="cal-tdesc" id="cal-tdesc"></p>
+        <div class="cal-tquote" id="cal-tquote"></div>
+      </div>
+      <div class="cal-news-sect"><div class="cal-news-t">🔥 女性热点</div><div class="cal-news-feed" id="cal-news-feed"></div></div>
+    </div>
+  </div>
+
+  <!-- SHEETS / MODALS -->
+  <div class="mask" id="mask"></div>
+  <div class="sheet" id="sheet-shield">
+    <div class="sheet-grip"></div>
+    <div class="sheet-scroll">
+      <h3 class="sheet-t">需要帮忙吗</h3><p class="sheet-sub">牙牙一直在。选一个就好。</p>
+      <div class="sh-em"><button class="sh-btn danger" id="btn-call-em">🆘 呼叫紧急联系人</button><button class="sh-btn danger" id="btn-call-110">📞 拨打 110</button></div>
+      <div class="sh-sc">
+        <div class="sh-lbl">我遇到了什么？</div>
+        <div class="sc-tabs">
+          <button class="sc-tab active" data-sc="voyeur">📸 被偷拍</button>
+          <button class="sc-tab" data-sc="rumor">💬 被造黄谣</button>
+          <button class="sc-tab" data-sc="harass">✋ 被骚扰</button>
+        </div>
+        <div class="sc-pan active" id="pn-voyeur">
+          <div class="sc-step"><div class="sc-num">1</div><div class="sc-bd"><strong>即时应对</strong><p>在公共场合，立即看向对方并大声说"你在偷拍我吗？"——多数偷拍者被当众指出后会停止。走向人群或有监控处，寻求工作人员帮助，报警（110）。</p></div></div>
+          <div class="sc-step"><div class="sc-num">2</div><div class="sc-bd"><strong>证据保全</strong><p>记住对方体貌特征、穿着。记下周围监控位置。寻求目击证人。不要自己动手抢手机（可能构成抢夺）。</p></div></div>
+          <div class="sc-step"><div class="sc-num">3</div><div class="sc-bd"><strong>法律路径</strong><p>《治安管理处罚法》第42条：偷窥偷拍散布隐私，处5日以下拘留或500元以下罚款；情节较重处5-10日拘留。《民法典》第1032-1033条：隐私权。《刑法》第284条：非法使用窃照专用器材。</p></div></div>
+          <div class="sc-step"><div class="sc-num">4</div><div class="sc-bd"><strong>心理支持</strong><p>"这不是你的错。穿什么衣服、走什么路，都不是被偷拍的理由。现在你可能觉得恶心、愤怒、害怕——这些感觉都是正常的。想聊聊现在的感受吗？"</p></div></div>
+        </div>
+        <div class="sc-pan" id="pn-rumor">
+          <div class="sc-step"><div class="sc-num">1</div><div class="sc-bd"><strong>即时应对</strong><p>第一时间截图/录屏保存证据！包括发布者账号、时间、转发量。不要和造谣者私了对骂。联系平台投诉下架（微博/微信/抖音均有侵权投诉入口）。</p></div></div>
+          <div class="sc-step"><div class="sc-num">2</div><div class="sc-bd"><strong>证据保全</strong><p>原始链接+截图（含URL、时间）。传播量截图。评论区攻击言论。对你造成的实际影响记录。可用"权利卫士"等App做区块链存证。</p></div></div>
+          <div class="sc-step"><div class="sc-num">3</div><div class="sc-bd"><strong>法律路径</strong><p>《刑法》第246条诽谤罪：捏造事实诽谤他人，情节严重处3年以下有期徒刑。《民法典》第1024条名誉权。平台接到通知未及时处理，对扩大损害承担连带责任。</p></div></div>
+          <div class="sc-step"><div class="sc-num">4</div><div class="sc-bd"><strong>心理支持</strong><p>"你被造谣不是因为你做错了什么。造谣者才是错的那个人。那些相信谣言的人，本来就不值得你在意。要不要我帮你把这些感受写下来？"</p></div></div>
+        </div>
+        <div class="sc-pan" id="pn-harass">
+          <div class="sc-step"><div class="sc-num">1</div><div class="sc-bd"><strong>即时应对</strong><p>公共场所：大声制止"不要碰我！"→ 寻求周围人帮助 → 报警。职场：保留证据 → 向HR或上级举报 → 向劳动监察部门投诉。线上：截图 → 拉黑 → 平台举报。</p></div></div>
+          <div class="sc-step"><div class="sc-num">2</div><div class="sc-bd"><strong>证据保全</strong><p>聊天记录完整截图（含日期）。录音（告知"你刚才说的话我已经录下来了"）。证人证言。事后第一时间和信任的人叙述记录。涉及肢体接触：去医院做检查鉴定。</p></div></div>
+          <div class="sc-step"><div class="sc-num">3</div><div class="sc-bd"><strong>法律路径</strong><p>《刑法》第237条强制猥亵侮辱罪：5年以下有期徒刑或拘役。《治安管理处罚法》第44条：猥亵他人处5-10日拘留。《妇女权益保障法》第23条。用人单位有法定义务制止职场性骚扰。</p></div></div>
+          <div class="sc-step"><div class="sc-num">4</div><div class="sc-bd"><strong>心理支持</strong><p>"你不需要为别人的行为感到羞耻。你的身体是你自己的，任何人没有权利触碰你。如果你现在不想说话，没关系。我就在这儿陪着你。"</p></div></div>
+        </div>
+      </div>
+      <button class="sh-btn ghost" id="btn-just-talk">💬 只想找人说说话</button>
+      <div class="sh-res"><div class="sh-lbl">📞 外部求助资源</div>
+        <a class="sh-link" href="#">全国妇联维权热线 12338</a>
+        <a class="sh-link" href="#">法律援助中心 12348</a>
+        <a class="sh-link" href="#">心理援助热线 400-161-9995</a>
+      </div>
+    </div>
+    <button class="sheet-close" id="btn-sheet-close">收起</button>
+  </div>
+
+  <div class="popover" id="pop-calendar">
+    <div class="pop-head"><span>📅 女子日历</span><button class="pop-exp" id="btn-cal-expand">查看详情 →</button></div>
+    <div class="pop-body"><p class="pop-hero"></p><p class="pop-desc"></p></div>
+  </div>
+
+  <div class="modal" id="modal-confirm">
+    <div class="modal-head">确认呼叫</div>
+    <p class="modal-desc" id="confirm-desc">确定要呼叫紧急联系人吗？</p>
+    <div class="confirm-actions">
+      <button class="confirm-btn cancel" id="btn-confirm-cancel">再想想</button>
+      <button class="confirm-btn go" id="btn-confirm-go">确认呼叫</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
