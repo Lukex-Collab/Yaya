@@ -19,6 +19,8 @@ import (
 	"github.com/lingpal/platform/internal/bidcare"
 	"github.com/lingpal/platform/internal/capsule"
 	"github.com/lingpal/platform/internal/chat"
+	"github.com/lingpal/platform/internal/dailytopic"
+	"github.com/lingpal/platform/internal/nostalgia"
 	"github.com/lingpal/platform/internal/core"
 	"github.com/lingpal/platform/internal/core/middleware"
 	sched "github.com/lingpal/platform/internal/core/scheduler"
@@ -45,6 +47,7 @@ import (
 	"github.com/lingpal/platform/internal/upload"
 	"github.com/lingpal/platform/internal/user"
 	"github.com/lingpal/platform/internal/voice"
+	"github.com/lingpal/platform/internal/voicechat"
 	"github.com/lingpal/platform/internal/wellness"
 	"github.com/lingpal/platform/internal/world"
 	"github.com/lingpal/platform/pkg/realtime"
@@ -192,6 +195,18 @@ func main() {
 	// Voice
 	voiceH := voice.NewHandler(pool, cfg.DeepSeekAPIKey, cfg.DeepSeekBaseURL)
 	voiceH.RegisterRoutes(auth)
+
+	// VoiceChat (实时语音通话 WebRTC)
+	voicechatH := voicechat.NewHandler(pool, deepseekClient)
+	voicechatH.RegisterRoutes(auth)
+
+	// DailyTopic (每日话题引擎)
+	dailytopicH := dailytopic.NewHandler(pool, deepseekClient)
+	dailytopicH.RegisterRoutes(auth)
+
+	// Nostalgia (怀旧引擎/那年的今天)
+	nostalgiaH := nostalgia.NewHandler(pool)
+	nostalgiaH.RegisterRoutes(auth)
 
 	// World (灵伴世界 3D宠物探索)
 	worldH := world.NewHandler(pool)
