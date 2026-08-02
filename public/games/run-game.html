@@ -1,0 +1,28 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>牙牙快跑 🏃</title><style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:linear-gradient(180deg,#FFF8F0,#FDF0F3);display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;overflow:hidden;font-family:'PingFang SC',sans-serif}
+.score{font-size:20px;color:#FF8FA3;font-weight:700;margin-bottom:8px}
+#canvas{background:linear-gradient(180deg,#E8F5E9,#A5D6A7);border-radius:16px}
+.game-over{display:none;text-align:center;background:white;padding:24px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.1);margin-top:12px}
+button{background:linear-gradient(135deg,#F4A0B5,#FF8FA3);border:none;color:white;padding:12px 32px;border-radius:24px;font-size:16px;font-weight:600;cursor:pointer;margin-top:12px}
+</style></head><body>
+<h2>🏃 牙牙快跑</h2><div class="score">距离: <span id="score">0</span>m | 💎 <span id="gems">0</span></div>
+<canvas id="canvas" width="400" height="500"></canvas>
+<div class="game-over" id="go"><h3>游戏结束</h3><p>跑了 <span id="fs">0</span> 米</p><p>💎 <span id="eg">0</span></p><button onclick="location.reload()">再来一次</button></div>
+<script>
+const W=400,H=500,c=document.getElementById('canvas'),ctx=c.getContext('2d');
+let groundY=430,yaya={x:60,y:groundY-50,w:50,h:50,vy:0,jumping:false},obstacles=[],score=0,gems=0,speed=5,frame=0,playing=true;
+function spawn(){let h=20+Math.random()*30;obstacles.push({x:W,y:groundY-h,w:20+Math.random()*20,h:h,passed:false});if(Math.random()<0.3)obstacles.push({x:W,y:groundY-h-80,w:15,h:15,passed:false,isGem:true})}
+document.addEventListener('keydown',e=>{if(e.key===' '||e.key==='ArrowUp')jump()});c.addEventListener('touchstart',e=>{e.preventDefault();jump()});c.addEventListener('click',jump);
+function jump(){if(!yaya.jumping){yaya.vy=-14;yaya.jumping=true}}
+function update(){if(!playing)return;frame++;if(frame%60==0&&Math.random()<0.7)spawn();yaya.vy+=0.6;yaya.y+=yaya.vy;if(yaya.y>=groundY-50){yaya.y=groundY-50;yaya.jumping=false;yaya.vy=0}
+for(let o of obstacles){o.x-=speed;if(!o.passed&&o.x+o.w<yaya.x){score+=10;o.passed=true;if(o.isGem){gems++}}
+if(o.x<yaya.x+yaya.w&&o.x+o.w>yaya.x&&o.y<yaya.y+yaya.h&&o.y+o.h>yaya.y){if(!o.isGem)playing=false;else{o.y=-50;gems+=2;o.isGem=false}}}
+if(score%100==0)speed+=0.05}
+function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#7BC67E';ctx.fillRect(0,groundY,W,H-groundY);
+ctx.font='45px sans-serif';let bounce=yaya.jumping?0:Math.sin(frame/5)*3;ctx.fillText('🧸',yaya.x-15,yaya.y+45+bounce);
+for(let o of obstacles){ctx.fillStyle=o.isGem?'#FF8FA3':'#795548';ctx.fillRect(o.x,o.y,o.w,o.h);if(o.isGem){ctx.font='20px sans-serif';ctx.fillText('💎',o.x-5,o.y-5)}}
+ctx.font='14px sans-serif';ctx.fillStyle='#5C3D2E';ctx.fillText('速度:'+speed.toFixed(1),10,20)}
+function loop(){update();draw();document.getElementById('score').textContent=score;document.getElementById('gems').textContent=gems;
+if(!playing){document.getElementById('fs').textContent=score;document.getElementById('eg').textContent=gems;document.getElementById('go').style.display='block'}
+if(playing)requestAnimationFrame(loop)}loop();
+</script></body></html>

@@ -1,0 +1,9 @@
+{
+  "name": "lingpal-world",
+  "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "creator": {
+    "version": "3.8.5"
+  },
+  "version": "3.8.5",
+  "description": "灵伴世界 - 3D探索世界引擎"
+}

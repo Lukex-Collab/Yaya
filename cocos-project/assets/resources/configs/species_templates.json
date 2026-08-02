@@ -1,0 +1,82 @@
+﻿{
+  "_comment": "物种模板 — 7 首发物种，对应实体盲盒",
+  "species": [
+    {
+      "id": "linghu",
+      "name": "灵狐",
+      "model_ref": "models/pets/linghu",
+      "rarity": "common",
+      "base_color": [0.95, 0.72, 0.42],
+      "voice_profile": { "tts_id": "linghu_soft_01", "baseline": { "speed": 0.95, "pitch": 3 } },
+      "personality_tags": ["curious", "playful", "clever"],
+      "base_animations": ["idle", "walk", "sit", "sleep", "happy_spin"],
+      "habitat_zones": ["HUB", "Z-E", "Z-N"]
+    },
+    {
+      "id": "xiongmao",
+      "name": "熊猫",
+      "model_ref": "models/pets/xiongmao",
+      "rarity": "common",
+      "base_color": [0.95, 0.95, 0.92],
+      "voice_profile": { "tts_id": "xiongmao_warm_01", "baseline": { "speed": 0.88, "pitch": -1 } },
+      "personality_tags": ["lazy", "gentle", "foodie"],
+      "base_animations": ["idle", "walk", "sit", "sleep", "roll"],
+      "habitat_zones": ["HUB", "Z-N", "Z-S"]
+    },
+    {
+      "id": "yaya",
+      "name": "牙牙",
+      "model_ref": "models/pets/yaya",
+      "rarity": "rare",
+      "base_color": [0.85, 0.55, 0.75],
+      "voice_profile": { "tts_id": "yaya_bright_01", "baseline": { "speed": 1.05, "pitch": 4 } },
+      "personality_tags": ["brave", "energetic", "loyal"],
+      "base_animations": ["idle", "walk", "sit", "sleep", "pounce"],
+      "habitat_zones": ["HUB", "Z-W", "Z-S"]
+    },
+    {
+      "id": "maotouying",
+      "name": "猫头鹰",
+      "model_ref": "models/pets/maotouying",
+      "rarity": "rare",
+      "base_color": [0.65, 0.55, 0.40],
+      "voice_profile": { "tts_id": "maotouying_wise_01", "baseline": { "speed": 0.85, "pitch": 0 } },
+      "personality_tags": ["wise", "quiet", "observant"],
+      "base_animations": ["idle", "walk", "perch", "sleep", "head_turn"],
+      "habitat_zones": ["HUB", "Z-N", "Z-S"]
+    },
+    {
+      "id": "zhangyu",
+      "name": "章鱼",
+      "model_ref": "models/pets/zhangyu",
+      "rarity": "rare",
+      "base_color": [0.80, 0.45, 0.60],
+      "voice_profile": { "tts_id": "zhangyu_bubbly_01", "baseline": { "speed": 1.0, "pitch": 2 } },
+      "personality_tags": ["creative", "mischievous", "affectionate"],
+      "base_animations": ["idle", "walk", "sit", "sleep", "wave_tentacle"],
+      "habitat_zones": ["HUB", "Z-SE", "Z-NW"]
+    },
+    {
+      "id": "pixiu",
+      "name": "貔貅",
+      "model_ref": "models/pets/pixiu",
+      "rarity": "epic",
+      "base_color": [0.85, 0.70, 0.30],
+      "voice_profile": { "tts_id": "pixiu_deep_01", "baseline": { "speed": 0.90, "pitch": -2 } },
+      "personality_tags": ["proud", "protective", "mysterious"],
+      "base_animations": ["idle", "walk", "sit", "sleep", "roar"],
+      "habitat_zones": ["HUB", "Z-W", "Z-E"]
+    },
+    {
+      "id": "jingyu",
+      "name": "鲸鱼",
+      "model_ref": "models/pets/jingyu",
+      "rarity": "epic",
+      "base_color": [0.40, 0.55, 0.80],
+      "voice_profile": { "tts_id": "jingyu_deep_01", "baseline": { "speed": 0.80, "pitch": -3 } },
+      "personality_tags": ["calm", "dreamy", "gentle_giant"],
+      "base_animations": ["idle", "walk", "float", "sleep", "sing"],
+      "habitat_zones": ["HUB", "Z-NW", "Z-SE"]
+    }
+  ]
+}

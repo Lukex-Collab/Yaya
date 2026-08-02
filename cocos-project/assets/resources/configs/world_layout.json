@@ -1,0 +1,23 @@
+﻿{
+  "_comment": "世界布局 — 22x22 chunks, 7 zones",
+  "chunkSize": 16,
+  "tileSize": 1.0,
+  "worldChunksX": 22,
+  "worldChunksZ": 22,
+  "remoteAssetBase": "",
+  "zones": [
+    { "id": "HUB",  "name": "灵屿村", "chunkBounds": { "minCX": 9,  "maxCX": 12, "minCZ": 9,  "maxCZ": 12 }, "ambientColor": [1.0, 0.97, 0.90], "fogDensity": 0.01, "fogColor": [0.80, 0.85, 0.90] },
+    { "id": "Z-N",  "name": "云杉林", "chunkBounds": { "minCX": 9,  "maxCX": 12, "minCZ": 13, "maxCZ": 16 }, "ambientColor": [0.70, 0.90, 0.70], "fogDensity": 0.03, "fogColor": [0.55, 0.70, 0.60] },
+    { "id": "Z-E",  "name": "花语原", "chunkBounds": { "minCX": 13, "maxCX": 16, "minCZ": 9,  "maxCZ": 12 }, "ambientColor": [1.0, 0.95, 0.80], "fogDensity": 0.01, "fogColor": [0.90, 0.88, 0.75] },
+    { "id": "Z-SE", "name": "萤火沼", "chunkBounds": { "minCX": 13, "maxCX": 15, "minCZ": 13, "maxCZ": 15 }, "ambientColor": [0.60, 0.70, 0.90], "fogDensity": 0.04, "fogColor": [0.30, 0.40, 0.60] },
+    { "id": "Z-S",  "name": "月影丘", "chunkBounds": { "minCX": 9,  "maxCX": 12, "minCZ": 5,  "maxCZ": 8  }, "ambientColor": [0.85, 0.80, 0.95], "fogDensity": 0.02, "fogColor": [0.50, 0.45, 0.70] },
+    { "id": "Z-W",  "name": "暮光谷", "chunkBounds": { "minCX": 5,  "maxCX": 8,  "minCZ": 9,  "maxCZ": 12 }, "ambientColor": [0.85, 0.78, 0.70], "fogDensity": 0.03, "fogColor": [0.60, 0.55, 0.50] },
+    { "id": "Z-NW", "name": "星砂滩", "chunkBounds": { "minCX": 5,  "maxCX": 8,  "minCZ": 13, "maxCZ": 16 }, "ambientColor": [0.90, 0.95, 1.00], "fogDensity": 0.01, "fogColor": [0.70, 0.85, 0.95] }
+  ],
+  "chunkZoneMap": {
+    "9,9": "HUB", "10,9": "HUB", "11,9": "HUB", "12,9": "HUB",
+    "9,10": "HUB", "10,10": "HUB", "11,10": "HUB", "12,10": "HUB",
+    "9,11": "HUB", "10,11": "HUB", "11,11": "HUB", "12,11": "HUB",
+    "9,12": "HUB", "10,12": "HUB", "11,12": "HUB", "12,12": "HUB"
+  }
+}

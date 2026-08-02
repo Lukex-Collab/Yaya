@@ -28,6 +28,7 @@ import (
 	"github.com/lingpal/platform/internal/yayaletter"
 	"github.com/lingpal/platform/internal/yayacall"
 	"github.com/lingpal/platform/internal/community"
+	"github.com/lingpal/platform/internal/minigame"
 	"github.com/lingpal/platform/internal/core/middleware"
 	sched "github.com/lingpal/platform/internal/core/scheduler"
 	"github.com/lingpal/platform/internal/dream"
@@ -260,6 +261,10 @@ func main() {
 	// Community (社区广场 - 数百只牙牙一起玩)
 	ch := community.NewHandler(pool)
 	ch.RegisterRoutes(auth)
+	// Minigame (小游戏中心)
+	mgH := minigame.NewHandler(pool)
+	mgH.RegisterRoutes(auth)
+
 	// PublicFeed (公共内容广场 + 公众号内容源)
 	pfeedH := publicfeed.NewHandler(pool)
 	pfeedH.RegisterRoutes(auth)
