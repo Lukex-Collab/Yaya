@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>唤醒你的 yaya</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: radial-gradient(ellipse at 50% 30%, #2a1f4a, #0b1026 70%);
+    color: #eaf4ff; font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden; text-align: center;
+  }
+  .stage { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; }
+  .ring {
+    position: absolute; border-radius: 50%; border: 2px solid rgba(127,208,255,.5);
+    animation: pulse 2.4s ease-out infinite;
+  }
+  .ring.r1 { width: 200px; height: 200px; }
+  .ring.r2 { width: 240px; height: 240px; animation-delay: .8s; }
+  .ring.r3 { width: 280px; height: 280px; animation-delay: 1.6s; }
+  @keyframes pulse { 0% { transform: scale(.7); opacity: 0; } 40% { opacity: .8; } 100% { transform: scale(1.15); opacity: 0; } }
+  #pet {
+    width: 220px; opacity: 0; transform: scale(.3);
+    transition: opacity 1.2s ease, transform 1.2s cubic-bezier(.2,1.4,.4,1);
+    filter: drop-shadow(0 0 24px rgba(255,160,220,.55));
+  }
+  #pet.awake { opacity: 1; transform: scale(1); }
+  #line { margin-top: 26px; font-size: 17px; letter-spacing: 2px; min-height: 26px; opacity: .9; transition: opacity .5s; }
+  #form { margin-top: 22px; opacity: 0; transition: opacity .8s; pointer-events: none; }
+  #form.show { opacity: 1; pointer-events: auto; }
+  #name {
+    background: rgba(255,255,255,.1); border: 1px solid rgba(127,208,255,.4); border-radius: 12px;
+    color: #fff; padding: 10px 16px; font-size: 16px; width: 200px; text-align: center; outline: none;
+  }
+  #go {
+    margin-top: 14px; background: linear-gradient(135deg, #ff9fe0, #7fd0ff); border: none; border-radius: 14px;
+    color: #1a1440; font-size: 17px; font-weight: bold; padding: 12px 44px; letter-spacing: 3px;
+    cursor: pointer; box-shadow: 0 4px 20px rgba(255,159,224,.4);
+  }
+  #go:active { transform: scale(.96); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+  <img id="pet" alt="">
+</div>
+<div id="line">……</div>
+<div id="form">
+  <input id="name" placeholder="给它取个名字" maxlength="8">
+  <br>
+  <button id="go">进入小世界</button>
+</div>
+<script>
+const PET_NAMES = {
+  yaya: '牙牙', pixiu: '貔貅', pangda: '胖达', maotouying: '猫头鹰', long: '龙',
+  linghu: '灵狐', jingyu: '鲸鱼', zhangyu: '章鱼', xiongmao: '熊猫',
+};
+const q = new URLSearchParams(location.search);
+let petId = q.get('pet') || null;
+const code = q.get('code');
+
+function deviceId() {
+  let d = localStorage.getItem('deviceId');
+  if (!d) { d = 'dev_' + Math.random().toString(36).slice(2, 12); localStorage.setItem('deviceId', d); }
+  return d;
+}
+
+const line = document.getElementById('line');
+const form = document.getElementById('form');
+
+async function activate() {
+  if (!code) return petId || 'yaya'; // 无码直进（开发用）
+  try {
+    const r = await fetch('/api/activate', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, device: deviceId() }),
+    });
+    const data = await r.json();
+    if (!data.ok) {
+      // 已被唤醒/校验失败：展示宠物 + 游客模式，不做死胡同
+      const guessPet = (code.split('.')[0] || 'yaya');
+      const img = document.getElementById('pet');
+      img.src = `../assets/2d/pets/${guessPet}.png`;
+      img.onload = () => img.classList.add('awake');
+      line.textContent = (data.error || '绑定失败') + '，先去围观它的世界吧';
+      line.style.color = '#ffd7a8';
+      document.getElementById('name').style.display = 'none';
+      document.getElementById('go').textContent = '围观模式进入';
+      form.classList.add('show');
+      document.getElementById('go').onclick = () => {
+        location.href = `./index.html?pet=${guessPet}&guest=1`;
+      };
+      throw new Error(data.error);
+    }
+    return data.pet;
+  } catch (e) {
+    if (!petId) throw e;
+    return petId;
+  }
+}
+
+let petName = '牙牙';
+activate().then((id) => {
+  petId = id;
+  petName = PET_NAMES[petId] || '牙牙';
+  startCeremony();
+}).catch(() => {});
+
+const petImg = document.getElementById('pet');
+
+function startCeremony() {
+  petImg.src = `../assets/2d/pets/${petId}.png`;
+  const lines = [`是${petName}……`, '它正在苏醒', '它睁开了眼睛', '它认出你了'];
+  let i = 0;
+  petImg.onload = () => setTimeout(() => petImg.classList.add('awake'), 400);
+  const timer = setInterval(() => {
+    line.style.opacity = 0;
+    setTimeout(() => {
+      line.textContent = lines[i];
+      line.style.opacity = .9;
+      i++;
+      if (i >= lines.length) {
+        clearInterval(timer);
+        setTimeout(() => form.classList.add('show'), 600);
+      }
+    }, 500);
+  }, 1800);
+
+  document.getElementById('go').onclick = () => {
+    const name = document.getElementById('name').value.trim() || petName;
+    localStorage.setItem('petName', name);
+    localStorage.setItem('petId', petId);
+    location.href = `./index.html?pet=${petId}`;
+  };
+}
+</script>
+</body>
+</html>

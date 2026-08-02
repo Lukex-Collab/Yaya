@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>世界背景挑选</title>
+<style>
+  body { background:#111; color:#eee; font-family:"Microsoft YaHei",sans-serif; padding:20px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  figure { margin:0; }
+  img { width:100%; border-radius:6px; display:block; }
+  figcaption { text-align:center; padding:6px; font-size:14px; color:#9cf; }
+</style>
+</head>
+<body>
+<h2>18 张渲染图 —— 告诉我要哪张、对应哪个区域（灵屿/海滩/森林/山谷/雪山/遗迹/云端）</h2>
+<div class="grid" id="g"></div>
+<script>
+const g = document.getElementById('g');
+for (let w = 1; w <= 6; w++) {
+  for (const d of [2.5, 5, 9]) {
+    const name = `world${w}_d${d}`;
+    g.innerHTML += `<figure><img src="../assets/2d/worlds/${name}.jpg"><figcaption>${name}</figcaption></figure>`;
+  }
+}
+</script>
+</body>
+</html>

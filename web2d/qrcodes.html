@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>yaya 盲盒 · 扫码唤醒</title>
+<style>
+  body { background: #0b1026; color: #eaf4ff; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; padding: 24px; text-align: center; }
+  h1 { font-size: 22px; letter-spacing: 6px; margin-bottom: 6px; }
+  p { opacity: .55; font-size: 13px; margin-bottom: 24px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 900px; margin: 0 auto; }
+  .card { background: rgba(255,255,255,.06); border-radius: 14px; padding: 14px; }
+  .card img.qr { width: 100%; border-radius: 8px; background: #fff; padding: 6px; }
+  .card img.pet { width: 72px; margin-top: 8px; }
+  .card .n { font-size: 16px; letter-spacing: 3px; margin-top: 4px; }
+</style>
+</head>
+<body>
+<h1>yaya 盲盒</h1>
+<p>手机扫码 → 唤醒仪式 → 进入小世界（需与电脑同一 WiFi）</p>
+<div class="grid" id="g"></div>
+<script>
+const PETS = { yaya:'牙牙', pixiu:'貔貅', pangda:'胖达', maotouying:'猫头鹰', long:'龙', linghu:'灵狐', jingyu:'鲸鱼', zhangyu:'章鱼', xiongmao:'熊猫' };
+const g = document.getElementById('g');
+for (const [id, name] of Object.entries(PETS)) {
+  g.innerHTML += `<div class="card"><img class="qr" src="../assets/qr/${id}.png"><img class="pet" src="../assets/2d/pets/${id}.png"><div class="n">${name}</div></div>`;
+}
+</script>
+</body>
+</html>

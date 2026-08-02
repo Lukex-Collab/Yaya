@@ -1,35 +1,30 @@
-
-!server.js
-!yaya-bg.png
 # Cocos Creator
-# OS
-# WeChat DevTools
-*.local
-*.log
-*.mjs
-*.png
-.DS_Store
-.env
-.old-prototype-v3/
-Thumbs.db
-anim-*.png
-build/
-cal-*.png
-final*.png
-frames/
 library/
+temp/
 local/
-merge-*.png
+build/
+profiles/
+node_modules/
 native/engine/android/
 native/engine/ios/
-node_modules/
-package-lock.json
-package.json
-private.config.json
-profiles/
+
+# WeChat DevTools
 project.private.config.json
-prototype-v2/
-prototype-v3/
-screenshot-*.png
-temp/
-test-results/
+private.config.json
+*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python 运行时
+__pycache__/
+data.db
+*.log
+.env
+
+# 宠物展示视频（本地资源，不上传仓库）
+assets/videos/
+
+# 高精度原始宠物模型（68~87MB/个，需 Git LFS，暂不上传）
+assets/pets/src/

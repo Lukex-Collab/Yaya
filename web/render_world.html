@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#000}</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.179.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.179.0/examples/jsm/",
+    "@sparkjsdev/spark": "https://unpkg.com/@sparkjsdev/spark@2.1.0/dist/spark.module.js"
+  }
+}
+</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from 'three';
+import { SparkRenderer, SplatMesh } from '@sparkjsdev/spark';
+
+const q = new URLSearchParams(location.search);
+const sceneName = q.get('scene') || 'world1';
+const dist = parseFloat(q.get('dist') || '5');
+const angle = parseFloat(q.get('angle') || '0.6');
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a12);
+const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.05, 500);
+camera.position.set(Math.sin(angle) * dist, dist * 0.35, Math.cos(angle) * dist);
+camera.lookAt(0, dist * 0.12, 0);
+
+const spark = new SparkRenderer({ renderer });
+scene.add(spark);
+
+try {
+  const splat = new SplatMesh({ url: `../assets/worlds/${sceneName}.spz` });
+  scene.add(splat);
+} catch (e) {
+  window.__error = String(e);
+}
+
+const clock = new THREE.Clock();
+let elapsed = 0;
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = clock.getDelta();
+  elapsed += dt;
+  renderer.render(scene, camera);
+  if (elapsed > 10 && !window.__done) window.__done = true;
+}
+loop();
+addEventListener('error', (e) => { window.__error = String(e.message); });
+</script>
+</body>
+</html>
