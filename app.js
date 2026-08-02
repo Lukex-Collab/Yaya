@@ -149,8 +149,10 @@ introCurtain(){
   curtains.addEventListener('touchstart',open,{once:true});
 },_mainInit(){
   this.bindTabs();this.bindNavigation();this.bindSheets();
-  this.bindChatInput();this.bindYayaInteraction();this.bindGameWorld();
+  this.bindChatInput();this.bindYayaInteraction();
   this.bindScenarioTabs();this.bindWardrobe();this.bindHandbookSubtabs();
+  this.bindGameSubtabs();this.bindGameLaunch();
+  this.bindGameSubtabs();this.bindGameLaunch();
   this.renderCalendar();this.renderTodayHero();this.renderNewsFeed();
   this.renderTimeline();this.renderSparkline();this.renderWeather();this.renderHealth();
   this.updateClock();setInterval(()=>this.updateClock(),60000);
@@ -282,6 +284,37 @@ bindWardrobe(){$$('#owned-skins .sk-card:not(.locked)').forEach(c=>{c.onclick=fu
 
 // ── Game World ──────────────────────────────────────
 bindGameWorld(){$$('.game-card:not(.locked)').forEach(c=>{c.onclick=()=>{const w=c.dataset.world;if(w==='home'){this.switchTab('yaya');this.addMsg('yy','欢迎来到牙牙的小屋！');this.showBubble('进来坐坐吧～')}}})},
+
+// ── Game Tab Subtabs ─────────────────────────────
+bindGameSubtabs(){
+  document.querySelectorAll('[data-gametab]').forEach(b=>{b.onclick=()=>{
+    document.querySelectorAll('[data-gametab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+    document.querySelectorAll('#tab-game .hb-panel').forEach(p=>p.classList.remove('active'));
+    const panel=document.getElementById('game-panel-'+b.dataset.gametab);if(panel)panel.classList.add('active');
+  }});
+},
+
+// ── Game Launch ───────────────────────────────────
+bindGameLaunch(){
+  document.querySelectorAll('.game-card-3').forEach(card=>{
+    card.onclick=()=>{
+      const game=card.dataset.game;
+      const map={jump:'games/jump-game.html',catch:'games/catch-game.html',run:'games/run-game.html'};
+      if(map[game]){
+        const wrap=document.getElementById('game-frame-wrap');
+        const frame=document.getElementById('game-frame');
+        if(wrap&&frame){wrap.style.display='flex';frame.src=map[game]}
+      }
+    };
+  });
+  const backBtn=document.getElementById('game-back-btn');
+  if(backBtn)backBtn.onclick=()=>{
+    const wrap=document.getElementById('game-frame-wrap');
+    const frame=document.getElementById('game-frame');
+    if(wrap){wrap.style.display='none'}
+    if(frame){frame.src=''}
+  };
+},
 
 // ── Calendar ────────────────────────────────────────
 renderCalendar(){

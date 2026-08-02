@@ -61,19 +61,45 @@
 
     <!-- TAB: 游戏 -->
     <div class="tab-view" id="tab-game">
-      <div class="game-scroll">
-        <div class="game-sect">
-          <div class="game-sect-t">🌟 yaya世界</div>
-          <p class="game-sect-d">在另一个世界，牙牙有自己的小房子、朋友和冒险故事…</p>
-          <div class="game-grid">
-            <div class="game-card" data-world="home"><span class="gw-i">🏠</span><span class="gw-n">牙牙的小屋</span><span class="gw-s">可进入</span></div>
-            <div class="game-card locked"><span class="gw-i">🌳</span><span class="gw-n">森林探险</span><span class="gw-s">🔒 陪伴30天解锁</span></div>
-            <div class="game-card locked"><span class="gw-i">🎪</span><span class="gw-n">朋友派对</span><span class="gw-s">🔒 默契度★★★解锁</span></div>
-            <div class="game-card locked"><span class="gw-i">🌙</span><span class="gw-n">梦境旅行</span><span class="gw-s">🔒 写满30篇日记解锁</span></div>
+      <!-- 游戏内子Tab -->
+      <div class="hb-subtabs">
+        <button class="hb-stab active" data-gametab="world">🎮 小游戏</button>
+        <button class="hb-stab" data-gametab="closet">👗 衣橱</button>
+        <button class="hb-stab" data-gametab="energy">⚡ 能量</button>
+      </div>
+
+      <!-- 小游戏面板 -->
+      <div class="hb-panel active" id="game-panel-world">
+        <div class="hb-panel-inner">
+          <p class="game-sect-d">和牙牙一起玩～</p>
+          <div class="game-grid-3">
+            <div class="game-card-3" data-game="jump" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">
+              <span class="gw-i">🦘</span>
+              <span class="gw-n">牙牙跳一跳</span>
+              <span class="gw-s">向上跳跃收集宝石</span>
+            </div>
+            <div class="game-card-3" data-game="catch" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);">
+              <span class="gw-i">🍓</span>
+              <span class="gw-n">接浆果</span>
+              <span class="gw-s">左右移动接住掉落</span>
+            </div>
+            <div class="game-card-3" data-game="run" style="background:linear-gradient(135deg,#FCE4EC,#F8BBD0);">
+              <span class="gw-i">🏃</span>
+              <span class="gw-n">牙牙快跑</span>
+              <span class="gw-s">跳跃躲避障碍物</span>
+            </div>
+          </div>
+          <!-- Game iframe container -->
+          <div class="game-frame-wrap" id="game-frame-wrap" style="display:none;">
+            <button class="game-back-btn" id="game-back-btn">← 返回游戏列表</button>
+            <iframe class="game-frame" id="game-frame" src="" allowfullscreen></iframe>
           </div>
         </div>
-        <div class="game-sect">
-          <div class="game-sect-t">👗 牙牙的衣橱</div>
+      </div>
+
+      <!-- 衣橱面板 -->
+      <div class="hb-panel" id="game-panel-closet">
+        <div class="hb-panel-inner">
           <div class="ward-mini"><video src="yaya-bored.mp4" autoplay loop muted playsinline class="ward-mini-vid"></video></div>
           <div class="ward-lab">已拥有</div>
           <div class="ward-row" id="owned-skins">
@@ -92,12 +118,18 @@
             <div class="sk-card shop"><span>🎀</span><small>¥8</small></div>
           </div>
         </div>
-        <div class="game-sect">
-          <div class="game-sect-t">⚡ 芽芽能量</div>
-          <div class="energy-wrap">
-            <div class="energy-head"><span>今日剩余</span><span class="energy-num">47 / 50 次</span></div>
-            <div class="energy-track"><div class="energy-fill" style="width:94%"></div></div>
-            <button class="energy-btn">购买能量包 · ¥9 / 100次</button>
+      </div>
+
+      <!-- 能量面板 -->
+      <div class="hb-panel" id="game-panel-energy">
+        <div class="hb-panel-inner">
+          <div class="game-sect">
+            <div class="game-sect-t">⚡ 芽芽能量</div>
+            <div class="energy-wrap">
+              <div class="energy-head"><span>今日剩余</span><span class="energy-num">47 / 50 次</span></div>
+              <div class="energy-track"><div class="energy-fill" style="width:94%"></div></div>
+              <button class="energy-btn">购买能量包 · ¥9 / 100次</button>
+            </div>
           </div>
         </div>
       </div>
