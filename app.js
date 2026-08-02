@@ -108,63 +108,52 @@ init(){
 introCurtain(){
   const curtains=document.getElementById('intro-curtains');
   const hint=document.getElementById('intro-hint');
-  const canvas=document.getElementById('intro-swallows');
   const title=document.getElementById('intro-title');
   const fade=document.getElementById('intro-fade');
   const screen=document.getElementById('intro-screen');
   if(!curtains)return this._mainInit();
 
-  // Touch / click to open curtains
+  // 用phone的真实尺寸
+  const phone=document.getElementById('phone');
+  const W=phone?phone.offsetWidth:430,H=phone?phone.offsetHeight:932;
+
+  // ── P5 飞燕动画 ──
+  const swallowSketch=(p)=>{
+    const birds=[];
+    for(let i=0;i<10;i++)birds.push({x:W+80+p.random(0,200),y:80+p.random(0,300),s:0.5+p.random(0,0.6),sp:1.5+p.random(0,2.5),ph:p.random(0,6.28),yo:0});
+    p.setup=()=>{const c=p.createCanvas(W,H);c.parent('intro-screen');c.style('pointer-events','none');c.style('z-index','3');c.style('position','absolute');c.style('top','0');c.style('left','0');p.clear()};
+    p.draw=()=>{p.clear();birds.forEach(b=>{b.x-=b.sp;b.yo=p.sin(b.ph+b.x*0.02)*20;if(b.x<-80){b.x=W+80;b.y=80+p.random(0,300)}const y=b.y+b.yo,s=b.s;p.push();p.translate(b.x,y);p.scale(s,s);p.fill('#2a1a35');p.noStroke();p.beginShape();p.vertex(-6,-16);p.vertex(-2,-20);p.vertex(2,-20);p.vertex(6,-16);p.vertex(4,-8);p.vertex(8,-4);p.vertex(0,-2);p.vertex(-8,-4);p.vertex(-4,-8);p.endShape(p.CLOSE);const wa=p.sin(Date.now()*0.014+b.ph)*0.55;p.push();p.translate(-5,-8);p.rotate(-0.5+wa);p.beginShape();p.vertex(0,0);p.quadraticVertex(-22,-12,-26,4);p.quadraticVertex(-14,0,0,0);p.endShape(p.CLOSE);p.pop();p.push();p.translate(5,-8);p.rotate(0.5-wa);p.beginShape();p.vertex(0,0);p.quadraticVertex(22,-12,26,4);p.quadraticVertex(14,0,0,0);p.endShape(p.CLOSE);p.pop();p.beginShape();p.vertex(0,0);p.vertex(-9,28);p.vertex(-2,14);p.vertex(2,14);p.vertex(9,28);p.endShape(p.CLOSE);p.pop()})};
+  };
+  let swallowP5=null;
+
+  // ── P5 雨帘动画 ──
+  const curtainP5=new p5((p)=>{
+    const LINE=14,COL='#E8577C',ALPHA=220,LEN=780,DR_MIN=6,DR_MAX=14,DS_MIN=0.22,DS_MAX=0.48,GRV=0.16,REP=90;
+    let bodies=[],drops=[],lines=[],dropImgs=[];
+
+    for(let i=1;i<=12;i++){const img=p.loadImage('https://cdn.jsdelivr.net/gh/xxoogreymon-prog/image-resources@main/icons/rain_drops/drop'+i+'.png',()=>{},()=>{});dropImgs.push(img)}
+    function pickImg(){const v=dropImgs.filter(i=>i&&i.width>0);return v.length?v[Math.floor(p.random(v.length))]:null}
+
+    p.setup=()=>{
+      const c=p.createCanvas(W,H);c.parent('intro-screen');c.style('pointer-events','none');c.style('z-index','1');c.style('position','absolute');c.style('top','0');c.style('left','0');
+      p.frameRate(30);
+      const sp=(W-60)/(LINE-1);for(let i=0;i<LINE;i++)lines.push({x0:30+i*sp,y1:-10});
+      for(let li=0;li<lines.length;li++){const ln=lines[li],top=ln.y1+p.random(30,80),end=ln.y1+LEN;const n=Math.max(1,Math.floor(p.random(DR_MIN,DR_MAX+1)));for(let i=0;i<n;i++){const t=i/(n-1),yc=p.lerp(top,end,t)+p.random(-5,5);drops.push({y0:p.constrain(yc,top,end-2),r:p.random(DS_MIN,DS_MAX)*16,li,attached:true,img:pickImg()})}}
+      const nSub=8;
+      for(let li=0;li<lines.length;li++){const base=lines[li],bd=drops.filter(d=>d.li===li).sort((a,b)=>a.y0-b.y0);if(!bd.length)continue;const rb={pts:[],segs:[],li,dropIdxs:[],restY:[]};rb.pts.push({pos:p.createVector(base.x0,base.y1),old:p.createVector(base.x0,base.y1),snap:true});rb.restY.push(0);const bY=[0];bd.forEach(d=>bY.push(d.y0-base.y1));for(let j=0;j<bd.length;j++){const spn=bY[j+1]-bY[j];for(let s=0;s<nSub;s++){const t=(s+1)/nSub,yOff=p.lerp(bY[j],bY[j+1],t);rb.pts.push({pos:p.createVector(base.x0,base.y1+yOff),old:p.createVector(base.x0,base.y1+yOff),snap:false});rb.restY.push(yOff);if(s===nSub-1)rb.dropIdxs.push(rb.pts.length-1);rb.segs.push({a:rb.pts.length-2,b:rb.pts.length-1,rl:spn/nSub})}}bodies.push(rb)}
+    };
+    p.draw=()=>{p.clear();bodies.forEach(rb=>{rb.pts.forEach(pt=>{if(!pt.snap){pt.old.add(0,GRV);const d=p.dist(p.mouseX,p.mouseY,pt.pos.x,pt.pos.y);if(d<REP&&d>1e-6)pt.old.add(pt.pos.copy().sub(p.createVector(p.mouseX,p.mouseY)).normalize())}})});bodies.forEach(rb=>rb.segs.forEach(s=>{const a=rb.pts[s.a],b=rb.pts[s.b];if(!a||!b||a.snap&&b.snap)return;const cl=a.pos.dist(b.pos);if(cl<1e-8)return;const diff=(s.rl-cl)/cl/5,dv=b.pos.copy().sub(a.pos).mult(diff);if(!a.snap)a.pos.sub(dv);if(!b.snap)b.pos.add(dv)}));const cc=p.color(COL);bodies.forEach(rb=>{for(let i=0;i<rb.pts.length-1;i++){p.stroke(p.red(cc),p.green(cc),p.blue(cc),ALPHA);p.strokeWeight(1);p.strokeCap(p.ROUND);p.line(rb.pts[i].pos.x,rb.pts[i].pos.y,rb.pts[i+1].pos.x,rb.pts[i+1].pos.y)}});bodies.forEach(rb=>{rb.dropIdxs.forEach((di,idx)=>{const d=drops.filter(dd=>dd.li===rb.li)[idx];if(!d||!d.attached)return;const pt=rb.pts[di];if(d.img&&d.img.width>0)p.image(d.img,pt.pos.x-d.r,p.pos.y-d.r,d.r*2,d.r*2);else{p.fill(p.red(cc)+40,p.green(cc)+20,p.blue(cc)+30,200);p.noStroke();p.ellipse(pt.pos.x,pt.pos.y,d.r,d.r)}})});};
+  });
+
+  // ── 点击帘子 → 打开 → 飞燕 → 淡出到主页 ──
   const open=()=>{
     curtains.classList.add('open');hint.classList.add('hide');
-    // After curtains open, show swallows + title
-    setTimeout(()=>{
-      canvas.classList.add('show');
-      this._animateSwallows(canvas);
-      setTimeout(()=>title.classList.add('show'),400);
-    },500);
-    // Then fade to main app
+    setTimeout(()=>{curtainP5.remove();swallowP5=new p5(swallowSketch);setTimeout(()=>title.classList.add('show'),400)},600);
     setTimeout(()=>fade.classList.add('hide'),2800);
-    setTimeout(()=>{screen.classList.add('done');this._mainInit()},3500);
+    setTimeout(()=>{if(swallowP5)swallowP5.remove();screen.style.display='none';this._mainInit()},3600);
   };
   curtains.addEventListener('click',open);
   curtains.addEventListener('touchstart',open,{once:true});
-},
-
-_animateSwallows(canvas){
-  const ctx=canvas.getContext('2d');if(!ctx)return;
-  const W=430,H=932;canvas.width=W;canvas.height=H;
-
-  const birds=[];
-  for(let i=0;i<8;i++){
-    birds.push({x:W+80+Math.random()*200,y:80+Math.random()*300,size:0.6+Math.random()*0.6,speed:2+Math.random()*2.5,phase:Math.random()*Math.PI*2,yOff:0});
-  }
-
-  const draw=()=>{
-    ctx.clearRect(0,0,W,H);
-    birds.forEach(b=>{
-      b.x-=b.speed;b.yOff=Math.sin(b.phase+b.x*0.02)*20;
-      if(b.x<-80){b.x=W+80;b.y=80+Math.random()*300}
-      const y=b.y+b.yOff,s=b.size;
-      ctx.save();ctx.translate(b.x,y);ctx.scale(s,s);
-      ctx.fillStyle='#2a1a35';
-      // Body
-      ctx.beginPath();ctx.ellipse(0,0,8,22,0,0,Math.PI*2);ctx.fill();
-      // Wings (flapping)
-      const wingAngle=Math.sin(Date.now()*0.012+b.phase)*0.6;
-      ctx.save();ctx.translate(-6,-8);ctx.rotate(-0.5+wingAngle);
-      ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(-30,-15,-35,5);ctx.quadraticCurveTo(-20,0,0,0);ctx.fill();
-      ctx.restore();
-      ctx.save();ctx.translate(6,-8);ctx.rotate(0.5-wingAngle);
-      ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(30,-15,35,5);ctx.quadraticCurveTo(20,0,0,0);ctx.fill();
-      ctx.restore();
-      // Tail
-      ctx.beginPath();ctx.moveTo(0,20);ctx.lineTo(-12,38);ctx.lineTo(-3,22);ctx.lineTo(3,22);ctx.lineTo(12,38);ctx.closePath();
-      ctx.fill();ctx.restore();
-    });
-    if(canvas.classList.contains('show'))requestAnimationFrame(draw);
-  };
-  draw();
 },_mainInit(){
   this.bindTabs();this.bindNavigation();this.bindSheets();
   this.bindChatInput();this.bindYayaInteraction();this.bindGameWorld();
