@@ -1,0 +1,37 @@
+<!-- 健康追踪页 -->
+<view class="health-container">
+  <!-- 经期追踪 -->
+  <view class="section-card yaya-card">
+    <text class="section-title">🩷 经期记录</text>
+    <view class="period-summary">
+      <view class="period-stat"><text class="ps-value">{{prediction.nextIn}}天</text><text class="ps-label">距下次</text></view>
+      <view class="period-stat"><text class="ps-value">{{prediction.cycleLength}}天</text><text class="ps-label">周期</text></view>
+      <view class="period-stat"><text class="ps-value">{{records.length}}次</text><text class="ps-label">已记录</text></view>
+    </view>
+    <view class="period-actions">
+      <t-button size="small" theme="primary" bindtap="recordPeriod">记录本次</t-button>
+      <t-button size="small" variant="outline" bindtap="viewHistory">历史记录</t-button>
+    </view>
+    <!-- 简易日历 -->
+    <view class="mini-calendar">
+      <text wx:for="{{calendarDays}}" wx:key="*this" class="cal-day {{item.isPeriod ? 'period' : ''}} {{item.isToday ? 'today' : ''}}">{{item.day}}</text>
+    </view>
+  </view>
+
+  <!-- 身体状态打卡 -->
+  <view class="section-card yaya-card">
+    <text class="section-title">💪 今日状态</text>
+    <view class="body-checklist">
+      <view class="check-item" wx:for="{{bodyChecks}}" wx:key="label" bindtap="toggleCheck" data-key="{{item.key}}">
+        <view class="check-box {{item.checked ? 'checked' : ''}}">{{item.checked ? '✅' : '⬜'}}</view>
+        <text class="check-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 美甲/护肤 -->
+  <view class="section-card yaya-card">
+    <text class="section-title">💅 美丽记录</text>
+    <t-button size="small" variant="outline" bindtap="addBeautyNote">添加记录</t-button>
+  </view>
+</view>

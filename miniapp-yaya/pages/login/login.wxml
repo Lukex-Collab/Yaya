@@ -1,0 +1,21 @@
+<view class="login-page">
+  <view class="hero">
+    <view class="yaya-icon">🦊</view>
+    <view class="title">牙牙</view>
+    <view class="subtitle">你的 AI 守护玩偶</view>
+  </view>
+
+  <view class="intro-text">
+    一只永远在线、懂你冷暖的小怪兽朋友。
+    她会记住你说过的每一件事，在你需要时出现。
+  </view>
+
+  <button class="login-btn" type="primary" bindtap="handleLogin"
+    loading="{{loading}}" disabled="{{loading}}">
+    微信一键登录
+  </button>
+
+  <view class="demo-note" wx:if="{{isDemo}}">
+    <text>开发模式：输入任意昵称即可体验</text>
+  </view>
+</view>

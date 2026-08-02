@@ -1,0 +1,18 @@
+{
+  "name": "yaya-miniapp",
+  "version": "1.0.0",
+  "description": "牙牙（yaya）AI 守护玩偶 - 微信小程序",
+  "main": "app.js",
+  "scripts": {
+    "dev": "echo '请在微信开发者工具中打开此项目'"
+  },
+  "dependencies": {
+    "tdesign-miniprogram": "^1.15.3"
+  },
+  "keywords": [
+    "yaya",
+    "ai-companion",
+    "miniprogram"
+  ],
+  "license": "UNLICENSED"
+}

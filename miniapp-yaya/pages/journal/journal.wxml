@@ -1,0 +1,114 @@
+<!-- pages/journal/journal.wxml — 手账页 -->
+<view class="journal-container">
+
+  <!-- 顶部 Tab -->
+  <t-tabs value="{{activeTab}}" bind:change="onTabChange" theme="card" style="--td-tab-bar-bg-color: transparent;">
+    <t-tab-panel label="牙牙日记" value="ai"></t-tab-panel>
+    <t-tab-panel label="我的记录" value="user"></t-tab-panel>
+    <t-tab-panel label="健康追踪" value="health"></t-tab-panel>
+  </t-tabs>
+
+  <!-- 牙牙视角日记 Tab -->
+  <view class="journal-content" wx:if="{{activeTab === 'ai'}}">
+    <!-- 情绪筛选 -->
+    <scroll-view class="emotion-filter" scroll-x show-scrollbar="{{false}}">
+      <view class="emotion-chip {{currentEmotion === 'all' ? 'active' : ''}}"
+            bindtap="filterByEmotion" data-emotion="all">全部</view>
+      <view class="emotion-chip {{currentEmotion === 'happy' ? 'active' : ''}}"
+            bindtap="filterByEmotion" data-emotion="happy">😊 开心</view>
+      <view class="emotion-chip {{currentEmotion === 'sad' ? 'active' : ''}}"
+            bindtap="filterByEmotion" data-emotion="sad">😢 难过</view>
+      <view class="emotion-chip {{currentEmotion === 'calm' ? 'active' : ''}}"
+            bindtap="filterByEmotion" data-emotion="calm">😌 平静</view>
+      <view class="emotion-chip {{currentEmotion === 'excited' ? 'active' : ''}}"
+            bindtap="filterByEmotion" data-emotion="excited">🎉 兴奋</view>
+    </scroll-view>
+
+    <!-- 日记列表 — 时间线 -->
+    <view class="timeline" wx:if="{{journals.length > 0}}">
+      <view class="timeline-item" wx:for="{{journals}}" wx:key="_id" bindtap="openDetail" data-id="{{item._id}}">
+        <view class="timeline-dot {{item.emotion}}"></view>
+        <view class="timeline-card yaya-glass">
+          <view class="timeline-header">
+            <text class="timeline-date">{{item.date}}</text>
+            <text class="timeline-emoji">{{item.emoji || '📖'}}</text>
+          </view>
+          <text class="timeline-title">{{item.title}}</text>
+          <text class="timeline-preview">{{item.content.slice(0, 80)}}...</text>
+        </view>
+      </view>
+    </view>
+
+    <t-empty wx:if="{{journals.length === 0 && !isLoading}}" description="还没有日记哦～和牙牙聊聊天吧"></t-empty>
+    <t-loading wx:if="{{isLoading}}" theme="dots" text="加载中..."></t-loading>
+  </view>
+
+  <!-- 我的记录 Tab -->
+  <view class="journal-content" wx:if="{{activeTab === 'user'}}">
+    <view class="write-entry">
+      <textarea class="write-textarea" placeholder="写点什么吧...牙牙会帮你整理的 📝"
+                value="{{draftContent}}" bindinput="onDraftInput"
+                maxlength="2000" auto-height></textarea>
+      <view class="write-actions">
+        <text class="action-hint">{{draftContent.length}}/2000</text>
+        <view class="yaya-btn write-submit" bindtap="submitJournal">保存记录</view>
+      </view>
+    </view>
+
+    <!-- 用户手动记录的列表 -->
+    <view class="timeline" wx:if="{{userJournals.length > 0}}">
+      <view class="timeline-item" wx:for="{{userJournals}}" wx:key="_id" bindtap="openDetail" data-id="{{item._id}}">
+        <view class="timeline-dot {{item.emotion}}"></view>
+        <view class="timeline-card yaya-glass">
+          <view class="timeline-header">
+            <text class="timeline-date">{{item.date}}</text>
+            <text class="timeline-emoji">{{item.emoji || '📝'}}</text>
+          </view>
+          <text class="timeline-preview">{{item.content.slice(0, 100)}}</text>
+        </view>
+      </view>
+    </view>
+    <t-empty wx:if="{{userJournals.length === 0}}" description="开始记录你的日常吧"></t-empty>
+  </view>
+
+  <!-- 健康追踪 Tab -->
+  <view class="journal-content" wx:if="{{activeTab === 'health'}}">
+    <!-- 经期追踪 -->
+    <view class="health-section">
+      <view class="section-title">🩷 经期追踪</view>
+      <view class="period-calendar">
+        <!-- 简易日历展示，点击跳转健康页 -->
+        <view class="period-stats">
+          <view class="stat-item">
+            <text class="stat-value">{{periodData.daysUntilNext || '--'}}</text>
+            <text class="stat-label">距下次经期</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-value">{{periodData.cycleLength || 28}}</text>
+            <text class="stat-label">周期天数</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-value">{{periodData.currentDay || '--'}}</text>
+            <text class="stat-label">当前第几天</text>
+          </view>
+        </view>
+        <view class="yaya-btn-outline" bindtap="goHealth">查看详情 →</view>
+      </view>
+    </view>
+
+    <!-- 身体状态 -->
+    <view class="health-section">
+      <view class="section-title">💪 身体状态</view>
+      <view class="body-notes">
+        <view class="body-note-card" wx:for="{{bodyNotes}}" wx:key="_id">
+          <text class="note-type">{{item.type}}</text>
+          <text class="note-detail">{{item.detail}}</text>
+          <text class="note-date">{{item.date}}</text>
+        </view>
+        <t-empty wx:if="{{bodyNotes.length === 0}}" description="暂无记录"></t-empty>
+      </view>
+    </view>
+
+    <t-loading wx:if="{{isLoading}}" theme="dots"></t-loading>
+  </view>
+</view>

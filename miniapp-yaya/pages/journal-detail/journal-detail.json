@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "日记详情",
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-button": "tdesign-miniprogram/button/button"
+  }
+}

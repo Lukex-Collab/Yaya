@@ -1,0 +1,72 @@
+<!-- pages/home/home.wxml — 牙牙主页 -->
+<view class="home-container">
+
+  <!-- 自定义导航栏 -->
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-left">
+      <text class="nav-greeting">{{greetingText}}</text>
+      <text class="nav-nickname">{{userNickname}}</text>
+    </view>
+    <view class="nav-right">
+      <!-- 安全盾牌 -->
+      <view class="safety-shield {{safetyStatus}}" bindtap="goSafety">
+        <text class="shield-icon">🛡️</text>
+        <view class="shield-dot {{safetyStatus}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 牙牙 3D 互动形象区域 -->
+  <view class="yaya-stage" bindtouchstart="onYayaTouch" bindlongpress="onYayaLongPress" bindtap="onYayaTap">
+    <!-- 使用 Lottie 或 canvas 实现牙牙动画 -->
+    <!-- Demo 阶段：CSS 动画 + emoji/图片 -->
+    <view class="yaya-avatar {{yayaState.mood}}">
+      <canvas
+        wx:if="{{useCanvas}}"
+        type="2d"
+        id="yaya-canvas"
+        class="yaya-canvas"
+      ></canvas>
+      <view wx:else class="yaya-emoji {{yayaState.mood}}">
+        <text class="yaya-face">{{yayaState.currentEmoji}}</text>
+      </view>
+
+      <!-- 牙牙状态气泡 -->
+      <view class="yaya-status-bubble" wx:if="{{yayaState.message}}">
+        <text>{{yayaState.message}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 小黑板 + 关心气泡 — 牙牙左右两侧 -->
+  <view class="yaya-info-row">
+    <!-- 小黑板（女子日历） -->
+    <view class="info-card blackboard" bindtap="openBlackboard">
+      <text class="blackboard-icon">📋</text>
+      <text class="blackboard-date">{{todayDate}}</text>
+      <text class="blackboard-fact">{{womenFact}}</text>
+    </view>
+
+    <!-- 关心气泡 -->
+    <view class="info-card care-bubble" bindtap="openCareDetail">
+      <text class="care-icon">💬</text>
+      <text class="care-text">{{careMessage}}</text>
+    </view>
+  </view>
+
+  <!-- 语音按钮 -->
+  <view class="voice-btn-area">
+    <view class="voice-btn {{isRecording ? 'recording' : ''}}"
+          bindtouchstart="startRecord"
+          bindtouchend="stopRecord"
+          bindtap="openChat">
+      <text class="voice-icon">🎤</text>
+      <text class="voice-label">{{isRecording ? '正在听...' : '和牙牙说话'}}</text>
+    </view>
+  </view>
+
+  <!-- 牙牙状态提示文本 -->
+  <view class="yaya-hint">
+    <text>{{hintText}}</text>
+  </view>
+</view>

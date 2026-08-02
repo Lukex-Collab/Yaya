@@ -1,0 +1,12 @@
+.detail-container { min-height:100vh; background:#FFF8F0; padding:24rpx; }
+.detail-card { padding:40rpx; border-radius:24rpx; background:white; }
+.detail-header { display:flex; align-items:center; gap:12rpx; margin-bottom:20rpx; }
+.detail-emoji { font-size:48rpx; }
+.detail-date { font-size:24rpx; color:#9B8B8B; }
+.detail-title { font-size:36rpx; font-weight:700; color:#5C3D2E; display:block; }
+.detail-divider { height:2rpx; background:linear-gradient(90deg,#F4A0B5,transparent); margin:24rpx 0; }
+.detail-content { font-size:30rpx; line-height:1.9; color:#5C3D2E; white-space:pre-wrap; }
+.detail-meta { display:flex; gap:16rpx; margin-top:32rpx; }
+.detail-emotion,.detail-words { font-size:24rpx; color:#9B8B8B; }
+.detail-actions { display:flex; margin-top:24rpx; }
+.loading-card { text-align:center; padding:80rpx; color:#9B8B8B; }

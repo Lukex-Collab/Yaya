@@ -1,0 +1,140 @@
+/* pages/journal/journal.wxss — 手账页样式 */
+.journal-container {
+  min-height: 100vh;
+  background: #FFF8F0;
+}
+.journal-content {
+  padding: 24rpx;
+}
+
+/* 情绪筛选条 */
+.emotion-filter {
+  white-space: nowrap;
+  padding: 16rpx 0;
+  margin-bottom: 16rpx;
+}
+.emotion-chip {
+  display: inline-block;
+  padding: 12rpx 28rpx;
+  margin-right: 16rpx;
+  background: white;
+  border-radius: 48rpx;
+  font-size: 26rpx;
+  color: #5C3D2E;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.emotion-chip.active {
+  background: linear-gradient(135deg, #F4A0B5, #FF8FA3);
+  color: white;
+}
+
+/* 时间线 */
+.timeline { padding-left: 40rpx; }
+.timeline-item {
+  position: relative;
+  padding-left: 40rpx;
+  padding-bottom: 40rpx;
+  border-left: 3rpx solid #F7B8C4;
+}
+.timeline-item:last-child { border-left-color: transparent; }
+.timeline-dot {
+  position: absolute;
+  left: -15rpx;
+  top: 8rpx;
+  width: 26rpx;
+  height: 26rpx;
+  background: #F4A0B5;
+  border-radius: 50%;
+  border: 3rpx solid white;
+  box-shadow: 0 2rpx 8rpx rgba(244,160,181,0.3);
+}
+.timeline-dot.happy { background: #7BC67E; }
+.timeline-dot.sad { background: #D4A8D6; }
+.timeline-dot.anxious { background: #FFB347; }
+.timeline-dot.calm { background: #F4A0B5; }
+
+.timeline-card {
+  padding: 24rpx;
+  background: white;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+}
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+.timeline-date { font-size: 24rpx; color: #9B8B8B; }
+.timeline-emoji { font-size: 32rpx; }
+.timeline-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #5C3D2E;
+  display: block;
+  margin-bottom: 8rpx;
+}
+.timeline-preview {
+  font-size: 26rpx;
+  color: #9B8B8B;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* 写日记 */
+.write-entry {
+  background: white;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+}
+.write-textarea {
+  width: 100%;
+  min-height: 200rpx;
+  font-size: 30rpx;
+  line-height: 1.7;
+}
+.write-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16rpx;
+}
+.action-hint { font-size: 24rpx; color: #9B8B8B; }
+.write-submit { padding: 12rpx 36rpx; font-size: 26rpx; }
+
+/* 健康 */
+.health-section {
+  background: white;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+}
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #5C3D2E;
+  margin-bottom: 20rpx;
+}
+.period-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 24rpx;
+}
+.stat-item { text-align: center; }
+.stat-value { display: block; font-size: 44rpx; font-weight: 700; color: #F4A0B5; }
+.stat-label { display: block; font-size: 22rpx; color: #9B8B8B; margin-top: 4rpx; }
+
+.body-note-card {
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid rgba(0,0,0,0.04);
+}
+.body-note-card:last-child { border: none; }
+.note-type { font-size: 22rpx; color: #FF8FA3; background: #FFF0F3; padding: 4rpx 12rpx; border-radius: 8rpx; }
+.note-detail { display: block; font-size: 28rpx; color: #5C3D2E; margin: 8rpx 0; }
+.note-date { font-size: 22rpx; color: #9B8B8B; }

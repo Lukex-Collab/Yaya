@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS core_facts;
+DROP TABLE IF EXISTS memories;

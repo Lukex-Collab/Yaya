@@ -1,0 +1,39 @@
+<!-- 情绪图谱页 -->
+<view class="emotion-container">
+  <!-- 情绪曲线（简化版 - 用 emoji 柱状图表示） -->
+  <view class="emotion-section yaya-card">
+    <text class="section-title">📊 情绪趋势（近7天）</text>
+    <view class="emotion-chart">
+      <view class="chart-bar" wx:for="{{weeklyMoods}}" wx:key="date">
+        <text class="chart-emoji">{{item.emoji}}</text>
+        <view class="chart-fill" style="height: {{item.value * 60}}rpx;"></view>
+        <text class="chart-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 情绪规律 -->
+  <view class="emotion-section yaya-card">
+    <text class="section-title">🔍 情绪规律</text>
+    <view class="insight-item" wx:for="{{insights}}" wx:key="*this">
+      <text>{{item}}</text>
+    </view>
+  </view>
+
+  <!-- 情绪急救 -->
+  <view class="emotion-section yaya-card">
+    <text class="section-title">🩹 情绪急救</text>
+    <view class="rescue-grid">
+      <view class="rescue-card" wx:for="{{rescueActions}}" wx:key="label" bindtap="doRescue" data-action="{{item.action}}">
+        <text class="rescue-emoji">{{item.emoji}}</text>
+        <text class="rescue-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 月度报告入口 -->
+  <view class="yaya-card" bindtap="viewMonthlyReport">
+    <text style="font-size:30rpx;font-weight:600;color:#5C3D2E;">📋 本月情绪报告</text>
+    <text style="font-size:24rpx;color:#FF8FA3;display:block;margin-top:8rpx;">查看完整分析 →</text>
+  </view>
+</view>

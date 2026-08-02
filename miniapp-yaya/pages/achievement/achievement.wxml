@@ -1,0 +1,18 @@
+<!-- 成就墙 -->
+<view class="achievement-container">
+  <view class="growth-header yaya-card">
+    <text class="growth-days">🦷 陪伴 {{companionDays}} 天</text>
+    <text class="growth-level">关系等级：{{currentLevel.name}} · 默契度 {{intimacyScore}}%</text>
+  </view>
+  <view class="achievement-grid">
+    <view class="achievement-card {{item.unlocked ? 'unlocked' : ''}}" wx:for="{{achievements}}" wx:key="code">
+      <text class="ach-emoji">{{item.icon_emoji || '🏆'}}</text>
+      <text class="ach-name">{{item.name}}</text>
+      <text class="ach-desc">{{item.description}}</text>
+      <view class="ach-progress" wx:if="{{!item.unlocked}}">
+        <t-progress percentage="{{item.progressPercent}}" stroke-width="6"></t-progress>
+      </view>
+      <text class="ach-status">{{item.unlocked ? '✅ 已解锁' : item.progress + '/' + item.target}}</text>
+    </view>
+  </view>
+</view>
