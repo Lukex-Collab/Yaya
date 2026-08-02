@@ -1,40 +1,26 @@
-// services/http.js — 统一 HTTP 客户端
-// 双模式: CloudBase云函数(开发) / Go后端(生产)
-// 优先级: 如果有 token 且 Go 后端在线 → 用 Go
-//          否则 → 降级到 CloudBase 云函数
+// services/http.js — 统一 HTTP 客户端 (对接 Go 后端 API)
+// 封装: JWT token管理 · 自动重试 · 错误处理 · 响应拦截
 const app = getApp();
 
-// Go 后端地址（部署后修改）
-const GO_BASE = 'https://api.lingpal.com';
-
-// CloudBase 云函数（开发模式）
-const CLOUD_FUNCTIONS = {
-  login:    'userLogin',
-  chat:     'aiChat',
-  memory:   'memoryIngest',
-  memorySearch: 'memoryIngest',
-  push:     'pushSchedule',
-};
+const BASE_URL = 'https://api.lingpal.com'; // 生产域名，开发时可改为 localhost
 
 /**
- * 通用请求 — 优先 Go 后端, 降级 CloudBase
+ * 通用请求 (带 JWT)
  */
 function request(method, path, data = null) {
   return new Promise((resolve, reject) => {
     const token = wx.getStorageSync('token') || '';
-
-    // 尝试 Go 后端
     wx.request({
-      url: GO_BASE + '/api/v1' + path,
+      url: BASE_URL + '/api/v1' + path,
       method: method,
       data: data,
       header: {
         'Content-Type': 'application/json',
         'Authorization': token ? 'Bearer ' + token : '',
       },
-      timeout: 5000, // 5秒超时
       success(res) {
         if (res.statusCode === 401) {
+          // token 过期 → 重新登录
           wx.removeStorageSync('token');
           wx.reLaunch({ url: '/pages/login/login' });
           reject(new Error('登录已过期'));
@@ -46,32 +32,12 @@ function request(method, path, data = null) {
           reject(new Error(res.data?.msg || '请求失败'));
         }
       },
-      fail() {
-        // Go后端不可用 → 降级 CloudBase 云函数
-        cloudFallback(method, path, data).then(resolve).catch(reject);
+      fail(err) {
+        console.error('[http]', method, path, err);
+        reject(err);
       },
     });
   });
-}
-
-// CloudBase 云函数降级
-async function cloudFallback(method, path, data) {
-  if (!wx.cloud) throw new Error('CloudBase 未初始化');
-
-  // 路由 → 云函数映射
-  if (path === '/auth/wechat/login') {
-    const res = await wx.cloud.callFunction({ name: CLOUD_FUNCTIONS.login, data: { code: data?.code || 'dev', nickname: data?.nickname || '牙牙的朋友' } });
-    return res.result?.user ? { token: 'cloud-' + Date.now(), user: res.result.user, is_new: false } : null;
-  }
-  if (path === '/chat/send') {
-    const res = await wx.cloud.callFunction({ name: CLOUD_FUNCTIONS.chat, data: { content: data.content } });
-    return res.result;
-  }
-  if (path === '/user/profile') {
-    return { nickname: '牙牙的朋友', companion_days: 1, yaya_nickname: '牙牙' };
-  }
-
-  throw new Error('功能暂未开放');
 }
 
 // 便捷方法
@@ -81,93 +47,60 @@ const http = {
   put: (path, data) => request('PUT', path, data),
   del: (path) => request('DELETE', path),
 
-  // 微信登录
-  login: async (code, nickname) => {
-    return new Promise((resolve, reject) => {
-      // 先试 Go 后端
-      wx.request({
-        url: GO_BASE + '/api/v1/auth/wechat/login',
-        method: 'POST',
-        data: { code: code || 'dev', nickname: nickname || '牙牙的朋友' },
-        header: { 'Content-Type': 'application/json' },
-        timeout: 5000,
-        success(res) {
-          if (res.data?.code === 0 && res.data?.data?.token) {
-            wx.setStorageSync('token', res.data.data.token);
-            app.globalData.userInfo = res.data.data.user;
-            app.globalData.isLogin = true;
-            resolve(res.data.data);
-            return;
-          }
-          // Go 后端返回错误 → 用 CloudBase
-          wx.cloud.callFunction({ name: CLOUD_FUNCTIONS.login, data: { code: code || 'dev' } }).then(r => {
-            const token = 'cloud-' + Date.now();
-            wx.setStorageSync('token', token);
-            app.globalData.isLogin = true;
-            resolve({ token, user: r.result?.user || { nickname }, is_new: false });
-          }).catch(reject);
-        },
-        fail() {
-          // Go 后端不可用 → CloudBase
-          wx.cloud.callFunction({ name: CLOUD_FUNCTIONS.login, data: { code: code || 'dev' } }).then(r => {
-            const token = 'cloud-' + Date.now();
-            wx.setStorageSync('token', token);
-            app.globalData.isLogin = true;
-            resolve({ token, user: r.result?.user || { nickname: '牙牙的朋友' }, is_new: true });
-          }).catch(reject);
-        },
-      });
+  // 登录（无需 token）
+  login: (code, nickname) => new Promise((resolve, reject) => {
+    wx.request({
+      url: BASE_URL + '/api/v1/auth/wechat/login',
+      method: 'POST',
+      data: { code, nickname },
+      header: { 'Content-Type': 'application/json' },
+      success(res) {
+        if (res.data?.code === 0 && res.data?.data?.token) {
+          wx.setStorageSync('token', res.data.data.token);
+          app.globalData.userInfo = res.data.data.user;
+          app.globalData.isLogin = true;
+          resolve(res.data.data);
+        } else {
+          reject(new Error(res.data?.msg || '登录失败'));
+        }
+      },
+      fail: reject,
     });
-  },
+  }),
 
   // SSE 流式对话
   chatStream(content, convId, onToken, onDone, onError) {
     const token = wx.getStorageSync('token') || '';
-    wx.request({
-      url: GO_BASE + '/api/v1/chat/send',
-      method: 'POST',
-      data: { content, conversation_id: convId || '' },
-      header: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
-      },
-      enableChunked: true,
-      timeout: 30000,
-      success: () => {},
-      fail(err) {
-        // 降级 CloudBase
-        wx.cloud.callFunction({ name: CLOUD_FUNCTIONS.chat, data: { content } }).then(r => {
-          if (onToken) onToken(r.result?.reply || '牙牙在呢～');
-          if (onDone) onDone('');
-        }).catch(onError || (() => {}));
-      },
-    });
-    // SSE parsing handled by enableChunked + onChunkReceived
     const task = wx.request({
-      url: GO_BASE + '/api/v1/chat/send',
+      url: BASE_URL + '/api/v1/chat/send',
       method: 'POST',
       data: { content, conversation_id: convId || '' },
       header: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
       },
-      enableChunked: true,
-      timeout: 30000,
+      enableChunked: true, // 开启分块传输（SSE）
       success: () => {},
-      fail: () => {
-        wx.cloud.callFunction({ name: CLOUD_FUNCTIONS.chat, data: { content } }).then(r => {
-          if (onToken) onToken(r.result?.reply || '牙牙在呢～');
-        }).catch(onError);
-      },
+      fail: onError,
     });
+
+    let buffer = '';
     task.onChunkReceived((res) => {
       const text = res.data;
-      try {
-        const event = JSON.parse(text.replace('data: ', ''));
-        if (event.content && onToken) onToken(event.content);
-        if (event.done && onDone) onDone(event.conv_id);
-        if (event.error && onError) onError(new Error(event.error));
-      } catch(e) {}
+      buffer += text;
+      // 解析 SSE: data: {...}\n\n
+      const lines = buffer.split('\n\n');
+      buffer = lines.pop() || '';
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const event = JSON.parse(line.slice(6));
+            if (event.content) onToken(event.content);
+            if (event.done) { onDone(event.conv_id); return; }
+            if (event.error) onError(new Error(event.error));
+          } catch(e) {}
+        }
+      }
     });
     return task;
   },
