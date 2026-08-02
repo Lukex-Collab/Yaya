@@ -5,7 +5,7 @@
 ## 🌿 分支策略
 
 ```
-main ─────────────────────────────────────▶ 生产就绪
+master ─────────────────────────────────────▶ 生产就绪
   │
   ├── feat/<name> ───────────────────────▶ 新功能开发
   ├── fix/<name> ────────────────────────▶ Bug 修复
@@ -18,11 +18,11 @@ main ─────────────────────────
 
 | 规则 | 说明 |
 |------|------|
-| **`main` 是保护分支** | 不允许直接 push，只能通过 PR 合并 |
-| **功能分支从 `main` 切出** | `git checkout -b feat/my-feature main` |
+| **`master` 是保护分支** | 不允许直接 push，只能通过 PR 合并 |
+| **功能分支从 `master` 切出** | `git checkout -b feat/my-feature master` |
 | **分支名全部小写** | 用 `-` 分隔，如 `feat/voice-message` |
 | **一个分支一件事** | 不要在一个分支里混入不相关的改动 |
-| **rebase 代替 merge** | 合并前先 `git rebase main`，保持历史线性 |
+| **rebase 代替 merge** | 合并前先 `git rebase master`，保持历史线性 |
 
 ### 分支命名
 
@@ -88,14 +88,14 @@ chore(deps): 升级 gin v1.10
  1. 切分支        2. 开发+测试       3. Push+开PR
     │                 │                 │
   feat/xxx        make test         gh pr create
-  (从 main)       make lint         (填写模板)
+  (从 master)       make lint         (填写模板)
     │                 │                 │
     └─────────────────┴─────────────────┘
                                          │
  6. 合并+清理 ◀── 5. 解决冲突 ◀── 4. CI 通过 + Review
     │                 │                 │
   Squash merge    git rebase        至少1人 Approve
-  git branch -d   main              所有检查 ✅
+  git branch -d   master              所有检查 ✅
 ```
 
 ### 详细步骤
@@ -103,9 +103,9 @@ chore(deps): 升级 gin v1.10
 #### 1. 开始工作
 
 ```bash
-# 更新本地 main
-git checkout main
-git pull origin main
+# 更新本地 master
+git checkout master
+git pull origin master
 
 # 切功能分支
 git checkout -b feat/my-feature
@@ -118,9 +118,9 @@ git checkout -b feat/my-feature
 git add -p                    # 选择性暂存，避免大坨提交
 git commit -m "feat(chat): 添加消息历史分页"
 
-# 定期同步 main（避免最后冲突地狱）
-git fetch origin main
-git rebase origin/main
+# 定期同步 master（避免最后冲突地狱）
+git fetch origin master
+git rebase origin/master
 ```
 
 #### 3. 推送并开 PR
@@ -133,7 +133,7 @@ make test && make lint
 git push origin feat/my-feature
 
 # 创建 PR
-gh pr create --base main --title "feat(chat): 添加语音消息" --body "..."
+gh pr create --base master --title "feat(chat): 添加语音消息" --body "..."
 ```
 
 #### 4. Code Review
@@ -159,8 +159,8 @@ PR 创建后：
 git push origin --delete feat/my-feature
 
 # 删除本地分支
-git checkout main
-git pull origin main
+git checkout master
+git pull origin master
 git branch -d feat/my-feature
 ```
 
@@ -232,7 +232,7 @@ make lint
 **避免冲突的策略：**
 - 改上述文件时先在 Issue/群聊里说一下
 - 不同人负责不同模块，减少文件重叠
-- 频繁 rebase main（每天至少一次）
+- 频繁 rebase master（每天至少一次）
 - 小的 PR 优先（< 500 行改动）
 - 改同一文件的不同区域通常能自动合并
 
@@ -244,8 +244,8 @@ make lint
 # 1. 确保当前在功能分支
 git checkout feat/my-feature
 
-# 2. rebase main
-git rebase main
+# 2. rebase master
+git rebase master
 
 # 3. 如果有冲突，逐个解决
 #    编辑冲突文件 → git add → git rebase --continue
@@ -258,8 +258,8 @@ git push --force-with-lease origin feat/my-feature
 ### PR 合并后我的本地分支怎么办？
 
 ```bash
-git checkout main
-git pull origin main
+git checkout master
+git pull origin master
 git branch -d feat/my-feature    # 删除本地分支
 git remote prune origin           # 清理远程分支引用
 ```

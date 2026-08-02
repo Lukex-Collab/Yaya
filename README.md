@@ -110,9 +110,9 @@ make lint        # 代码检查
 
 我们欢迎所有贡献！请先阅读 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解：
 
-- 分支策略 — feat/ fix/ refactor/ 从 main 切出
+- 分支策略 — feat/ fix/ refactor/ 从 master 切出
 - Commit 规范 — Conventional Commits
 - PR 流程 — 至少 1 人 Review + CI 全部通过
 - 开发环境 — Docker + Go + 微信开发者工具
 
-**TL;DR：** 不要直接 push main → 切分支开发 → rebase → 开 PR → squash merge
+**TL;DR：** 不要直接 push master → 切分支开发 → rebase → 开 PR → squash merge
