@@ -1,0 +1,20 @@
+# 代码所有者 — 自动请求 Review
+# 最后匹配规则生效
+
+# 全局
+* @Lukex-Collab
+
+# 后端核心
+/server/ @Lukex-Collab
+
+# 小程序
+/miniapp-yaya/ @Lukex-Collab
+
+# CI/CD
+/.github/workflows/ @Lukex-Collab
+
+# 文档
+/docs/ @Lukex-Collab
+
+# 部署
+/deploy/ @Lukex-Collab
