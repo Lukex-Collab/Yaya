@@ -1,12 +1,9 @@
 // 牙牙 AI 代理服务器
 // 用法: node server.js
-// 默认端口 3456，可通过 PORT 环境变量修改
+// 默认端口 3456
 //
-// 支持的 API（任选一个，设置环境变量即可）:
-//   Groq (免费额度): set GROQ_KEY=xxx && node server.js
-//   OpenAI:          set OPENAI_KEY=xxx && node server.js
-//   豆包/ volcengine: set DOUBAO_KEY=xxx && set DOUBAO_URL=https://ark.cn-beijing.volces.com/api/v3 && node server.js
-//   其他兼容 OpenAI 格式的 API: set OPENAI_KEY=xxx && set OPENAI_URL=https://你的地址/v1 && node server.js
+// 支持 DeepSeek:  设置 DEEPSEEK_KEY + DEEPSEEK_BASE_URL 环境变量后启动
+// 也支持: Groq / OpenAI / 豆包 等兼容 OpenAI 格式的 API
 
 const express = require('express');
 const cors = require('cors');
@@ -33,14 +30,22 @@ const SYSTEM_PROMPT = `你是「牙牙」，一只 AI 毛绒陪伴挂件。你�
 
 你不是客服，不是助手，你是她的小太阳。`;
 
-// 检测使用哪个 API
+// 检测 API
+const DEEPSEEK_KEY = process.env.DEEPSEEK_KEY;
+const DEEPSEEK_URL = process.env.DEEPSEEK_BASE_URL;
 const GROQ_KEY = process.env.GROQ_KEY;
 const OPENAI_KEY = process.env.OPENAI_KEY;
 const DOUBAO_KEY = process.env.DOUBAO_KEY;
 
 let API_URL, API_KEY, API_MODEL;
 
-if (GROQ_KEY) {
+if (DEEPSEEK_KEY && DEEPSEEK_URL) {
+  API_URL = DEEPSEEK_URL.replace(/\/+$/, '') + '/chat/completions';
+  API_KEY = DEEPSEEK_KEY;
+  API_MODEL = 'deepseek-chat';
+  console.log('✓ 使用 DeepSeek API (' + API_MODEL + ')');
+  console.log('  ' + API_URL);
+} else if (GROQ_KEY) {
   API_URL = 'https://api.groq.com/openai/v1/chat/completions';
   API_KEY = GROQ_KEY;
   API_MODEL = 'llama-3.3-70b-versatile';
@@ -57,18 +62,18 @@ if (GROQ_KEY) {
   console.log('✓ 使用 OpenAI 兼容 API (' + API_MODEL + ')');
 } else {
   console.log('⚠ 未配置 API KEY！');
-  console.log('  设置方法: set GROQ_KEY=你的key && node server.js');
-  console.log('  免费获取 Groq Key: https://console.groq.com/keys');
-  console.log('  或: set OPENAI_KEY=你的key && node server.js');
+  console.log('  DeepSeek: set DEEPSEEK_KEY=xxx && set DEEPSEEK_BASE_URL=https://api.deepseek.com/v1 && node server.js');
+  console.log('  Groq:     set GROQ_KEY=xxx && node server.js');
+  console.log('  OpenAI:   set OPENAI_KEY=xxx && node server.js');
+  console.log('  豆包:    set DOUBAO_KEY=xxx && node server.js');
 }
 
 app.post('/api/chat', async (req, res) => {
   const { messages } = req.body;
 
   if (!API_KEY) {
-    // 未配 API，返回提示
     return res.json({
-      reply: '牙牙还没连上大脑呢～让主人帮我设置一下 API 吧！',
+      reply: '牙牙还没连上大脑呢～让主人帮我设置一下 API 吧！你可以用 DeepSeek 的 key 哦。',
       offline: true
     });
   }
@@ -86,22 +91,22 @@ app.post('/api/chat', async (req, res) => {
           { role: 'system', content: SYSTEM_PROMPT },
           ...messages.filter(m => m.role !== 'system'),
         ],
-        max_tokens: 150,
+        max_tokens: 200,
         temperature: 0.85,
       }),
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(20000),
     });
 
     if (!response.ok) {
       const err = await response.text();
-      console.error('API 错误:', response.status, err.slice(0, 200));
+      console.error('API 错误:', response.status, err.slice(0, 300));
       return res.json({ reply: '牙牙脑袋有点晕…等一下下就好！' });
     }
 
     const data = await response.json();
     const reply = data.choices?.[0]?.message?.content || '嗯…牙牙在想怎么回答你～';
 
-    console.log('💬', reply.slice(0, 50));
+    console.log('💬', reply.slice(0, 60));
     res.json({ reply });
 
   } catch (e) {
@@ -115,5 +120,6 @@ app.get('/health', (req, res) => res.json({ ok: true }));
 app.listen(PORT, () => {
   console.log('🦷 牙牙 AI 代理已启动 → http://localhost:' + PORT);
   console.log('   前端会自动连接这个地址');
-  console.log('');
+  if (API_KEY) console.log('   AI 已就绪！');
+  else console.log('   ⚠ AI 未配置，将使用离线 mock 回复');
 });
