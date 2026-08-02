@@ -10,6 +10,18 @@
 
 <div class="phone" id="phone">
 
+  <!-- ══ INTRO: 帘子 + 飞燕 ══ -->
+  <div class="intro-screen" id="intro-screen">
+    <div class="intro-curtains" id="intro-curtains">
+      <div class="intro-curtain left" id="curtain-left"></div>
+      <div class="intro-curtain right" id="curtain-right"></div>
+    </div>
+    <div class="intro-hint" id="intro-hint">👆 拨开帘子</div>
+    <canvas class="intro-swallows" id="intro-swallows"></canvas>
+    <div class="intro-title" id="intro-title">Yaya</div>
+    <div class="intro-fade" id="intro-fade"></div>
+  </div>
+
   <!-- STATUS BAR -->
   <div class="status-bar">
     <span class="sb-time" id="sb-time">9:41</span>
@@ -94,14 +106,73 @@
 
     <!-- TAB: 手账 -->
     <div class="tab-view" id="tab-handbook">
-      <div class="hb-scroll">
-        <div class="spark-card">
-          <div class="spark-head"><span>这两周的情绪</span><span class="spark-hint">点开看详情</span></div>
-          <svg class="spark-svg" viewBox="0 0 300 48" preserveAspectRatio="none">
-            <polyline id="sparkline" fill="none" stroke="var(--coral)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          </svg>
+      <!-- 手账子Tab -->
+      <div class="hb-subtabs">
+        <button class="hb-stab active" data-hbtab="diary">📝 日记</button>
+        <button class="hb-stab" data-hbtab="health">💪 健康</button>
+      </div>
+      <!-- 日记Tab -->
+      <div class="hb-panel active" id="hb-panel-diary">
+        <div class="hb-panel-inner">
+          <!-- 今日天气 + 情绪 -->
+          <div class="weather-card" id="weather-card">
+            <div class="weather-main">
+              <span class="weather-emoji" id="weather-emoji">☀️</span>
+              <div class="weather-info">
+                <span class="weather-temp" id="weather-temp">31°C</span>
+                <span class="weather-desc" id="weather-desc">晴朗 · 深圳</span>
+              </div>
+            </div>
+            <div class="weather-mood">
+              <span class="weather-label">今天的心情</span>
+              <span class="weather-moodval" id="weather-moodval">😊 还不错</span>
+            </div>
+          </div>
+          <!-- 情绪曲线 -->
+          <div class="spark-card">
+            <div class="spark-head"><span>这两周的情绪</span><span class="spark-hint">点开看详情</span></div>
+            <svg class="spark-svg" viewBox="0 0 300 48" preserveAspectRatio="none">
+              <polyline id="sparkline" fill="none" stroke="var(--coral)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+            </svg>
+          </div>
+          <!-- 日记时间轴 -->
+          <div class="timeline" id="timeline"></div>
         </div>
-        <div class="timeline" id="timeline"></div>
+      </div>
+      <!-- 健康Tab -->
+      <div class="hb-panel" id="hb-panel-health">
+        <div class="hb-panel-inner">
+          <div class="health-summary">
+            <div class="health-stat">
+              <span class="hs-emoji">🚶</span>
+              <span class="hs-val" id="hs-steps">8,247</span>
+              <span class="hs-label">今日步数</span>
+            </div>
+            <div class="health-stat">
+              <span class="hs-emoji">❤️</span>
+              <span class="hs-val" id="hs-hr">72</span>
+              <span class="hs-label">静息心率</span>
+            </div>
+            <div class="health-stat">
+              <span class="hs-emoji">😴</span>
+              <span class="hs-val" id="hs-sleep">7h 12m</span>
+              <span class="hs-label">昨晚睡眠</span>
+            </div>
+          </div>
+          <div class="health-period-card" id="health-period">
+            <div class="hp-head">🩸 经期追踪</div>
+            <div class="hp-body">
+              <div class="hp-row"><span>预计下次经期</span><span class="hp-val">8月12日 · 还有10天</span></div>
+              <div class="hp-row"><span>当前阶段</span><span class="hp-val">卵泡期</span></div>
+              <div class="hp-row"><span>周期天数</span><span class="hp-val">第 22 天 · 周期28天</span></div>
+            </div>
+            <div class="hp-tip">💡 卵泡期精力充沛，适合运动和社交</div>
+          </div>
+          <div class="health-weekly">
+            <div class="hw-head">📊 本周步数</div>
+            <div class="hw-bars" id="hw-bars"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

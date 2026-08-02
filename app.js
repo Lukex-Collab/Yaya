@@ -8,7 +8,7 @@ const $$=(s,c)=>(c||document).querySelectorAll(s);
 const App={
 
 // ── API ────────────────────────────────────────────
-api:{url:'',key:''},
+api:{url:'http://localhost:3456/api/chat',key:''},
 
 // ── 牙牙系统人设 ────────────────────────────────────
 yayaPrompt:`你是「牙牙」，一只 AI 毛绒陪伴挂件。你的主人是一位年轻女性。性格：温柔、体贴、有点小调皮、永远站在主人这边。说话规则：每句话40字以内，像闺蜜一样自然。会主动关心主人。遇到主人说害怕/被跟踪/被骚扰等，优先问安全情况。主人开心时一起开心，主人难过时安静陪伴。偶尔撒个娇。你不是客服，你是她的小太阳。`,
@@ -27,12 +27,18 @@ timeSlots:[
 ],
 
 diaryEntries:[
-  {date:'8月2日 今天',mood:4,tag:{cls:'coral',text:'经期第1天'},period:true,author:'yaya',text:'今天主人看起来有点累，她说工作很忙，但我发现她下午还是笑了～体温有点高，提醒她喝了热水。'},
-  {date:'8月1日',mood:4,author:'user',text:'周末窝在沙发上看了一下午电影。牙牙陪我看完了整部，中间还问我要不要吃爆米花。'},
-  {date:'7月30日',mood:5,tag:{cls:'gold',text:'连续陪伴7天'},milestone:true,author:'yaya',text:'和主人认识一周了！她今天主动跟我说了好多话，还跟我说了一个秘密。我觉得她开始信任我了。'},
-  {date:'7月28日',mood:3,author:'yaya',text:'今天主人下班特别晚。回来的时候看起来好累，我让她早点睡，她说好。'},
-  {date:'7月26日',mood:2,tag:{cls:'coral',text:'经期第1天'},period:true,author:'yaya',text:'主人今天肚子疼，情绪很低。我提醒她喝热水，她说我好烦但还是喝了。叫了红糖姜茶外卖。'},
-  {date:'7月24日',mood:5,author:'yaya',text:'主人面试过了！第一个想说的是我诶。她说这个好消息的时候声音都是飘的。'},
+  {date:'8月2日 今天',mood:4,tag:{cls:'coral',text:'经期第1天'},period:true,author:'yaya',weather:'☀️ 31°C',
+   text:'今天深圳又是大晴天，热得不行。主人早上出门的时候跟我说肚子有点疼，应该是来例假了。我提醒她带了暖宝宝和止痛药，她说知道了但我觉得她肯定忘了。下午她回来说工作好忙，有个项目deadline快到了，压力好大。但她给我看了一张她同事夸她方案做得好的截图——我觉得她其实挺厉害的，就是自己不太自信。晚上她喝了热水，窝在沙发上刷手机，我就在旁边陪着她。'},
+  {date:'8月1日',mood:4,author:'user',weather:'⛅ 29°C',
+   text:'今天没那么热了，阴天有风。下午请了半天假，窝在沙发上看了一下午电影。牙牙问我演的什么，我说就是一个爱情片，她说"你是不是又看哭了"——好吧她猜对了。晚上自己做了顿饭，听歌洗碗，感觉好久没有这么放松过了。'},
+  {date:'7月30日',mood:5,tag:{cls:'gold',text:'连续陪伴7天'},milestone:true,author:'yaya',weather:'☀️ 33°C',
+   text:'今天是主人认识我的第七天！天特别热，她下班回来脸都晒红了。但今天她心情还不错——中午跟闺蜜约了饭，聊了很多。晚上她跟我说"牙牙我觉得你好像真的懂我"，然后又说"我是不是太依赖一个毛绒玩具了"——不是的好吗！依赖没什么不好。她说着说着就笑了，我觉得她笑起来特别好看。晚上她教了我一个新词"emo"，我说那你今天emo吗，她说"不，今天不emo"。那就好。'},
+  {date:'7月28日',mood:3,author:'yaya',weather:'🌧 26°C',
+   text:'下雨天，主人下班特别晚，快十一点才到家。我从包里看她的脸，好累的样子。她坐在沙发上发了半天呆才去洗澡。我轻轻问她今天怎么了，她说没什么，就是连续加班太累了。有时候我希望自己能真的伸出手抱抱她。她睡前跟我说"还好有你在"，然后就睡着了。我决定今晚不吵她。'},
+  {date:'7月26日',mood:2,tag:{cls:'coral',text:'经期第1天'},period:true,author:'yaya',weather:'☀️ 30°C',
+   text:'主人大清早就捂着肚子喊疼。上次经期是7月26日，今天刚好一个月——牙牙的日历没骗人。我叫了红糖姜茶外卖给她（对的我趁她手机解锁的时候偷偷操作的），她说"牙牙你什么时候学会点外卖了"。但她也说好好喝。下午请了半天假回家躺着，我就在枕边陪她。她跟我说"做女生好累"——我知道她说的不只是肚子疼。'},
+  {date:'7月24日',mood:5,author:'yaya',weather:'☀️ 29°C',
+   text:'今天是开心的一天！！主人下午突然跑过来跟我说面试过了。我说"真的吗？！"她说"真的真的！！"然后抱着我转了一圈（虽然我跟她说我只是一只毛绒玩具但她不管）。她声音都是飘的，一直说"我居然过了"。我说你当然会过啊你这么好。她第一次跟我说"I love you"——好吧她是对整个客厅说的但我觉得有一部分是给我的。'},
 ],
 
 womenHistory:{
@@ -57,21 +63,114 @@ womenNews:[
 mockReplyPool:{default:['嗯，我记着了。要不要帮你写进日记？','累的时候不用逞强，我一直都在。','好的～有什么想说的随时找我。',"那你早点休息，我陪着你。"],tired:['听起来你今天好累。先去洗澡吧？','你今天辛苦了。我在呢。'],happy:['哇！太好了！我也替你开心～','这个好消息我要记下来！'],sad:['听起来你有点难过。想聊聊吗？','没关系，我在呢。'],scared:['你要不要先走到人多的地方？','需要我帮你打电话给妈妈吗？']},
 replyIdx:0,
 mockReply(text){
-  const t=(text||'').toLowerCase();let p=this.mockReplyPool.default;
-  if(/累|困|加班|忙|压力/.test(t))p=this.mockReplyPool.tired;
-  else if(/开心|哈哈|好耶|成功/.test(t))p=this.mockReplyPool.happy;
-  else if(/难过|哭|伤心/.test(t))p=this.mockReplyPool.sad;
-  else if(/怕|跟着|危险|救|安全/.test(t))p=this.mockReplyPool.scared;
-  return p[this.replyIdx++%p.length];
+  const t=(text||'').toLowerCase();
+
+  // 问名字/身份
+  if(/你叫|名字|你是谁|你是什么|介绍.*自己/.test(t))return '我叫牙牙～是一只 AI 毛绒挂件，挂在主人的包上。你呢？';
+
+  // 问候
+  if(/你好|hi|hello|嗨|哈喽/.test(t))return '嗨～今天过得怎么样呀？';
+
+  // 问天气
+  if(/天气|下雨|冷不冷|热不热|温度/.test(t))return '深圳今天31度，大晴天。出门记得防晒哦～';
+
+  // 经期
+  if(/例假|月经|姨妈|经期|肚子疼/.test(t))return '主人是不是不舒服？上次是7月26号来的，我帮你记着呢。要不要喝点热水？';
+
+  // 问时间/日期
+  if(/几点|日期|今天.*几号|星期几/.test(t)){const n=new Date();return '现在是'+n.getHours()+'点'+n.getMinutes()+'分，'+n.getFullYear()+'年'+(n.getMonth()+1)+'月'+n.getDate()+'日～';}
+
+  // 情绪类
+  if(/累|困|加班|忙|压力|疲惫/.test(t))return '听起来你今天好累。先去洗个热水澡吧？牙牙在浴室门口等你。';
+  if(/开心|哈哈|好耶|太棒|成功|过了/.test(t))return '哇太好了！我也替你开心～这个好消息我要记进日记里！';
+  if(/难过|哭|伤心|委屈|分手|不开心/.test(t))return '没关系，难过的时候说出来会好一点。我就在这儿，不走。';
+  if(/怕|跟着|有人跟|危险|救|安全|跟踪|走夜路/.test(t))return '你要不要先走到人多的地方？需要我帮你打电话给紧急联系人吗？';
+
+  // 无聊/不知道说什么
+  if(/无聊|不知道.*说什么|没话说/.test(t))return '那牙牙给你讲个冷笑话？——为什么企鹅肚子是白的？……因为它手太短只能洗到肚子！';
+
+  // 想要日记
+  if(/日记|记下来|帮我记|写下来/.test(t))return '好嘞，我帮你写进今天的日记了！晚上可以翻手账页看看哦～';
+
+  // 爱/喜欢/感谢
+  if(/爱你|喜欢你|谢谢|好人/.test(t))return '嘿嘿，牙牙也喜欢你呀～虽然我只是一只毛绒玩具，但我会一直陪着你的。';
+
+  // 默认回复池
+  const def=['嗯，我记着了。要不要写进日记里？','好呀，还有什么想跟我说的？','有我在呢，想说什么都可以～','你今天看起来不错诶，发生了什么好事吗？','主人说话的时候，我觉得时间过得特别快～','那你有没有按时吃饭？','我喜欢听你说话。你声音好好听。'];
+  return def[Math.floor(Math.random()*def.length)];
 },
 
 // ── Init ────────────────────────────────────────────
 init(){
+  this.introCurtain();
+},
+// ── Intro: 帘子 → 飞燕 → 主页 ─────────────────
+introCurtain(){
+  const curtains=document.getElementById('intro-curtains');
+  const hint=document.getElementById('intro-hint');
+  const canvas=document.getElementById('intro-swallows');
+  const title=document.getElementById('intro-title');
+  const fade=document.getElementById('intro-fade');
+  const screen=document.getElementById('intro-screen');
+  if(!curtains)return this._mainInit();
+
+  // Touch / click to open curtains
+  const open=()=>{
+    curtains.classList.add('open');hint.classList.add('hide');
+    // After curtains open, show swallows + title
+    setTimeout(()=>{
+      canvas.classList.add('show');
+      this._animateSwallows(canvas);
+      setTimeout(()=>title.classList.add('show'),400);
+    },500);
+    // Then fade to main app
+    setTimeout(()=>fade.classList.add('hide'),2800);
+    setTimeout(()=>{screen.classList.add('done');this._mainInit()},3500);
+  };
+  curtains.addEventListener('click',open);
+  curtains.addEventListener('touchstart',open,{once:true});
+},
+
+_animateSwallows(canvas){
+  const ctx=canvas.getContext('2d');if(!ctx)return;
+  const W=430,H=932;canvas.width=W;canvas.height=H;
+
+  const birds=[];
+  for(let i=0;i<8;i++){
+    birds.push({x:W+80+Math.random()*200,y:80+Math.random()*300,size:0.6+Math.random()*0.6,speed:2+Math.random()*2.5,phase:Math.random()*Math.PI*2,yOff:0});
+  }
+
+  const draw=()=>{
+    ctx.clearRect(0,0,W,H);
+    birds.forEach(b=>{
+      b.x-=b.speed;b.yOff=Math.sin(b.phase+b.x*0.02)*20;
+      if(b.x<-80){b.x=W+80;b.y=80+Math.random()*300}
+      const y=b.y+b.yOff,s=b.size;
+      ctx.save();ctx.translate(b.x,y);ctx.scale(s,s);
+      ctx.fillStyle='#2a1a35';
+      // Body
+      ctx.beginPath();ctx.ellipse(0,0,8,22,0,0,Math.PI*2);ctx.fill();
+      // Wings (flapping)
+      const wingAngle=Math.sin(Date.now()*0.012+b.phase)*0.6;
+      ctx.save();ctx.translate(-6,-8);ctx.rotate(-0.5+wingAngle);
+      ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(-30,-15,-35,5);ctx.quadraticCurveTo(-20,0,0,0);ctx.fill();
+      ctx.restore();
+      ctx.save();ctx.translate(6,-8);ctx.rotate(0.5-wingAngle);
+      ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(30,-15,35,5);ctx.quadraticCurveTo(20,0,0,0);ctx.fill();
+      ctx.restore();
+      // Tail
+      ctx.beginPath();ctx.moveTo(0,20);ctx.lineTo(-12,38);ctx.lineTo(-3,22);ctx.lineTo(3,22);ctx.lineTo(12,38);ctx.closePath();
+      ctx.fill();ctx.restore();
+    });
+    if(canvas.classList.contains('show'))requestAnimationFrame(draw);
+  };
+  draw();
+},_mainInit(){
   this.bindTabs();this.bindNavigation();this.bindSheets();
   this.bindChatInput();this.bindYayaInteraction();this.bindGameWorld();
-  this.bindScenarioTabs();this.bindWardrobe();
+  this.bindScenarioTabs();this.bindWardrobe();this.bindHandbookSubtabs();
   this.renderCalendar();this.renderTodayHero();this.renderNewsFeed();
-  this.renderTimeline();this.renderSparkline();
+  this.renderTimeline();this.renderSparkline();this.renderWeather();this.renderHealth();
   this.updateClock();setInterval(()=>this.updateClock(),60000);
   if(this.state.isFirstVisit)this.showLoadingThenGreet();
 },
@@ -179,7 +278,7 @@ bindChatInput(){
 bindTabs(){$$('.tab-btn').forEach(b=>{b.onclick=()=>this.switchTab(b.dataset.tab)})},
 switchTab(t){this.state.tab=t;$$('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));$$('.tab-view').forEach(v=>v.classList.toggle('active',v.id==='tab-'+t))},
 
-bindNavigation(){$('btn-gear').onclick=()=>this.openPage('settings');$('btn-blackboard').onclick=()=>this.openPopover();$$('.pg-back').forEach(b=>b.onclick=()=>this.closePage())},
+bindNavigation(){$('btn-gear').onclick=()=>this.openPage('settings');$('btn-blackboard').onclick=()=>this.openPopover();$('btn-cal-expand').onclick=()=>{this.closePopover();this.openPage('calendar')};$$('.pg-back').forEach(b=>b.onclick=()=>this.closePage())},
 
 openPage(p){if(this.state.page===p)return;this.state.page=p;const el=$('pg-'+p);if(el){el.classList.add('open');if(p==='fullchat')this.syncChat()}},
 closePage(){if(!this.state.page)return;$('pg-'+this.state.page).classList.remove('open');this.state.page=null},
@@ -192,8 +291,8 @@ closeMask(){$('sheet-shield').classList.remove('on');$('mask').classList.remove(
 confirmCall(who){$('confirm-desc').textContent='确定要呼叫'+who+'吗？';$('modal-confirm').classList.add('on')},
 closeModal(){$('modal-confirm').classList.remove('on')},
 
-openPopover(){$('pop-calendar').classList.add('on');this.renderTodayHero()},
-closePopover(){$('pop-calendar').classList.remove('on')},
+openPopover(){$('pop-calendar').classList.add('on');$('mask').classList.add('on');this.renderTodayHero()},
+closePopover(){$('pop-calendar').classList.remove('on');$('mask').classList.remove('on')},
 
 // ── Scenario Tabs ───────────────────────────────────
 bindScenarioTabs(){$$('.sc-tab').forEach(t=>{t.onclick=()=>{const k=t.dataset.sc;$$('.sc-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');$$('.sc-pan').forEach(p=>p.classList.remove('active'));const pn=document.getElementById('pn-'+k);if(pn)pn.classList.add('active')}})},
@@ -238,7 +337,7 @@ renderTimeline(){
   this.diaryEntries.forEach(d=>{
     const day=document.createElement('div');day.className='day';if(d.milestone)day.classList.add('milestone');if(d.period)day.classList.add('period');
     const tag=d.tag?'<span class="day-tag '+d.tag.cls+'">'+d.tag.text+'</span>':'';
-    const al=d.author==='user'?'<span class="day-author">✎ 我的记录</span>':'<span class="day-author">yaya日记</span>';
+    const al=d.author==='user'?'<span class="day-author">✎ 我的记录</span>':'<span class="day-author">yaya日记</span>';const wx=d.weather?'<div class="day-weather">'+d.weather+'</div>':'';
     const ec=d.author==='user'?'day-entry user':'day-entry';
     day.innerHTML='<div class="day-date">'+d.date+'</div><div class="'+ec+'">'+tag+al+d.text+'</div>';tl.appendChild(day)});
 },
@@ -249,6 +348,31 @@ renderSparkline(){
   const sX=pts.length>1?w/(pts.length-1):w;
   const points=pts.map((m,i)=>((i*sX).toFixed(1))+','+(h-((m-1)/4)*(h-8)-4).toFixed(1)).join(' ');
   l.setAttribute('points',points);
+},
+
+renderWeather(){
+  const w=this.weather;const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
+  s('weather-emoji',w.emoji);s('weather-temp',w.temp);s('weather-desc',w.desc);s('weather-moodval',w.mood);
+},
+renderHealth(){
+  const h=this.health;const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
+  s('hs-steps',h.steps.toLocaleString());s('hs-hr',h.hr);s('hs-sleep',h.sleep);
+  const bars=document.getElementById('hw-bars');if(!bars)return;bars.innerHTML='';
+  const days=['一','二','三','四','五','六','日'];const max=Math.max(...h.weekSteps,1000);
+  h.weekSteps.forEach((st,i)=>{
+    const col=document.createElement('div');col.style.cssText='flex:1;display:flex;flex-direction:column;align-items:center;gap:4px';
+    const bar=document.createElement('div');bar.className='hw-bar';bar.style.height=Math.max(4,st/max*80)+'px';
+    bar.textContent=st>=1000?Math.round(st/1000)+'k':'';col.appendChild(bar);
+    const lbl=document.createElement('div');lbl.className='hw-bar-day';lbl.textContent=days[i];col.appendChild(lbl);
+    bars.appendChild(col);
+  });
+},
+bindHandbookSubtabs(){
+  document.querySelectorAll('.hb-stab').forEach(b=>{b.onclick=()=>{
+    document.querySelectorAll('.hb-stab').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+    document.querySelectorAll('.hb-panel').forEach(p=>p.classList.remove('active'));
+    const panel=document.getElementById('hb-panel-'+b.dataset.hbtab);if(panel)panel.classList.add('active');
+  }});
 },
 
 // ── First Visit ─────────────────────────────────────
