@@ -1,40 +1,43 @@
-// app.js — 牙牙 AI 守护玩偶
-const APP_CONFIG = require('./utils/constants');
+// app.js — 灵伴(LingPal) 微信小程序入口
+// 双模式: 牙牙(AI陪伴) + 灵伴世界(3D宠物)
+// 后端: Go/Gin API Gateway (40微服务·144+端点)
 
 App({
   onLaunch: function () {
-    // 1. 初始化云开发
-    if (!wx.cloud) {
-      console.error('请使用基础库 >= 2.2.3，并确保已开通云开发');
-      return;
+    // 1. 初始化云开发 (如果有的话)
+    if (wx.cloud) {
+      try {
+        wx.cloud.init({ env: 'yaya-d5gf9yfw20986839f', traceUser: true });
+      } catch(e) { console.warn('云开发初始化失败(可能未开通):', e.message); }
     }
 
-    wx.cloud.init({
-      env: 'yaya-d5gf9yfw20986839f',
-      traceUser: true,
-    });
+    // 2. 获取系统信息
+    const sys = wx.getSystemInfoSync();
+    this.globalData.systemInfo = sys;
+    this.globalData.statusBarHeight = sys.statusBarHeight;
+    this.globalData.windowHeight = sys.windowHeight;
 
-    // 2. 检查登录态
+    // 3. 检查登录
     this.checkLogin();
-
-    // 3. 获取系统信息
-    const systemInfo = wx.getSystemInfoSync();
-    this.globalData.systemInfo = systemInfo;
-    this.globalData.statusBarHeight = systemInfo.statusBarHeight;
   },
 
-  /**
-   * 检查微信登录态
-   */
+  // 检查登录状态
   async checkLogin() {
+    const token = wx.getStorageSync('token');
+    if (!token) {
+      this.globalData.isLogin = false;
+      return;
+    }
+    // 验证 token 有效性
     try {
-      const res = await wx.cloud.callFunction({
-        name: 'userLogin',
-      });
-      this.globalData.userInfo = res.result.user;
+      const http = require('./services/http');
+      const user = await http.get('/user/profile');
+      this.globalData.userInfo = user;
       this.globalData.isLogin = true;
-    } catch (err) {
-      console.warn('登录失败，将以游客模式运行', err);
+      this.globalData.companionDays = user.companion_days || 1;
+    } catch(err) {
+      console.warn('Token 无效, 需重新登录');
+      wx.removeStorageSync('token');
       this.globalData.isLogin = false;
     }
   },
@@ -44,18 +47,19 @@ App({
     userInfo: null,
     systemInfo: null,
     statusBarHeight: 20,
+    windowHeight: 600,
     companionDays: 1,
     intimacyScore: 0,
 
-    // 牙牙当前状态
+    // 牙牙状态
     yayaState: {
-      mood: 'happy',           // happy, sleepy, worried, excited, coquettish, guarding
-      currentEmoji: '😊',
+      mood: 'happy',
+      currentEmoji: '🧸',
       lastInteraction: null,
     },
 
-    // 设备连接状态
+    // 设备/安全
     deviceConnected: false,
-    safetyStatus: 'safe',      // safe, alert, offline
+    safetyStatus: 'safe',
   },
 });

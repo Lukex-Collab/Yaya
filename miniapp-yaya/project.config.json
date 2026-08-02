@@ -1,8 +1,9 @@
 {
-  "description": "牙牙（yaya）AI 守护玩偶",
+  "description": "灵伴(LingPal) — AI陪伴×3D世界",
   "packOptions": {
     "ignore": [
-      { "type": "file", "value": ".eslintrc.js" }
+      { "type": "file", "value": "*.ts" },
+      { "type": "folder", "value": "node_modules" }
     ]
   },
   "setting": {
@@ -14,14 +15,24 @@
     "coverView": true,
     "showShadowRootInWxmlPanel": true,
     "nodeModules": true,
-    "lazyCodeLoading": "requiredComponents"
+    "lazyCodeLoading": "requiredComponents",
+    "checkSiteMap": false
   },
   "compileType": "miniprogram",
   "libVersion": "3.8.0",
-  "appid": "{{YOUR_APPID}}",
-  "projectname": "yaya-miniapp",
+  "appid": "{{YOUR_WECHAT_APPID}}",
+  "projectname": "lingpal",
   "cloudfunctionRoot": "cloudfunctions/",
   "cloud": {
     "env": "yaya-d5gf9yfw20986839f"
+  },
+  "condition": {
+    "miniprogram": {
+      "list": [
+        { "name": "登录页", "path": "pages/login/login", "query": "" },
+        { "name": "首页", "path": "pages/home/home", "query": "" },
+        { "name": "对话页", "path": "pages/chat/chat", "query": "" }
+      ]
+    }
   }
 }
