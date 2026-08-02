@@ -68,6 +68,35 @@ import (
 
 var startTime = time.Now()
 
+var docsHTML = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>灵伴(LingPal) API 文档</title><style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:PingFang SC,sans-serif;background:#FFF8F0;color:#5C3D2E;max-width:900px;margin:0 auto;padding:40px 20px}
+h1{font-size:28px;background:linear-gradient(135deg,#F4A0B5,#D4A8D6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.sub{color:#9B8B8B;margin-bottom:32px}.section{margin-bottom:32px;background:white;border-radius:24px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,0.04)}
+h2{font-size:20px;color:#FF8FA3;margin-bottom:16px;border-bottom:2px solid #FDF0F3;padding-bottom:8px}
+.route{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid #f5f5f5;font-size:14px;gap:12px}
+.method{min-width:60px;text-align:center;padding:4px 8px;border-radius:8px;font-size:12px;font-weight:700}
+.method.get{background:#E8F5E9;color:#2E7D32}.method.post{background:#FFF3E0;color:#E65100}.method.put{background:#E3F2FD;color:#1565C0}.method.delete{background:#FFEBEE;color:#C62828}
+.path{font-family:monospace;font-size:13px;flex:1}.desc{color:#9B8B8B;font-size:13px;min-width:180px;text-align:right}
+.footer{text-align:center;padding:40px;color:#D4A8D6;font-size:12px}
+</style></head><body><h1>灵伴(LingPal) API v1.0</h1><p class="sub">AI陪伴×3D世界 · 40微服务 · 144+端点 · Go 1.26·Gin</p>
+<div class="section"><h2>系统</h2>`+route("GET","/health","健康检查")+route("GET","/health/live","K8s存活探针")+route("GET","/health/ready","K8s就绪探针")+route("GET","/ws","WebSocket连接")+route("GET","/docs","本文档")+`</div>
+<div class="section"><h2>认证</h2>`+route("POST","/api/v1/auth/wechat/login","微信登录(code=dev开发模式)")+`</div>
+<div class="section"><h2>用户</h2>`+route("GET","/api/v1/user/profile","个人信息")+route("PUT","/api/v1/user/profile","更新资料")+route("GET","/api/v1/user/settings","设置")+route("PUT","/api/v1/user/settings","更新设置")+`</div>
+<div class="section"><h2>AI对话</h2>`+route("POST","/api/v1/chat/send","SSE流式对话")+route("GET","/api/v1/chat/history","对话历史")+route("DELETE","/api/v1/chat/history/:id","删除对话")+`</div>
+<div class="section"><h2>记忆系统</h2>`+route("POST","/api/v1/memory/ingest","写入记忆")+route("POST","/api/v1/memory/search","语义搜索")+route("GET","/api/v1/memory/facts","核心事实")+route("DELETE","/api/v1/memory/forget/:id","删除记忆")+`</div>
+<div class="section"><h2>牙牙专属</h2>`+route("GET","/api/v1/attachment/checkin","签到")+route("GET","/api/v1/attachment/status","亲密度")+route("GET","/api/v1/attachment/reunion","久别重逢")+route("GET","/api/v1/care/yaya-status","牙牙状态")+route("POST","/api/v1/care/tend","照顾牙牙")+route("GET","/api/v1/dream/tonight","今晚梦境")+route("GET","/api/v1/dailytopic/today","每日话题")+route("GET","/api/v1/nostalgia/today","那年的今天")+route("GET","/api/v1/capsule/moments","生命故事")+route("GET","/api/v1/yayaletter/this-week","牙牙周信")+route("GET","/api/v1/onboarding/status","新手引导")+`</div>
+<div class="section"><h2>灵伴世界</h2>`+route("GET","/api/v1/world/pet","宠物状态")+route("GET","/api/v1/world/zones","探索区域")+route("POST","/api/v1/world/explore/:id","探索区域")+route("POST","/api/v1/world/pet/feed","喂食")+route("GET","/api/v1/pet/activity","自主活动")+route("POST","/api/v1/nfc/bind","NFC绑定")+route("GET","/api/v1/nfc/mypet","已绑定宠物")+`</div>
+<div class="section"><h2>社交·配对</h2>`+route("GET","/api/v1/soulmate/mypair","我的配对")+route("POST","/api/v1/soulmate/pair","闺蜜配对")+route("GET","/api/v1/soulmate/yaya-conversation","牙牙对话")+route("GET","/api/v1/social/friends","好友")+route("GET","/api/v1/publicfeed/moments","公共广场")+`</div>
+<div class="section"><h2>语音</h2>`+route("GET","/api/v1/tts/voices","音色列表")+route("POST","/api/v1/tts/synthesize","语音合成")+route("POST","/api/v1/voicechat/call","发起通话")+route("POST","/api/v1/voiceclone/sample","上传声音样本")+route("GET","/api/v1/voiceclone/voices","克隆音色")+`</div>
+<div class="section"><h2>硬件·安全</h2>`+route("GET","/api/v1/hardware/status","硬件状态")+route("POST","/api/v1/hardware/touch","触摸")+route("GET","/api/v1/safety/devices","设备列表")+route("POST","/api/v1/safety/scenario/:name","安全场景")+`</div>
+<p class="footer">灵伴(LingPal) · 牙牙在，就不孤单 🧸</p></body></html>`
+
+func route(method, path, desc string) string {
+	cls := "get"
+	if method == "POST" { cls = "post" } else if method == "PUT" { cls = "put" } else if method == "DELETE" { cls = "delete" }
+	return "<div class='route'><span class='method "+cls+"'>"+method+"</span><span class='path'>"+path+"</span><span class='desc'>"+desc+"</span></div>"
+}
+
 func main() {
 	cfg := core.Load()
 	ctx := context.Background()
@@ -119,13 +148,11 @@ func main() {
 	// ── 文档 + 静态资源 ──
 	r.Static("/uploads", "./uploads")
 	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"name":    "牙牙(Yaya) AI守护玩偶",
-			"version": "1.0.0",
-			"docs":    "/health",
-			"api":     "/api/v1",
-			"ws":      "/ws",
-		})
+		c.JSON(200, gin.H{"name":"灵伴(LingPal) AI陪伴×3D世界","version":"1.0.0","docs":"/docs","api":"/api/v1","ws":"/ws"})
+	})
+	r.GET("/docs", func(c *gin.Context) {
+		c.Header("Content-Type", "text/html; charset=utf-8")
+		c.String(200, docsHTML)
 	})
 
 	// ═══════════ API v1 ═══════════
@@ -329,6 +356,7 @@ func main() {
 			"port", cfg.GatewayPort,
 			"version", "1.0.0",
 			"health", "http://localhost:"+cfg.GatewayPort+"/health",
+			"docs", "http://localhost:"+cfg.GatewayPort+"/docs",
 			"ws", "ws://localhost:"+cfg.GatewayPort+"/ws",
 		)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

@@ -13,7 +13,7 @@ func NewHandler(pool *pgxpool.Pool) *Handler { return &Handler{svc: NewService(p
 func (h *Handler) RegisterRoutes(rg *gin.RouterGroup) {
 	rg.GET("/world/pet", h.GetMyPet)
 	rg.GET("/world/zones", h.GetZones)
-	rg.GET("/world/explore/:zoneId", h.ExploreZone)
+	rg.POST("/world/explore/:zoneId", h.ExploreZone)
 	rg.POST("/world/pet/feed", h.FeedPet)
 	rg.GET("/world/pets/nearby", h.GetNearbyPets)
 }
