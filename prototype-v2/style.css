@@ -1,0 +1,267 @@
+/* 芽芽 Yaya 原型样式
+   设计 token 来自 Yaya.md 第六部分：
+   - #FFF5F0 奶白打底
+   - #FF6B6B 只用在按钮和强调，占屏面积 <10%
+   - #FFB347 暖金承担成就 / 解锁 / 日记里程碑 */
+
+:root{
+  --cream:#FFF5F0;
+  --coral:#FF6B6B;
+  --gold:#FFB347;
+  --ink:#4A3B36;
+  --ink-soft:#8B7A72;
+  --card:#FFFFFF;
+  --line:#F2E4DC;
+  --shadow:0 2px 12px rgba(122,92,78,.08);
+  --r:18px;
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:#E8DED8;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+}
+button{font-family:inherit;color:inherit}
+
+.phone{
+  width:390px;height:100%;max-height:844px;background:var(--cream);
+  display:flex;flex-direction:column;overflow:hidden;position:relative;
+  border-radius:38px;box-shadow:0 24px 60px rgba(80,55,45,.26);
+}
+@media (max-width:430px){ .phone{border-radius:0;max-height:none} }
+
+/* ── 顶栏 ───────────────────────────────── */
+.bar{
+  flex:0 0 auto;padding:16px 20px 6px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.brand{font-size:17px;font-weight:600;letter-spacing:.5px}
+.shield{
+  width:34px;height:34px;border:0;border-radius:50%;cursor:pointer;
+  background:rgba(255,107,107,.10);color:var(--coral);font-size:15px;
+  display:grid;place-items:center;transition:transform .15s;
+}
+.shield:active{transform:scale(.9)}
+
+/* ── 视图容器 ───────────────────────────── */
+.views{flex:1;min-height:0;position:relative}
+.view{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.view.on{opacity:1;pointer-events:auto}
+
+/* ── 芽芽形象（上 34%）────────────────────
+   三个微动作：待机呼吸 / 聆听 / 思考
+   文档第六部分 4：这是「有生命」和「是个头像」的分界线 */
+.stage{
+  flex:0 0 34%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;
+}
+.yaya{
+  width:118px;height:112px;position:relative;
+  animation:breathe 3.6s ease-in-out infinite;
+}
+@keyframes breathe{
+  0%,100%{transform:scale(1) translateY(0)}
+  50%    {transform:scale(1.035) translateY(-3px)}
+}
+.face{
+  position:absolute;inset:0;border-radius:47% 47% 44% 44%;
+  background:linear-gradient(168deg,#FFF9F5,#FFE6DA);
+  box-shadow:inset 0 -7px 16px rgba(214,160,140,.20), var(--shadow);
+}
+.ear{
+  position:absolute;top:-13px;width:40px;height:44px;border-radius:50%;
+  background:linear-gradient(168deg,#FFF3ED,#FFDCCD);
+}
+.ear.l{left:6px;transform:rotate(-15deg)}
+.ear.r{right:6px;transform:rotate(15deg)}
+.eye{
+  position:absolute;top:46px;width:12px;height:13px;border-radius:50%;
+  background:#5C463E;animation:blink 5.2s infinite;
+}
+.eye.l{left:31px} .eye.r{right:31px}
+@keyframes blink{
+  0%,94%,100%{transform:scaleY(1)}
+  96%        {transform:scaleY(.12)}
+}
+.blush{
+  position:absolute;top:64px;width:17px;height:9px;border-radius:50%;
+  background:rgba(255,107,107,.22);
+}
+.blush.l{left:16px} .blush.r{right:16px}
+.mouth{
+  position:absolute;top:66px;left:50%;margin-left:-7px;
+  width:14px;height:8px;border-radius:0 0 14px 14px;
+  background:#C9776B;transition:height .2s,border-radius .2s;
+}
+
+/* 聆听：歪头 + 耳朵微张 */
+.yaya[data-mood="listen"]{animation:tilt 1.6s ease-in-out infinite}
+@keyframes tilt{
+  0%,100%{transform:rotate(-5deg)}
+  50%    {transform:rotate(5deg)}
+}
+/* 思考：转眼珠 */
+.yaya[data-mood="think"] .eye{animation:roll 1.3s ease-in-out infinite}
+@keyframes roll{
+  0%,100%{transform:translateX(-2.5px)}
+  50%    {transform:translateX(2.5px)}
+}
+.yaya[data-mood="think"] .mouth{height:5px;border-radius:14px}
+
+.mood{
+  margin:0;font-size:13px;color:var(--ink-soft);
+  background:var(--card);padding:6px 15px;border-radius:14px;box-shadow:var(--shadow);
+}
+
+/* ── 对话流 ─────────────────────────────── */
+.stream{
+  flex:1;min-height:0;overflow-y:auto;
+  padding:6px 18px 10px;display:flex;flex-direction:column;gap:10px;
+}
+.stream::-webkit-scrollbar{display:none}
+.bubble{
+  max-width:78%;padding:11px 15px;font-size:14.5px;line-height:1.6;
+  border-radius:var(--r);box-shadow:var(--shadow);
+  animation:rise .28s ease-out;white-space:pre-wrap;
+}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.bubble.yy{align-self:flex-start;background:var(--card);border-bottom-left-radius:6px}
+.bubble.me{
+  align-self:flex-end;background:var(--coral);color:#fff;
+  border-bottom-right-radius:6px;
+}
+.bubble.typing{display:flex;gap:5px;padding:15px}
+.bubble.typing i{
+  width:6px;height:6px;border-radius:50%;background:#D9C4BA;
+  animation:dot 1.2s infinite;
+}
+.bubble.typing i:nth-child(2){animation-delay:.18s}
+.bubble.typing i:nth-child(3){animation-delay:.36s}
+@keyframes dot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+/* 关键词触发的守护卡片 —— AI 主动浮出，不占 tab */
+.care-card{
+  align-self:stretch;background:#FFF9F0;border:1px solid rgba(255,179,71,.45);
+  border-radius:var(--r);padding:13px 15px;box-shadow:var(--shadow);
+  animation:rise .3s ease-out;
+}
+.care-card p{margin:0 0 10px;font-size:13.5px;line-height:1.55;color:var(--ink)}
+.care-card button{
+  border:0;background:var(--gold);color:#fff;font-size:13px;font-weight:600;
+  padding:8px 16px;border-radius:12px;cursor:pointer;
+}
+
+/* ── 输入区 ─────────────────────────────── */
+.composer{
+  flex:0 0 auto;padding:10px 18px 14px;display:flex;gap:10px;align-items:center;
+}
+.mic{
+  flex:1;height:48px;border:0;border-radius:24px;cursor:pointer;
+  background:var(--coral);color:#fff;font-size:15px;font-weight:600;
+  box-shadow:0 4px 14px rgba(255,107,107,.32);
+  transition:transform .12s;user-select:none;
+}
+.mic:active,.mic.hold{transform:scale(.97);background:#F25C5C}
+.kbd{
+  width:48px;height:48px;border:0;border-radius:24px;cursor:pointer;
+  background:var(--card);color:var(--ink-soft);font-size:17px;box-shadow:var(--shadow);
+}
+.typebar{flex:0 0 auto;padding:10px 18px 14px;display:flex;gap:10px}
+.typebar input{
+  flex:1;height:46px;border:1px solid var(--line);border-radius:23px;
+  padding:0 18px;font-size:14.5px;background:var(--card);color:var(--ink);outline:none;
+}
+.typebar input:focus{border-color:rgba(255,107,107,.5)}
+.typebar button{
+  border:0;border-radius:23px;padding:0 20px;cursor:pointer;
+  background:var(--coral);color:#fff;font-size:14px;font-weight:600;
+}
+
+/* ── 日记 tab ───────────────────────────── */
+.spark-wrap{
+  flex:0 0 auto;margin:8px 18px 4px;padding:13px 15px 8px;
+  background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);
+}
+.spark-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-size:13px;margin-bottom:4px;
+}
+.spark-hint{font-size:11px;color:var(--ink-soft)}
+.spark{width:100%;height:44px;display:block}
+
+.timeline{flex:1;min-height:0;overflow-y:auto;padding:8px 18px 16px}
+.timeline::-webkit-scrollbar{display:none}
+.day{
+  position:relative;padding:0 0 18px 20px;
+  border-left:2px solid var(--line);
+}
+.day:last-child{border-left-color:transparent}
+.day::before{
+  content:"";position:absolute;left:-6px;top:4px;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--card);border:2px solid var(--line);
+}
+.day.milestone::before{background:var(--gold);border-color:var(--gold)}
+.day.period::before{background:var(--coral);border-color:var(--coral)}
+.date{font-size:12px;color:var(--ink-soft);margin-bottom:6px}
+.entry{
+  background:var(--card);border-radius:var(--r);padding:12px 14px;
+  box-shadow:var(--shadow);font-size:14px;line-height:1.65;
+}
+.tag{
+  display:inline-block;font-size:11px;padding:3px 9px;border-radius:9px;
+  margin:0 0 7px;font-weight:600;
+}
+.tag.gold{background:rgba(255,179,71,.16);color:#C8811E}
+.tag.coral{background:rgba(255,107,107,.13);color:var(--coral)}
+
+/* ── 底部 tab ───────────────────────────── */
+.tabs{
+  flex:0 0 auto;display:flex;border-top:1px solid var(--line);
+  background:rgba(255,255,255,.72);backdrop-filter:blur(10px);
+}
+.tab{
+  flex:1;border:0;background:none;cursor:pointer;padding:9px 0 13px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  color:var(--ink-soft);transition:color .18s;
+}
+.tab i{font-size:19px;font-style:normal}
+.tab span{font-size:11px}
+.tab.on{color:var(--coral)}
+
+/* ── 守护面板 ───────────────────────────── */
+.sheet-mask{
+  position:absolute;inset:0;background:rgba(60,40,34,.34);
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.sheet-mask.on{opacity:1;pointer-events:auto}
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  background:var(--cream);border-radius:26px 26px 0 0;
+  padding:10px 22px 26px;box-shadow:0 -8px 30px rgba(80,55,45,.2);
+  transform:translateY(102%);transition:transform .3s cubic-bezier(.22,.9,.3,1);
+}
+.sheet.on{transform:none}
+.grip{width:38px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.sheet h3{margin:0 0 4px;font-size:17px}
+.sheet-sub{margin:0 0 16px;font-size:13px;color:var(--ink-soft)}
+.act{
+  display:block;width:100%;margin-bottom:9px;padding:14px;border:0;
+  border-radius:15px;background:var(--card);box-shadow:var(--shadow);
+  font-size:14.5px;cursor:pointer;text-align:center;
+}
+.act.primary{background:var(--coral);color:#fff;font-weight:600;box-shadow:0 4px 14px rgba(255,107,107,.3)}
+.act.ghost{background:none;box-shadow:none;border:1px solid var(--line);color:var(--ink-soft)}
+.info{
+  display:block;text-align:center;font-size:12.5px;color:var(--ink-soft);
+  text-decoration:none;margin:14px 0 6px;
+}
+.close{
+  display:block;width:100%;border:0;background:none;cursor:pointer;
+  font-size:13px;color:var(--ink-soft);padding:6px;
+}

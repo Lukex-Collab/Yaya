@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>芽芽 Yaya · 原型</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="phone">
+
+  <div class="bar">
+    <span class="brand">芽芽</span>
+    <button class="shield" id="shield" aria-label="安全求助">&#128737;</button>
+  </div>
+
+  <div class="views">
+
+    <!-- ══ Tab 1：芽芽（首页即对话）══ -->
+    <section class="view on" id="view-chat">
+      <div class="stage">
+        <div class="yaya" id="yaya" data-mood="idle">
+          <div class="ear l"></div><div class="ear r"></div>
+          <div class="face">
+            <div class="eye l"></div><div class="eye r"></div>
+            <div class="blush l"></div><div class="blush r"></div>
+            <div class="mouth"></div>
+          </div>
+        </div>
+        <p class="mood" id="mood">今天有点困困的</p>
+      </div>
+
+      <div class="stream" id="stream"></div>
+
+      <div class="composer">
+        <button class="mic" id="mic">按住说话</button>
+        <button class="kbd" id="kbd" aria-label="键盘输入">&#9000;</button>
+      </div>
+      <form class="typebar" id="typebar" hidden>
+        <input id="text" placeholder="和芽芽说点什么…" autocomplete="off">
+        <button type="submit">发送</button>
+      </form>
+    </section>
+
+    <!-- ══ Tab 2：日记 ══ -->
+    <section class="view" id="view-diary">
+      <div class="spark-wrap">
+        <div class="spark-head">
+          <span>这两周的情绪</span><span class="spark-hint">点开看详情</span>
+        </div>
+        <svg class="spark" viewBox="0 0 300 48" preserveAspectRatio="none">
+          <polyline id="sparkline" fill="none" stroke="var(--coral)" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"></polyline>
+        </svg>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+  </div>
+
+  <!-- ══ 只有 2 个 tab ══ -->
+  <nav class="tabs">
+    <button class="tab on" data-view="chat"><i>&#9787;</i><span>芽芽</span></button>
+    <button class="tab" data-view="diary"><i>&#9998;</i><span>日记</span></button>
+  </nav>
+
+  <!-- 守护：不占 tab，从盾牌或关键词浮出 -->
+  <div class="sheet-mask" id="mask"></div>
+  <div class="sheet" id="sheet">
+    <div class="grip"></div>
+    <h3>需要帮忙吗</h3>
+    <p class="sheet-sub">芽芽一直在。选一个就好。</p>
+    <button class="act primary" id="act-contact">呼叫紧急联系人 · 妈妈</button>
+    <button class="act">拨打 110</button>
+    <button class="act ghost">只想说说话</button>
+    <a class="info" href="#">妇联 12338 · 法律援助中心 &#8250;</a>
+    <button class="close" id="sheet-close">收起</button>
+  </div>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>

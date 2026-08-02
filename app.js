@@ -362,6 +362,20 @@ bindHandbookSubtabs(){
     document.querySelectorAll('.hb-panel').forEach(p=>p.classList.remove('active'));
     const panel=document.getElementById('hb-panel-'+b.dataset.hbtab);if(panel)panel.classList.add('active');
   }});
+  // 情绪曲线点开详情
+  const sparkHint=document.getElementById('spark-hint');
+  if(sparkHint)sparkHint.onclick=()=>this.showMoodDetail();
+},
+
+showMoodDetail(){
+  const moods=this.diaryEntries.map(d=>({date:d.date,mood:d.mood,text:d.text.slice(0,30)+'…'}));
+  const labels=['','😢 低落','😞 不太好','😐 一般','😊 不错','😄 很开心'];
+  let html='<div class="mood-pop-head">📊 两周情绪详情</div>';
+  moods.forEach(m=>{html+='<div class="mood-pop-row"><span>'+m.date+'</span><span>'+labels[m.mood]+'</span></div>'});
+  const pop=document.createElement('div');pop.className='mood-popup';pop.innerHTML=html+'<button class="mood-pop-close">关闭</button>';
+  pop.querySelector('.mood-pop-close').onclick=()=>pop.remove();
+  pop.onclick=e=>{if(e.target===pop)pop.remove()};
+  document.getElementById('phone').appendChild(pop);
 },
 
 // ── First Visit ─────────────────────────────────────

@@ -1,44 +1,17 @@
-# Binaries
-bin/
-server/bin/
-*.exe
-*.dll
-*.so
-*.dylib
-
-# Environment
-.env
-!.env.example
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Node
-miniapp-yaya/node_modules/
-miniapp-yaya/miniprogram_npm/
-
-# Go
-server/vendor/
-
-# Docker volumes
-pgdata/
-miniodata/
-
-# Test
-*.coverprofile
-coverage/
-
-# Temp
-tmp/
-/tmp/
-*.log
-
-# Miniapp
-miniapp-yaya/package-lock.json
+node_modules/
+test-results/
+*.png
+!yaya-bg.png
+screenshot-*.png
+final*.png
+merge-*.png
+anim-*.png
+cal-*.png
+*.mjs
+!server.js
+frames/
+.old-prototype-v3/
+prototype-v2/
+prototype-v3/
+package.json
+package-lock.json

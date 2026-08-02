@@ -24,7 +24,6 @@
 
   <!-- STATUS BAR -->
   <div class="status-bar">
-    <span class="sb-time" id="sb-time">9:41</span>
     <span class="sb-status" id="sb-status"><span class="dot online"></span> 牙牙在线</span>
     <button class="sb-gear" id="btn-gear">⚙️</button>
   </div>
@@ -130,7 +129,7 @@
           </div>
           <!-- 情绪曲线 -->
           <div class="spark-card">
-            <div class="spark-head"><span>这两周的情绪</span><span class="spark-hint">点开看详情</span></div>
+            <div class="spark-head"><span>这两周的情绪</span><span class="spark-hint" id="spark-hint" style="cursor:pointer">点开看详情</span></div>
             <svg class="spark-svg" viewBox="0 0 300 48" preserveAspectRatio="none">
               <polyline id="sparkline" fill="none" stroke="var(--coral)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
             </svg>
