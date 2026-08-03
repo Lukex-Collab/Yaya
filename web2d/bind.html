@@ -72,6 +72,25 @@ function deviceId() {
 const line = document.getElementById('line');
 const form = document.getElementById('form');
 
+// 客户端本地校验（公网静态托管无后端时的兜底，与 server.py 同一 HMAC 算法）
+const ACTIVATE_SECRET = 'yaya-demo-secret-2026';
+async function verifyClientSide(code) {
+  try {
+    const parts = code.split('.');
+    if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) return false;
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw', enc.encode(ACTIVATE_SECRET),
+      { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+    );
+    const mac = await crypto.subtle.sign('HMAC', key, enc.encode(`${parts[0]}.${parts[1]}`));
+    const hex = [...new Uint8Array(mac)].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 12);
+    return hex === parts[2];
+  } catch {
+    return false;
+  }
+}
+
 // 激活不可用（未部署后端/校验失败）时进围观模式，不做死胡同
 function enterGuest(msg) {
   const guessPet = (code && code.split('.')[0]) || petId || 'yaya';
@@ -99,6 +118,9 @@ async function activate() {
       });
       data = await r.json();
     } catch (e) {
+      // 后端不可用（如 GitHub Pages）：本地校验激活码，有效则直接唤醒
+      const ok = await verifyClientSide(code);
+      if (ok) return code.split('.')[0];
       enterGuest('激活服务暂不可用（公网演示）');
       throw e;
     }
