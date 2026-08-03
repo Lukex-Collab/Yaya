@@ -106,9 +106,8 @@
     box-shadow: 0 6px 18px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1);
     transition: transform .15s, box-shadow .2s; }
   .fbtn:active { transform: scale(.92); box-shadow: 0 0 18px rgba(201,184,255,.45); }
-  /* 聊天面板打开时，右侧功能按钮上移到面板之上，避免被遮挡 */
-  body.chat-open .fbtn { transform: translateY(-46vh); }
-  body.chat-open .fbtn:active { transform: translateY(-46vh) scale(.92); }
+  /* 聊天面板打开时隐藏右侧功能按钮（面板自带 ✕ 关闭） */
+  body.chat-open .fbtn { display: none; }
   #btnChat { bottom: 148px; }
   #btnDiary { bottom: 88px; }
   #btnDispatch { bottom: 28px; }
@@ -116,6 +115,8 @@
   #btnFeed { bottom: 268px; }
   #btnCheckin { bottom: 328px; }
   #btnCodex { bottom: 388px; }
+  #btnQuest { bottom: 448px; }
+  #btnShop { bottom: 508px; }
   #btnAction { right: 80px; bottom: 28px; width: auto; padding: 0 18px; height: 48px;
     border-radius: 999px; font-size: 13px; letter-spacing: 2px; display: none;
     color: var(--gold-soft); border-color: rgba(255,217,138,.5);
@@ -137,6 +138,8 @@
     align-self: flex-end; border-bottom-right-radius: 5px;
     box-shadow: 0 4px 14px rgba(179,157,255,.3); }
   #chatBar { display: flex; gap: 8px; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); }
+  #chatClose { position: absolute; top: 12px; right: 16px; font-size: 18px; color: var(--lilac);
+    background: none; border: none; cursor: pointer; z-index: 2; }
   #chatInput { flex: 1; background: rgba(255,255,255,.08); border: 1px solid rgba(201,184,255,.3);
     border-radius: 999px; color: #fff; padding: 11px 18px; font-size: 14px; outline: none; }
   #chatInput::placeholder { color: rgba(238,240,255,.35); }
@@ -185,6 +188,33 @@
   .cx-ach { font-size: 12px; padding: 7px 12px; border-radius: 10px; background: var(--chip-bg);
     border: 1px solid rgba(255,255,255,.08); color: #8f8fb5; }
   .cx-ach.done { color: var(--gold-soft); border-color: rgba(255,217,138,.35); }
+
+  /* 每日任务 / 商店面板 */
+  #quest, #shop { position: fixed; z-index: 20; inset: 8% 6%; background: rgba(12,14,36,.96); color: var(--ink);
+    border: 1px solid rgba(201,184,255,.25); border-radius: 20px; padding: 24px; overflow-y: auto;
+    transform: scale(.94) translateY(10px); opacity: 0; pointer-events: none;
+    transition: all .28s cubic-bezier(.2,.8,.2,1); box-shadow: 0 20px 60px rgba(0,0,0,.55);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+  #quest.open, #shop.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
+  #quest h3, #shop h3 { font-family: var(--serif); letter-spacing: 5px; color: var(--gold); margin-bottom: 14px; }
+  #questClose, #shopClose { position: absolute; top: 12px; right: 16px; font-size: 20px; color: var(--lilac);
+    background: none; border: none; cursor: pointer; }
+  .q-row { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 12px; margin-bottom: 8px; border-radius: 12px; background: var(--chip-bg);
+    border: 1px solid rgba(255,255,255,.08); }
+  .q-row.done { border-color: rgba(255,217,138,.35); }
+  .q-main b { display: block; font-family: var(--serif); letter-spacing: 2px; font-size: 14px; }
+  .q-main span { font-size: 11px; opacity: .6; }
+  .q-st { font-style: normal; font-size: 11px; opacity: .5; white-space: nowrap; }
+  .q-btn { background: linear-gradient(135deg, #cdb9ff, #ffd98a); border: none; border-radius: 999px;
+    color: #241a45; font-size: 12px; font-weight: bold; padding: 7px 14px; cursor: pointer; white-space: nowrap; }
+  .q-btn:active { transform: scale(.95); }
+  .shop-coins { font-size: 14px; color: var(--gold-soft); margin-bottom: 12px; letter-spacing: 2px; }
+  .panel-note { margin-top: 14px; font-size: 11px; opacity: .45; }
+
+  /* 金币 HUD */
+  #coins { top: 62px; right: 20px; font-size: 12px; letter-spacing: 1px; opacity: .85;
+    color: var(--gold-soft); text-shadow: 0 0 10px rgba(255,217,138,.4); }
 </style>
 <script src="./lib/phaser.min.js"></script>
 </head>
@@ -193,7 +223,8 @@
 <div class="hud chip" id="level">Lv.1 · 亲密 0</div>
 <div class="hud chip" id="weather"></div>
 <div class="hud chip" id="orbs">✦ 灵光 0 / 14</div>
-<div class="hud" id="hints">WASD / 触屏拖动 移动 · 💬聊天 📖手账 🎒派遣 🎬展示 ✨签到 🥣喂食 📔图鉴</div>
+<div class="hud chip" id="coins">🪙 0</div>
+<div class="hud" id="hints">WASD / 触屏拖动 移动 · 💬聊天 📖手账 🎒派遣 ✨签到 🥣喂食 📔图鉴 📜任务 🛒商店</div>
 <div class="hud" id="toast"></div>
 <div id="bubble"></div>
 <div id="vignette"></div>
@@ -212,9 +243,12 @@
 <button class="fbtn" id="btnFeed">🥣</button>
 <button class="fbtn" id="btnCheckin">✨</button>
 <button class="fbtn" id="btnCodex">📔</button>
+<button class="fbtn" id="btnQuest">📜</button>
+<button class="fbtn" id="btnShop">🛒</button>
 <button class="fbtn" id="btnAction"></button>
 
 <div id="chat">
+  <button id="chatClose">✕</button>
   <div id="chatMsgs"></div>
   <div id="chatBar">
     <input id="chatInput" placeholder="和它说点什么…" maxlength="100">
@@ -235,6 +269,20 @@
   <div id="codexPets"></div>
   <h4>🏆 成就</h4>
   <div id="codexAch"></div>
+</div>
+
+<div id="quest">
+  <button id="questClose">✕</button>
+  <h3>📜 每日任务</h3>
+  <div id="questList"></div>
+  <p class="panel-note">任务每天重置，完成后记得领取金币奖励</p>
+</div>
+
+<div id="shop">
+  <button id="shopClose">✕</button>
+  <h3>🛒 小店</h3>
+  <div id="shopCoins" class="shop-coins"></div>
+  <div id="shopList"></div>
 </div>
 
 <script src="./ai.js"></script>

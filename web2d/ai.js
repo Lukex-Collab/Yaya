@@ -27,7 +27,7 @@ const Memory = {
   data: null,
   load(petId) {
     try { this.data = JSON.parse(localStorage.getItem(MEM_KEY(petId))) || null; } catch { this.data = null; }
-    if (!this.data) this.data = { name: null, likes: [], fears: [], events: [], intimacy: 0, chatCount: 0, bornAt: Date.now(), lastSeen: Date.now(), shout: null, lastCheckin: null, checkinDays: 0, achievements: {}, orbsCollected: 0, dispatchCount: 0 };
+    if (!this.data) this.data = { name: null, likes: [], fears: [], events: [], intimacy: 0, chatCount: 0, bornAt: Date.now(), lastSeen: Date.now(), shout: null, lastCheckin: null, checkinDays: 0, achievements: {}, orbsCollected: 0, dispatchCount: 0, coins: 0, quests: null };
     return this.data;
   },
   save(petId) { this.data.lastSeen = Date.now(); localStorage.setItem(MEM_KEY(petId), JSON.stringify(this.data)); },

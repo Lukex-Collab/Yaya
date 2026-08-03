@@ -105,6 +105,8 @@ with sync_playwright() as p:
     m5 = mem()
     check("聊天: chatCount>=1", (m5.get("chatCount") or 0) >= 1, m5.get("chatCount"))
     check("成就: chat1 解锁", "chat1" in (m5.get("achievements") or {}))
+    page.click("#chatClose")  # 关闭聊天面板，恢复功能按钮
+    page.wait_for_timeout(300)
 
     # ---------- 成就: 手动触发高亲密 ----------
     page.evaluate("() => { const m = window.YAYA_AI.Memory.data; m.intimacy = 30; window.__unlockAwards(); }")
@@ -112,6 +114,62 @@ with sync_playwright() as p:
     m6 = mem()
     check("成就: inti6（亲密 Lv.6）", "inti6" in (m6.get("achievements") or {}))
     check("成就: 解锁 toast", "解锁成就" in toast(), toast())
+
+    # ---------- 每日任务 ----------
+    # 灵光任务需要 2 颗，先再收集一颗
+    page.evaluate("""() => {
+      const alive = window.__orbs.getChildren().filter(o => o.active);
+      if (alive.length) { window.__pet.x = alive[0].x; window.__pet.y = alive[0].y; }
+    }""")
+    page.wait_for_timeout(700)
+    page.click("#btnQuest")
+    page.wait_for_timeout(400)
+    check("任务: 面板打开", page.evaluate("document.getElementById('quest').classList.contains('open')"))
+    rows = page.evaluate("document.querySelectorAll('#questList .q-row').length")
+    check("任务: 5 条任务", rows == 5, rows)
+    done_rows = page.evaluate("document.querySelectorAll('#questList .q-row.done').length")
+    check("任务: 5 条全部完成", done_rows == 5, done_rows)
+    for _ in range(5):
+        page.click("#questList [data-claim]")
+        page.wait_for_timeout(250)
+    mq = mem()
+    check("任务: 领取后金币=190", mq["coins"] == 190, mq["coins"])
+    check("任务: 灵光任务奖励浆果+1", inv().get("浆果") == 1, inv())
+    check("任务: 全部显示已领取", page.evaluate("document.querySelectorAll('#questList i.q-st').length") == 5)
+    page.click("#questClose")
+    page.wait_for_timeout(250)
+    check("任务: HUD 金币=190", page.evaluate("document.getElementById('coins').textContent") == "🪙 190")
+
+    # ---------- 商店 ----------
+    page.click("#btnShop")
+    page.wait_for_timeout(400)
+    check("商店: 面板打开", page.evaluate("document.getElementById('shop').classList.contains('open')"))
+    page.click("#shopList [data-buy='berry']")
+    page.wait_for_timeout(300)
+    check("商店: 买浆果扣 20 金币", mem()["coins"] == 170, mem()["coins"])
+    check("商店: 浆果+1", inv().get("浆果") == 2, inv())
+    page.click("#shopList [data-buy='candy']")
+    page.wait_for_timeout(300)
+    check("商店: 买星光糖果", mem()["coins"] == 110 and inv().get("星光糖果") == 1, mem()["coins"])
+    page.evaluate("() => { window.YAYA_AI.Memory.data.coins = 5; }")
+    page.click("#shopList [data-buy='berry']")
+    page.wait_for_timeout(300)
+    check("商店: 金币不足提示", "金币不够" in toast(), toast())
+    check("商店: 金币不足不扣款", mem()["coins"] == 5 and inv().get("浆果") == 2, mem()["coins"])
+    page.click("#shopClose")
+    page.wait_for_timeout(250)
+
+    # ---------- 喂食优先级：星光糖果优先且 +5 ----------
+    before_feed = mem()["intimacy"]
+    page.click("#btnFeed")
+    page.wait_for_timeout(300)
+    check("喂食: 优先消耗星光糖果", inv().get("星光糖果") == 0 and inv().get("浆果") == 2, inv())
+    check("喂食: 糖果 +5 亲密", mem()["intimacy"] == before_feed + 5, f"{before_feed} -> {mem()['intimacy']}")
+
+    # ---------- 任务每日重置 ----------
+    page.evaluate("() => { window.YAYA_AI.Memory.data.quests.date = '2000-01-01'; }")
+    q0 = page.evaluate("() => window.YAYA_PLAY.questInfo().map(x => x.progress)")
+    check("任务: 跨天重置进度", q0 == [0, 0, 0, 0, 0], q0)
 
     # ---------- 无 JS 异常 ----------
     check("无 JS 异常", not errors, errors[:3])

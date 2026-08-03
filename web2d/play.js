@@ -1,6 +1,21 @@
 /* 玩法层：区域互动点 + 天气 + 派遣 + 背包 + 等级门槛
  * 依赖 window.YAYA_AI（ai.js），由 main.js 驱动 */
 
+// ---------- 每日任务 ----------
+const DAILY_QUESTS = [
+  { id: 'checkin',  name: '每日签到',   desc: '签到 1 次',       target: 1, reward: { coins: 30 } },
+  { id: 'feed',     name: '甜蜜投喂',   desc: '喂食 2 次',       target: 2, reward: { coins: 40 } },
+  { id: 'orb',      name: '灵光收集',   desc: '收集 2 颗灵光',   target: 2, reward: { coins: 40, item: '浆果', n: 1 } },
+  { id: 'dispatch', name: '远方来客',   desc: '派遣 1 次',       target: 1, reward: { coins: 50 } },
+  { id: 'chat',     name: '促膝长谈',   desc: '聊天 1 次',       target: 1, reward: { coins: 30 } },
+];
+
+// ---------- 商店 ----------
+const SHOP_ITEMS = [
+  { id: 'berry',  name: '浆果',     desc: '喂食宠物 +2 亲密',   price: 20, icon: '🫐' },
+  { id: 'candy',  name: '星光糖果', desc: '喂食宠物 +5 亲密',   price: 60, icon: '🍬' },
+];
+
 const Play = {
   scene: null, pet: null, soul: null, mem: null,
   zoneW: 1920,
@@ -115,12 +130,62 @@ const Play = {
 
   // ---------- 喂食 ----------
   feed() {
-    if ((this.inventory['浆果'] || 0) < 1) return null;
-    this.inventory['浆果']--;
+    let item = null, gain = 2;
+    if ((this.inventory['星光糖果'] || 0) > 0) { item = '星光糖果'; gain = 5; }
+    else if ((this.inventory['浆果'] || 0) > 0) { item = '浆果'; }
+    else return null;
+    this.inventory[item]--;
     this.mem.data.feedCount = (this.mem.data.feedCount || 0) + 1;
-    this.mem.addIntimacy(2);
-    this.mem.remember('play', '喂了一颗浆果给它，它眼睛都亮了');
-    return { berries: this.inventory['浆果'], intimacy: this.mem.data.intimacy };
+    this.mem.addIntimacy(gain);
+    this.mem.remember('play', `喂了一颗${item}给它，它眼睛都亮了`);
+    return { item, gain, berries: this.inventory['浆果'], intimacy: this.mem.data.intimacy };
+  },
+
+  // ---------- 每日任务 ----------
+  todayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  },
+  questInit() {
+    const d = this.mem.data;
+    if (!d.quests || d.quests.date !== this.todayStr()) {
+      d.quests = { date: this.todayStr(), progress: {}, claimed: {} };
+    }
+    return d.quests;
+  },
+  questTick(type) {
+    const q = this.questInit();
+    q.progress[type] = (q.progress[type] || 0) + 1;
+  },
+  questInfo() {
+    const q = this.questInit();
+    return DAILY_QUESTS.map(def => ({
+      ...def,
+      progress: q.progress[def.id] || 0,
+      done: (q.progress[def.id] || 0) >= def.target,
+      claimed: !!q.claimed[def.id],
+    }));
+  },
+  claimQuest(id) {
+    const q = this.questInit();
+    const def = DAILY_QUESTS.find(x => x.id === id);
+    if (!def || q.claimed[id] || (q.progress[id] || 0) < def.target) return null;
+    q.claimed[id] = true;
+    this.mem.data.coins = (this.mem.data.coins || 0) + (def.reward.coins || 0);
+    if (def.reward.item) this.inventory[def.reward.item] = (this.inventory[def.reward.item] || 0) + (def.reward.n || 1);
+    this.mem.remember('quest', `完成了每日任务「${def.name}」`);
+    return def;
+  },
+
+  // ---------- 商店 ----------
+  buyShop(id) {
+    const it = SHOP_ITEMS.find(x => x.id === id);
+    if (!it) return null;
+    if ((this.mem.data.coins || 0) < it.price) return 'poor';
+    this.mem.data.coins -= it.price;
+    this.inventory[it.name] = (this.inventory[it.name] || 0) + 1;
+    this.mem.remember('play', `在商店买了 1 颗${it.name}`);
+    return it;
   },
 
   // ---------- 等级门槛 ----------
@@ -132,3 +197,4 @@ const Play = {
 };
 
 window.YAYA_PLAY = Play;
+window.YAYA_PLAY.SHOP_ITEMS = SHOP_ITEMS;

@@ -138,6 +138,10 @@ function updateLevelHUD() {
   $('level').textContent = `Lv.${mem.level} · 亲密 ${mem.data.intimacy}`;
 }
 
+function updateCoinHUD() {
+  $('coins').textContent = '🪙 ' + (mem.data.coins || 0);
+}
+
 // ---------- 成就 ----------
 function unlockAwards() {
   const got = AI.checkAchievements(mem);
@@ -160,6 +164,10 @@ function addMsg(text, who) {
   box.scrollTop = box.scrollHeight;
 }
 function wireChat() {
+  $('chatClose').onclick = () => {
+    $('chat').classList.remove('open');
+    document.body.classList.remove('chat-open');
+  };
   $('btnChat').onclick = () => {
     const c = $('chat');
     c.classList.toggle('open');
@@ -178,6 +186,7 @@ function wireChat() {
     updateLevelHUD();
     const reply = await AI.chatReply(text, soul, mem);
     addMsg(reply, 'pet');
+    window.YAYA_PLAY.questTick('chat');
     AI.Memory.save(petId);
     unlockAwards();
   };
@@ -207,6 +216,7 @@ function wireDispatch() {
     const secs = P.dispatch((story) => {
       pet.setVisible(true);
       trail.emitting = true;
+      P.questTick('dispatch');
       showToast('它回来啦！', 2600);
       const b = $('bubble');
       b.textContent = `${soul.cp}${story}`;
@@ -238,6 +248,8 @@ function wireDaily() {
     const P = window.YAYA_PLAY;
     const r = P.checkin();
     if (!r) { showToast('今天已经签到过啦，明天再来'); return; }
+    P.questTick('checkin');
+    refreshQuestView();
     showToast(`✨ 签到成功 · 第 ${r.day} 天<span class="rule"></span><span class="toast-desc">浆果 ×2 · 亲密 +2</span>`, 2600, 'gold');
     updateLevelHUD();
     AI.Memory.save(petId);
@@ -247,14 +259,74 @@ function wireDaily() {
     const P = window.YAYA_PLAY;
     const r = P.feed();
     if (!r) { showToast('背包里没有浆果，先签到或去探险吧'); return; }
+    P.questTick('feed');
+    refreshQuestView();
     const b = $('bubble');
-    b.textContent = `${soul.cp}${AI.pick(['好吃！浆果甜甜的', '再喂一颗嘛……（星星眼）', '唔姆唔姆……好幸福'])}`;
+    b.textContent = `${soul.cp}${AI.pick([r.item + '好好吃！', '再喂一颗嘛……（星星眼）', '唔姆唔姆……好幸福'])}`;
     b.style.opacity = '1';
-    showToast(`🥣 喂食成功 · 亲密 +2<span class="rule"></span><span class="toast-desc">浆果还剩 ${r.berries} 颗</span>`);
+    showToast(`🥣 ${r.item} · 亲密 +${r.gain}<span class="rule"></span><span class="toast-desc">浆果还剩 ${r.berries} 颗</span>`);
     updateLevelHUD();
     AI.Memory.save(petId);
     unlockAwards();
   };
+}
+
+// ---------- 每日任务 / 商店 ----------
+function refreshQuestView() {
+  if ($('quest').classList.contains('open')) renderQuests();
+  updateCoinHUD();
+}
+
+function renderQuests() {
+  const P = window.YAYA_PLAY;
+  const list = $('questList');
+  list.innerHTML = P.questInfo().map(q => `
+    <div class="q-row${q.done ? ' done' : ''}">
+      <div class="q-main"><b>${q.name}</b><span>${q.desc} · ${q.progress}/${q.target}</span></div>
+      ${q.claimed
+        ? '<i class="q-st">✓ 已领取</i>'
+        : q.done
+          ? `<button class="q-btn" data-claim="${q.id}">领取 🪙${q.reward.coins || 0}${q.reward.item ? ' +' + q.reward.item + '×' + (q.reward.n || 1) : ''}</button>`
+          : '<i class="q-st">未完成</i>'}
+    </div>`).join('');
+}
+
+function renderShop() {
+  const P = window.YAYA_PLAY;
+  $('shopCoins').textContent = '🪙 ' + (mem.data.coins || 0);
+  $('shopList').innerHTML = P.SHOP_ITEMS.map(it => `
+    <div class="q-row">
+      <div class="q-main"><b>${it.icon} ${it.name}</b><span>${it.desc}</span></div>
+      <button class="q-btn" data-buy="${it.id}">🪙${it.price} 购买</button>
+    </div>`).join('');
+}
+
+function wireQuest() {
+  $('btnQuest').onclick = () => { renderQuests(); $('quest').classList.add('open'); };
+  $('questClose').onclick = () => $('quest').classList.remove('open');
+  $('questList').addEventListener('click', (e) => {
+    const id = e.target.getAttribute && e.target.getAttribute('data-claim');
+    if (!id) return;
+    const def = window.YAYA_PLAY.claimQuest(id);
+    if (!def) return;
+    showToast(`📜 任务完成：${def.name}<span class="rule"></span><span class="toast-desc">奖励 🪙${def.reward.coins || 0}${def.reward.item ? ' +' + def.reward.item + '×' + (def.reward.n || 1) : ''}</span>`, 2600, 'gold');
+    AI.Memory.save(petId);
+    renderQuests();
+    updateCoinHUD();
+  });
+  $('btnShop').onclick = () => { renderShop(); $('shop').classList.add('open'); };
+  $('shopClose').onclick = () => $('shop').classList.remove('open');
+  $('shopList').addEventListener('click', (e) => {
+    const id = e.target.getAttribute && e.target.getAttribute('data-buy');
+    if (!id) return;
+    const r = window.YAYA_PLAY.buyShop(id);
+    if (r === 'poor') { showToast('金币不够，先去做每日任务吧'); return; }
+    if (!r) return;
+    showToast(`🛒 购买成功：${r.icon} ${r.name}`);
+    AI.Memory.save(petId);
+    renderShop();
+    updateCoinHUD();
+  });
 }
 
 // ---------- 图鉴面板（宠物 + 成就） ----------
@@ -563,6 +635,7 @@ function create() {
     mem.addIntimacy(1);
     mem.remember('play', `在${ZONES[curZone]?.name || '世界'}收集到第 ${collected} 颗灵光`);
     mem.data.orbsCollected = Math.max(mem.data.orbsCollected || 0, collected);
+    window.YAYA_PLAY.questTick('orb');
     updateOrbCounter();
     updateLevelHUD();
     unlockAwards();
@@ -583,8 +656,10 @@ function create() {
   wireShowcase();
   wireDaily();
   wireCodex();
+  wireQuest();
   wireAction(scene);
   updateLevelHUD();
+  updateCoinHUD();
   // 定期存档 + 离开存档（本地 + 云端）
   scene.time.addEvent({ delay: 10000, loop: true, callback: () => { AI.Memory.save(petId); cloudSave(); } });
   addEventListener('beforeunload', () => { AI.Memory.save(petId); cloudSave(); });
