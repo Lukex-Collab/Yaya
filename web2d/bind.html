@@ -72,28 +72,38 @@ function deviceId() {
 const line = document.getElementById('line');
 const form = document.getElementById('form');
 
+// 激活不可用（未部署后端/校验失败）时进围观模式，不做死胡同
+function enterGuest(msg) {
+  const guessPet = (code && code.split('.')[0]) || petId || 'yaya';
+  const img = document.getElementById('pet');
+  img.src = `../assets/2d/pets/${guessPet}.png`;
+  img.onload = () => img.classList.add('awake');
+  line.textContent = msg + '，先去围观它的世界吧';
+  line.style.color = '#ffd7a8';
+  document.getElementById('name').style.display = 'none';
+  document.getElementById('go').textContent = '围观模式进入';
+  form.classList.add('show');
+  document.getElementById('go').onclick = () => {
+    location.href = `./index.html?pet=${guessPet}&guest=1`;
+  };
+}
+
 async function activate() {
   if (!code) return petId || 'yaya'; // 无码直进（开发用）
   try {
-    const r = await fetch('/api/activate', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, device: deviceId() }),
-    });
-    const data = await r.json();
+    let r, data;
+    try {
+      r = await fetch('/api/activate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, device: deviceId() }),
+      });
+      data = await r.json();
+    } catch (e) {
+      enterGuest('激活服务暂不可用（公网演示）');
+      throw e;
+    }
     if (!data.ok) {
-      // 已被唤醒/校验失败：展示宠物 + 游客模式，不做死胡同
-      const guessPet = (code.split('.')[0] || 'yaya');
-      const img = document.getElementById('pet');
-      img.src = `../assets/2d/pets/${guessPet}.png`;
-      img.onload = () => img.classList.add('awake');
-      line.textContent = (data.error || '绑定失败') + '，先去围观它的世界吧';
-      line.style.color = '#ffd7a8';
-      document.getElementById('name').style.display = 'none';
-      document.getElementById('go').textContent = '围观模式进入';
-      form.classList.add('show');
-      document.getElementById('go').onclick = () => {
-        location.href = `./index.html?pet=${guessPet}&guest=1`;
-      };
+      enterGuest(data.error || '绑定失败');
       throw new Error(data.error);
     }
     return data.pet;

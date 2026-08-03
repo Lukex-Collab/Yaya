@@ -113,6 +113,9 @@
   #btnDiary { bottom: 88px; }
   #btnDispatch { bottom: 28px; }
   #btnShow { bottom: 208px; }
+  #btnFeed { bottom: 268px; }
+  #btnCheckin { bottom: 328px; }
+  #btnCodex { bottom: 388px; }
   #btnAction { right: 80px; bottom: 28px; width: auto; padding: 0 18px; height: 48px;
     border-radius: 999px; font-size: 13px; letter-spacing: 2px; display: none;
     color: var(--gold-soft); border-color: rgba(255,217,138,.5);
@@ -155,6 +158,33 @@
     font-size: 13px; line-height: 1.9; color: #7a6f5f; }
   #diaryClose { position: absolute; top: 12px; right: 16px; font-size: 20px; color: #a89a80;
     background: none; border: none; cursor: pointer; }
+
+  /* 图鉴面板 */
+  #codex { position: fixed; z-index: 20; inset: 5% 6%; background: rgba(12,14,36,.96); color: var(--ink);
+    border: 1px solid rgba(201,184,255,.25); border-radius: 20px; padding: 24px; overflow-y: auto;
+    transform: scale(.94) translateY(10px); opacity: 0; pointer-events: none;
+    transition: all .28s cubic-bezier(.2,.8,.2,1); box-shadow: 0 20px 60px rgba(0,0,0,.55);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+  #codex.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
+  #codex h3 { font-family: var(--serif); letter-spacing: 6px; color: var(--gold); margin-bottom: 12px; }
+  #codex h4 { font-family: var(--serif); letter-spacing: 4px; color: var(--lilac); margin: 18px 0 10px; }
+  #codexClose { position: absolute; top: 12px; right: 16px; font-size: 20px; color: var(--lilac);
+    background: none; border: none; cursor: pointer; }
+  #codexPets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .cx-card { background: var(--chip-bg); border: 1px solid rgba(255,255,255,.12); border-radius: 14px;
+    padding: 10px 8px; text-align: center; }
+  .cx-card.owned { border-color: rgba(255,217,138,.6); box-shadow: 0 0 16px rgba(255,217,138,.18); }
+  .cx-card img { width: 64px; height: 64px; object-fit: contain; }
+  .cx-card b { display: block; margin-top: 4px; font-family: var(--serif); letter-spacing: 2px; }
+  .cx-card .cx-tag { display: inline-block; margin: 4px 0; font-size: 10px; padding: 2px 8px;
+    border-radius: 999px; background: rgba(201,184,255,.14); color: var(--lilac); }
+  .cx-card.owned .cx-tag { background: rgba(255,217,138,.16); color: var(--gold-soft); }
+  .cx-card small { display: block; font-size: 10px; opacity: .6; }
+  .cx-card i { display: block; font-style: normal; font-size: 11px; opacity: .8; margin-top: 3px; }
+  #codexAch { display: flex; flex-direction: column; gap: 6px; }
+  .cx-ach { font-size: 12px; padding: 7px 12px; border-radius: 10px; background: var(--chip-bg);
+    border: 1px solid rgba(255,255,255,.08); color: #8f8fb5; }
+  .cx-ach.done { color: var(--gold-soft); border-color: rgba(255,217,138,.35); }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 </head>
@@ -163,7 +193,7 @@
 <div class="hud chip" id="level">Lv.1 · 亲密 0</div>
 <div class="hud chip" id="weather"></div>
 <div class="hud chip" id="orbs">✦ 灵光 0 / 14</div>
-<div class="hud" id="hints">WASD / 触屏拖动 移动 · 💬聊天 📖手账 🎒派遣 🎬展示</div>
+<div class="hud" id="hints">WASD / 触屏拖动 移动 · 💬聊天 📖手账 🎒派遣 🎬展示 ✨签到 🥣喂食 📔图鉴</div>
 <div class="hud" id="toast"></div>
 <div id="bubble"></div>
 <div id="vignette"></div>
@@ -179,6 +209,9 @@
 <button class="fbtn" id="btnDiary">📖</button>
 <button class="fbtn" id="btnDispatch">🎒</button>
 <button class="fbtn" id="btnShow">🎬</button>
+<button class="fbtn" id="btnFeed">🥣</button>
+<button class="fbtn" id="btnCheckin">✨</button>
+<button class="fbtn" id="btnCodex">📔</button>
 <button class="fbtn" id="btnAction"></button>
 
 <div id="chat">
@@ -194,6 +227,14 @@
   <h3 id="diaryTitle">手账</h3>
   <div id="diaryBody"></div>
   <div id="diaryInv"></div>
+</div>
+
+<div id="codex">
+  <button id="codexClose">✕</button>
+  <h3>图鉴 · 九灵</h3>
+  <div id="codexPets"></div>
+  <h4>🏆 成就</h4>
+  <div id="codexAch"></div>
 </div>
 
 <script src="./ai.js"></script>

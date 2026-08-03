@@ -29,7 +29,7 @@ const Memory = {
   data: null,
   load(petId) {
     try { this.data = JSON.parse(localStorage.getItem(MEM_KEY(petId))) || null; } catch { this.data = null; }
-    if (!this.data) this.data = { name: null, likes: [], fears: [], events: [], intimacy: 0, chatCount: 0, bornAt: Date.now(), lastSeen: Date.now(), shout: null };
+    if (!this.data) this.data = { name: null, likes: [], fears: [], events: [], intimacy: 0, chatCount: 0, bornAt: Date.now(), lastSeen: Date.now(), shout: null, lastCheckin: null, checkinDays: 0, achievements: {}, orbsCollected: 0, dispatchCount: 0 };
     return this.data;
   },
   save(petId) { this.data.lastSeen = Date.now(); localStorage.setItem(MEM_KEY(petId), JSON.stringify(this.data)); },
@@ -159,3 +159,38 @@ async function chatReply(text, soul, mem) {
 }
 
 window.YAYA_AI = { SOULS, Memory, genBubble, genDiary, chatReply, fill, pick };
+
+// ---------- 成就 ----------
+const ACHIEVEMENTS = [
+  { id: 'orb1', name: '初拾灵光', desc: '收集第 1 颗灵光', test: d => (d.orbsCollected || 0) >= 1 },
+  { id: 'orb7', name: '星海拾贝', desc: '收集 7 颗灵光', test: d => (d.orbsCollected || 0) >= 7 },
+  { id: 'orb14', name: '点亮星海', desc: '集齐全部 14 颗灵光', test: d => (d.orbsCollected || 0) >= 14 },
+  { id: 'inti2', name: '初识之谊', desc: '亲密达到 Lv.2', test: d => (d.intimacy || 0) >= 6 },
+  { id: 'inti6', name: '形影不离', desc: '亲密达到 Lv.6', test: d => (d.intimacy || 0) >= 30 },
+  { id: 'inti11', name: '灵魂伴侣', desc: '亲密达到 Lv.11', test: d => (d.intimacy || 0) >= 60 },
+  { id: 'feed1', name: '投喂初体验', desc: '喂它吃 1 颗浆果', test: d => (d.feedCount || 0) >= 1 },
+  { id: 'feed10', name: '甜果常伴', desc: '累计喂食 10 次', test: d => (d.feedCount || 0) >= 10 },
+  { id: 'dispatch1', name: '第一次远行', desc: '派遣它出门探险 1 次', test: d => (d.dispatchCount || 0) >= 1 },
+  { id: 'dispatch5', name: '远方归来', desc: '累计派遣 5 次', test: d => (d.dispatchCount || 0) >= 5 },
+  { id: 'chat1', name: '初次交谈', desc: '和它聊第 1 句话', test: d => (d.chatCount || 0) >= 1 },
+  { id: 'chat20', name: '话痨搭档', desc: '累计聊了 20 句话', test: d => (d.chatCount || 0) >= 20 },
+  { id: 'checkin1', name: '今日之约', desc: '完成第 1 次每日签到', test: d => (d.checkinDays || 0) >= 1 },
+  { id: 'checkin7', name: '七日之约', desc: '累计签到 7 天', test: d => (d.checkinDays || 0) >= 7 },
+];
+
+// 检查并解锁新成就，返回本次新解锁的成就数组
+function checkAchievements(mem) {
+  const d = mem.data;
+  if (!d.achievements) d.achievements = {};
+  const got = [];
+  for (const a of ACHIEVEMENTS) {
+    if (!d.achievements[a.id] && a.test(d)) {
+      d.achievements[a.id] = Date.now();
+      got.push(a);
+    }
+  }
+  return got;
+}
+
+window.YAYA_AI.ACHIEVEMENTS = ACHIEVEMENTS;
+window.YAYA_AI.checkAchievements = checkAchievements;

@@ -138,6 +138,18 @@ function updateLevelHUD() {
   $('level').textContent = `Lv.${mem.level} · 亲密 ${mem.data.intimacy}`;
 }
 
+// ---------- 成就 ----------
+function unlockAwards() {
+  const got = AI.checkAchievements(mem);
+  if (!got.length) return;
+  const names = got.map(a => a.name).join('、');
+  showToast(`🏆 解锁成就：${names}<span class="rule"></span><span class="toast-desc">好感又近了一步</span>`, 3600, 'gold');
+  const b = $('bubble');
+  b.textContent = `${soul.cp}${AI.pick(['我好像变得更厉害了一点！', '你看你看，我有新徽章了！', '嘿嘿，被夸得有点不好意思'])}`;
+  b.style.opacity = '1';
+  AI.Memory.save(petId);
+}
+
 // ---------- 聊天面板 ----------
 function addMsg(text, who) {
   const box = $('chatMsgs');
@@ -166,6 +178,7 @@ function wireChat() {
     const reply = await AI.chatReply(text, soul, mem);
     addMsg(reply, 'pet');
     AI.Memory.save(petId);
+    unlockAwards();
   };
   $('chatSend').onclick = send;
   $('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
@@ -198,6 +211,7 @@ function wireDispatch() {
       b.textContent = `${soul.cp}${story}`;
       b.style.opacity = '1';
       updateLevelHUD();
+      unlockAwards();
       AI.Memory.save(petId);
     });
     if (secs) {
@@ -217,6 +231,58 @@ function wireShowcase() {
   };
 }
 
+// ---------- 每日签到 / 喂食 ----------
+function wireDaily() {
+  $('btnCheckin').onclick = () => {
+    const P = window.YAYA_PLAY;
+    const r = P.checkin();
+    if (!r) { showToast('今天已经签到过啦，明天再来'); return; }
+    showToast(`✨ 签到成功 · 第 ${r.day} 天<span class="rule"></span><span class="toast-desc">浆果 ×2 · 亲密 +2</span>`, 2600, 'gold');
+    updateLevelHUD();
+    AI.Memory.save(petId);
+    unlockAwards();
+  };
+  $('btnFeed').onclick = () => {
+    const P = window.YAYA_PLAY;
+    const r = P.feed();
+    if (!r) { showToast('背包里没有浆果，先签到或去探险吧'); return; }
+    const b = $('bubble');
+    b.textContent = `${soul.cp}${AI.pick(['好吃！浆果甜甜的', '再喂一颗嘛……（星星眼）', '唔姆唔姆……好幸福'])}`;
+    b.style.opacity = '1';
+    showToast(`🥣 喂食成功 · 亲密 +2<span class="rule"></span><span class="toast-desc">浆果还剩 ${r.berries} 颗</span>`);
+    updateLevelHUD();
+    AI.Memory.save(petId);
+    unlockAwards();
+  };
+}
+
+// ---------- 图鉴面板（宠物 + 成就） ----------
+function renderCodex() {
+  const box = $('codexPets');
+  box.innerHTML = '';
+  for (const [id, s] of Object.entries(AI.SOULS)) {
+    const owned = id === petId;
+    const t = s.traits;
+    const card = document.createElement('div');
+    card.className = 'cx-card' + (owned ? ' owned' : '');
+    card.innerHTML =
+      `<img src="../assets/2d/pets/${id}.png" alt=""><b>${s.cn}</b>` +
+      `<span class="cx-tag">${owned ? '⭐ 当前伙伴' : '🔒 未解锁'}</span>` +
+      `<small>勇${t.courage} 奇${t.curiosity} 社${t.sociability} 懒${t.laziness} 话${t.talkativeness}</small>` +
+      `<i>${s.style}</i>`;
+    box.appendChild(card);
+  }
+  $('codexAch').innerHTML = AI.ACHIEVEMENTS.map(a => {
+    const done = mem.data.achievements && mem.data.achievements[a.id];
+    return `<div class="cx-ach${done ? ' done' : ''}">${done ? '✓' : '🔒'} ${a.name} · ${a.desc}</div>`;
+  }).join('');
+}
+
+function wireCodex() {
+  $('btnCodex').onclick = () => { renderCodex(); $('codex').classList.add('open'); };
+  $('codexClose').onclick = () => $('codex').classList.remove('open');
+}
+
 // ---------- 区域互动 ----------
 function wireAction(scene) {
   $('btnAction').onclick = () => {
@@ -229,6 +295,7 @@ function wireAction(scene) {
     showToast(result, 2600);
     updateLevelHUD();
     AI.Memory.save(petId);
+    unlockAwards();
   };
 }
 
@@ -494,8 +561,10 @@ function create() {
     collected++;
     mem.addIntimacy(1);
     mem.remember('play', `在${ZONES[curZone]?.name || '世界'}收集到第 ${collected} 颗灵光`);
+    mem.data.orbsCollected = Math.max(mem.data.orbsCollected || 0, collected);
     updateOrbCounter();
     updateLevelHUD();
+    unlockAwards();
     if (collected === ORB_TOTAL) celebrate(scene);
   });
 
@@ -511,6 +580,8 @@ function create() {
   wireDiary();
   wireDispatch();
   wireShowcase();
+  wireDaily();
+  wireCodex();
   wireAction(scene);
   updateLevelHUD();
   // 定期存档 + 离开存档（本地 + 云端）
@@ -521,6 +592,7 @@ function create() {
   window.__dbg = { petLoaded: true, orbCount: ORB_TOTAL, zoneCount: ZONES.length, petId };
   window.__pet = pet;
   window.__orbs = orbs;
+  window.__unlockAwards = unlockAwards;
 
   document.title = `灵伴世界 · ${petName}`;
   $('title').textContent = `灵伴世界 · ${petName}`;

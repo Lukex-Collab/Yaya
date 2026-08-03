@@ -7,6 +7,7 @@ const Play = {
   inventory: {},
   weather: '晴',
   dispatched: false,
+  dispatchSecs: 15,      // demo 派遣时长（秒），测试可改小
   action: null,          // 当前可用互动 {label, run}
   onEvent: null,         // (text, intimacyGain) => void 记录事件/加亲密
 
@@ -81,21 +82,44 @@ const Play = {
   dispatch(done) {
     if (this.dispatched) return null;
     this.dispatched = true;
-    const mins = 15; // demo 用 15 秒
+    const secs = this.dispatchSecs || 15;
     const places = ['星砂海滩', '迷雾森林', '回声山谷', '霜语雪山', '沉睡遗迹'];
     const place = R2(places);
     const finds = ['一颗会发光的石头', '半张奇怪的地图', '一朵星星形状的花', '一枚温热的蛋形石子', '一根漂亮的羽毛'];
     const find = R2(finds);
     setTimeout(() => {
       this.dispatched = false;
+      this.mem.data.dispatchCount = (this.mem.data.dispatchCount || 0) + 1;
       this.inventory['纪念品'] = (this.inventory['纪念品'] || 0) + 1;
       const story = `它独自去了${place}，带回了${find}，还想跟你讲一路上的冒险`;
       this.mem.remember('dispatch', story);
       this.mem.addIntimacy(3);
       done(story);
-    }, mins * 1000);
+    }, secs * 1000);
     function R2(a) { return a[(Math.random() * a.length) | 0]; }
-    return mins;
+    return secs;
+  },
+
+  // ---------- 每日签到 ----------
+  checkin() {
+    const today = new Date().toISOString().slice(0, 10);
+    if (this.mem.data.lastCheckin === today) return null;
+    this.mem.data.lastCheckin = today;
+    this.mem.data.checkinDays = (this.mem.data.checkinDays || 0) + 1;
+    this.inventory['浆果'] = (this.inventory['浆果'] || 0) + 2;
+    this.mem.addIntimacy(2);
+    this.mem.remember('play', `完成第 ${this.mem.data.checkinDays} 天签到，领到 2 颗浆果`);
+    return { berries: this.inventory['浆果'], day: this.mem.data.checkinDays };
+  },
+
+  // ---------- 喂食 ----------
+  feed() {
+    if ((this.inventory['浆果'] || 0) < 1) return null;
+    this.inventory['浆果']--;
+    this.mem.data.feedCount = (this.mem.data.feedCount || 0) + 1;
+    this.mem.addIntimacy(2);
+    this.mem.remember('play', '喂了一颗浆果给它，它眼睛都亮了');
+    return { berries: this.inventory['浆果'], intimacy: this.mem.data.intimacy };
   },
 
   // ---------- 等级门槛 ----------
