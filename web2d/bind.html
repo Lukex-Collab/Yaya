@@ -78,6 +78,7 @@ async function verifyClientSide(code) {
   try {
     const parts = code.split('.');
     if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) return false;
+    if (!(parts[0] in PET_NAMES)) return false;  // 宠物必须存在于当前阵容
     const enc = new TextEncoder();
     const key = await crypto.subtle.importKey(
       'raw', enc.encode(ACTIVATE_SECRET),

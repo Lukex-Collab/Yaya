@@ -187,6 +187,7 @@ function wireChat() {
     const reply = await AI.chatReply(text, soul, mem);
     addMsg(reply, 'pet');
     window.YAYA_PLAY.questTick('chat');
+    refreshQuestView();
     AI.Memory.save(petId);
     unlockAwards();
   };
@@ -217,6 +218,7 @@ function wireDispatch() {
       pet.setVisible(true);
       trail.emitting = true;
       P.questTick('dispatch');
+      refreshQuestView();
       showToast('它回来啦！', 2600);
       const b = $('bubble');
       b.textContent = `${soul.cp}${story}`;
@@ -258,7 +260,7 @@ function wireDaily() {
   $('btnFeed').onclick = () => {
     const P = window.YAYA_PLAY;
     const r = P.feed();
-    if (!r) { showToast('背包里没有浆果，先签到或去探险吧'); return; }
+    if (!r) { showToast('背包里没有食物，先签到、做任务或用金币去商店买吧'); return; }
     P.questTick('feed');
     refreshQuestView();
     const b = $('bubble');
@@ -636,6 +638,7 @@ function create() {
     mem.remember('play', `在${ZONES[curZone]?.name || '世界'}收集到第 ${collected} 颗灵光`);
     mem.data.orbsCollected = Math.max(mem.data.orbsCollected || 0, collected);
     window.YAYA_PLAY.questTick('orb');
+    refreshQuestView();
     updateOrbCounter();
     updateLevelHUD();
     unlockAwards();

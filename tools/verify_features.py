@@ -61,7 +61,7 @@ with sync_playwright() as p:
     check("喂食: 第二颗浆果", inv().get("浆果") == 0, inv())
     page.click("#btnFeed")
     page.wait_for_timeout(300)
-    check("喂食: 无浆果提示", "没有浆果" in toast(), toast())
+    check("喂食: 无食物提示", "没有食物" in toast(), toast())
     check("喂食: 无浆果不加亲密", mem()["intimacy"] == 6, mem()["intimacy"])
     check("喂食: 亲密 Lv.2 成就 inti2", "inti2" in (mem().get("achievements") or {}))
 
