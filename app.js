@@ -121,6 +121,10 @@ const App = {
     const btnQuickShield = $('btn-quick-shield');
     if (btnQuickShield) btnQuickShield.onclick = () => this.openSheet('sheet-shield');
 
+    // 进入仓库内网页游戏 Demo（web2d/）
+    const btnGameDemo = $('btn-game-demo');
+    if (btnGameDemo) btnGameDemo.onclick = () => { location.href = 'web2d/'; };
+
     const btnShield = $('btn-shield');
     if (btnShield) btnShield.onclick = () => this.openSheet('sheet-shield');
 

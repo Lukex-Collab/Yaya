@@ -23,6 +23,8 @@ python server.py
 | 3D 太空演示 | http://localhost:8080/web/ |
 | 盲盒扫码页 | http://localhost:8080/web2d/qrcodes.html |
 
+仓库内置演示页：打开根目录 `index.html`（手机壳 Demo），点状态栏「🎮 网页游戏」即可直接进入 2D 小世界游戏。
+
 > 2D 小世界支持 `?pet=<id>` 直接指定宠物，例如 `web2d/?pet=yaya`。
 
 ## 仓库结构
