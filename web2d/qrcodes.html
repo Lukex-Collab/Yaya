@@ -20,7 +20,7 @@
 <p>手机扫码 → 唤醒仪式 → 进入小世界（公网可用，无需同一 WiFi）</p>
 <div class="grid" id="g"></div>
 <script>
-const PETS = { yaya:'牙牙', pixiu:'貔貅', pangda:'胖达', maotouying:'猫头鹰', long:'龙', linghu:'灵狐', jingyu:'鲸鱼', zhangyu:'章鱼', xiongmao:'熊猫' };
+const PETS = { yaya:'牙牙', pangda:'胖达', maotouying:'猫头鹰', long:'龙', linghu:'灵狐', jingyu:'鲸鱼', zhangyu:'章鱼', xiongmao:'貔貅' };
 const g = document.getElementById('g');
 for (const [id, name] of Object.entries(PETS)) {
   g.innerHTML += `<div class="card"><img class="qr" src="../assets/qr/${id}.png"><img class="pet" src="../assets/2d/pets/${id}.png"><div class="n">${name}</div></div>`;

@@ -11,7 +11,6 @@ SECRET = (
 )
 PETS = {
     "yaya",
-    "pixiu",
     "pangda",
     "maotouying",
     "long",

@@ -13,14 +13,13 @@ if "://" not in BASE:
     BASE = f"http://{BASE}:8080"
 PETS = {
     "yaya": "牙牙",
-    "pixiu": "貔貅",
     "pangda": "胖达",
     "maotouying": "猫头鹰",
     "long": "龙",
     "linghu": "灵狐",
     "jingyu": "鲸鱼",
     "zhangyu": "章鱼",
-    "xiongmao": "熊猫",
+    "xiongmao": "貔貅",
 }
 OUT = r"C:/Users/hbusl/lingpal-world/assets/qr"
 os.makedirs(OUT, exist_ok=True)

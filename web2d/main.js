@@ -19,8 +19,8 @@ const CONFIG = {
 };
 
 const PET_NAMES = {
-  yaya: '牙牙', pixiu: '貔貅', pangda: '胖达', maotouying: '猫头鹰', long: '龙',
-  linghu: '灵狐', jingyu: '鲸鱼', zhangyu: '章鱼', xiongmao: '熊猫',
+  yaya: '牙牙', pangda: '胖达', maotouying: '猫头鹰', long: '龙',
+  linghu: '灵狐', jingyu: '鲸鱼', zhangyu: '章鱼', xiongmao: '貔貅',
 };
 const petId = new URLSearchParams(location.search).get('pet') || 'yaya';
 const petName = PET_NAMES[petId] || petId;

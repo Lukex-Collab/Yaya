@@ -66,7 +66,7 @@ with sync_playwright() as p:
     page.click("#btnCodex")
     page.wait_for_timeout(500)
     check("图鉴: 面板打开", page.evaluate("document.getElementById('codex').classList.contains('open')"))
-    check("图鉴: 9 张宠物卡", page.evaluate("document.querySelectorAll('#codexPets .cx-card').length") == 9)
+    check("图鉴: 8 张宠物卡", page.evaluate("document.querySelectorAll('#codexPets .cx-card').length") == 8)
     check("图鉴: 当前伙伴标记", "当前伙伴" in page.evaluate("document.getElementById('codexPets').textContent"))
     check("图鉴: 14 条成就条目", page.evaluate("document.querySelectorAll('#codexAch .cx-ach').length") == 14)
     done = page.evaluate("document.querySelectorAll('#codexAch .cx-ach.done').length")

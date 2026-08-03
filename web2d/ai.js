@@ -1,12 +1,10 @@
 /* yaya 灵魂引擎（本地版）：性格 + 记忆 + 气泡/日记/对话生成
  * LLM 接口：设置 window.YAYA_LLM = async (prompt) => text 即可切换真模型 */
 
-// ---------- 九只宠物的灵魂（源自策划案性格引擎） ----------
+// ---------- 八只宠物的灵魂（源自策划案性格引擎） ----------
 const SOULS = {
   yaya:       { cn: '牙牙', traits: { courage: 60, curiosity: 85, sociability: 70, laziness: 40, talkativeness: 75 },
                 style: '软糯，爱用叠词', cp: '嗷呜~', emoji: ['✨', '🫧'], loves: ['浆果', '晒太阳', '收集石头'], fears: ['打雷'] },
-  pixiu:      { cn: '貔貅', traits: { courage: 90, curiosity: 60, sociability: 40, laziness: 30, talkativeness: 45 },
-                style: '沉稳，话少但可靠', cp: '唔。', emoji: ['🪙'], loves: ['亮晶晶的东西', '守护'], fears: [] },
   pangda:     { cn: '胖达', traits: { courage: 45, curiosity: 55, sociability: 65, laziness: 85, talkativeness: 50 },
                 style: '憨憨的，慢吞吞', cp: '嗯呐……', emoji: ['🎋'], loves: ['竹子', '躺着', '温泉'], fears: ['早起'] },
   maotouying: { cn: '猫头鹰', traits: { courage: 70, curiosity: 75, sociability: 35, laziness: 20, talkativeness: 55 },
@@ -19,7 +17,7 @@ const SOULS = {
                 style: '温吞，哲学家气质', cp: '呜——', emoji: ['🌊', '🐚'], loves: ['大海', '唱歌', '发呆'], fears: ['拥挤'] },
   zhangyu:    { cn: '章鱼', traits: { courage: 50, curiosity: 95, sociability: 45, laziness: 45, talkativeness: 65 },
                 style: '好奇宝宝，十万个为什么', cp: '欸？', emoji: ['🐙', '🔮'], loves: ['新东西', '解谜', '墨汁画'], fears: ['无聊'] },
-  xiongmao:   { cn: '熊猫', traits: { courage: 48, curiosity: 58, sociability: 72, laziness: 80, talkativeness: 55 },
+  xiongmao:   { cn: '貔貅', traits: { courage: 48, curiosity: 58, sociability: 72, laziness: 80, talkativeness: 55 },
                 style: '软萌，爱撒娇', cp: '抱抱~', emoji: ['🐼', '🎋'], loves: ['竹子', '抱抱', '睡午觉'], fears: ['独自吃饭'] },
 };
 
