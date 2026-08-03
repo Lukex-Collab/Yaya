@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>灵伴世界 · 宠物展示</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --night: #070718;
@@ -45,13 +42,16 @@
 </head>
 <body>
 <header>
-  <a href="./index.html">← 返回小世界</a>
+  <a id="backLink" href="./index.html">← 返回小世界</a>
   <h1>宠物展示</h1>
   <p>AI 生成演示视频</p>
 </header>
 <div class="grid" id="g"></div>
 <footer>演示视频为本地资源（assets/videos/），未随仓库上传</footer>
 <script>
+const backLink = document.getElementById('backLink');
+if (location.search) backLink.href = './index.html' + location.search;
+
 const VIDEOS = [
   { src: '../assets/videos/v1.mp4', title: '展示视频 · 01' },
   { src: '../assets/videos/v2.mp4', title: '展示视频 · 02' },

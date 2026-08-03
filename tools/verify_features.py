@@ -24,6 +24,9 @@ with sync_playwright() as p:
     page.goto(BASE)
     page.wait_for_function("window.__dbg && window.__dbg.petLoaded", timeout=20000)
     page.wait_for_timeout(600)
+    # 停到无灵光的安全角落，避免随机刷新的灵光被意外收集干扰亲密值断言
+    page.evaluate("window.__pet.x = 60; window.__pet.y = 1060")
+    page.wait_for_timeout(300)
 
     mem = lambda: page.evaluate("window.YAYA_AI.Memory.data")
     inv = lambda: page.evaluate("window.YAYA_PLAY.inventory")

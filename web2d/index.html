@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>灵伴世界</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --night: #070718;
@@ -109,6 +106,9 @@
     box-shadow: 0 6px 18px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1);
     transition: transform .15s, box-shadow .2s; }
   .fbtn:active { transform: scale(.92); box-shadow: 0 0 18px rgba(201,184,255,.45); }
+  /* 聊天面板打开时，右侧功能按钮上移到面板之上，避免被遮挡 */
+  body.chat-open .fbtn { transform: translateY(-46vh); }
+  body.chat-open .fbtn:active { transform: translateY(-46vh) scale(.92); }
   #btnChat { bottom: 148px; }
   #btnDiary { bottom: 88px; }
   #btnDispatch { bottom: 28px; }
@@ -186,7 +186,7 @@
     border: 1px solid rgba(255,255,255,.08); color: #8f8fb5; }
   .cx-ach.done { color: var(--gold-soft); border-color: rgba(255,217,138,.35); }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<script src="./lib/phaser.min.js"></script>
 </head>
 <body>
 <div class="hud chip" id="title">灵伴世界</div>

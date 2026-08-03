@@ -102,7 +102,8 @@ const Play = {
 
   // ---------- 每日签到 ----------
   checkin() {
-    const today = new Date().toISOString().slice(0, 10);
+    const d = new Date();
+    const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     if (this.mem.data.lastCheckin === today) return null;
     this.mem.data.lastCheckin = today;
     this.mem.data.checkinDays = (this.mem.data.checkinDays || 0) + 1;

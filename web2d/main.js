@@ -163,6 +163,7 @@ function wireChat() {
   $('btnChat').onclick = () => {
     const c = $('chat');
     c.classList.toggle('open');
+    document.body.classList.toggle('chat-open', c.classList.contains('open'));
     if (c.classList.contains('open') && !$('chatMsgs').children.length) {
       addMsg(`${soul.cp}你终于来陪我啦！${AI.pick(soul.emoji)}`, 'pet');
     }
@@ -227,7 +228,7 @@ function wireShowcase() {
   $('btnShow').onclick = () => {
     AI.Memory.save(petId);
     cloudSave();
-    location.href = './showcase.html';
+    location.href = './showcase.html?pet=' + petId;
   };
 }
 
