@@ -40,7 +40,11 @@ def sign(payload: str) -> str:
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def static_files(path):
-    return send_from_directory(ROOT, path or "web2d/index.html")
+    if not path:
+        path = "web2d/index.html"
+    elif path.endswith("/"):
+        path += "index.html"
+    return send_from_directory(ROOT, path)
 
 
 # ---------- 防伪激活 ----------
