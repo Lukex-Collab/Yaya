@@ -1,0 +1,8 @@
+{
+  "name": "waki-online",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/smoke.js && node test/server.js"
+  }
+}

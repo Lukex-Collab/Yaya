@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>瓦奇 Waki</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦷</text></svg>">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
+</script>
+</head>
+<body>
+
+<div class="phone" id="phone">
+
+  <!-- ══ INTRO: 帘子 + 飞燕 ══ -->
+  <div class="intro-screen" id="intro-screen">
+    <div class="intro-curtains" id="intro-curtains">
+      <div class="intro-curtain left" id="curtain-left"></div>
+      <div class="intro-curtain right" id="curtain-right"></div>
+    </div>
+    <div class="intro-title" id="intro-title">Waki</div>
+    <div class="intro-fade" id="intro-fade"></div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span class="sb-status" id="sb-status"><span class="dot online"></span> 瓦奇在线</span>
+    <span class="sb-time" id="sb-time"></span>
+    <button class="sb-gear" id="btn-gear">⚙️</button>
+  </div>
+
+  <!-- MAIN AREA -->
+  <div class="main-area" id="main-area">
+
+    <!-- TAB: 瓦奇 -->
+    <div class="tab-view active" id="tab-yaya">
+      <div class="scene" id="scene">
+        <div class="scene-sky"></div>
+        <div class="scene-overlay"></div>
+        <div class="scene-floor"></div>
+        <button class="sc-icon blk" id="btn-eyes" title="瓦奇眼睛">👁</button>
+        <button class="sc-icon shd" id="btn-shield">🛡</button>
+        <div class="yaya-wrap" id="yaya-wrap">
+          <video class="yaya-vid" id="yaya-vid" src="/assets/videos/yaya-bored.mp4" autoplay loop muted playsinline></video>
+          <div class="speech-bub" id="speech-bub"><span id="speech-txt"></span></div>
+        </div>
+        <p class="scene-mood" id="scene-mood">今天有点困困的</p>
+      </div>
+      <div class="chat-drawer" id="chat-drawer">
+        <div class="drawer-grip" id="drawer-grip"><span></span></div>
+        <div class="drawer-msgs" id="drawer-msgs"></div>
+      </div>
+      <div class="input-row"><div class="input-bar">
+        <button class="btn-upload" id="btn-upload" title="发照片/视频">🖼</button>
+        <textarea class="text-input" id="text-input" rows="1" placeholder="和瓦奇说点什么…" autocomplete="off"></textarea>
+        <button class="btn-mic" id="btn-mic"><span class="mic-icon">🎤</span></button>
+        <button class="btn-send" id="btn-send">➤</button>
+      </div></div>
+      <input type="file" id="media-input" accept="image/*,video/*" style="display:none">
+    </div>
+
+    <!-- TAB: 养成 -->
+    <div class="tab-view" id="tab-nurture">
+      <!-- 成长条 -->
+      <div class="grow-bar-wrap">
+        <div class="grow-stage-icon" id="grow-stage-icon">🥚</div>
+        <div class="grow-bar-info">
+          <div class="grow-bar-top"><span class="grow-stage-name" id="grow-stage-name">蛋蛋</span><span class="grow-val" id="grow-val">12 / 100</span></div>
+          <div class="grow-track"><div class="grow-fill" id="grow-fill" style="width:12%"></div></div>
+          <div class="grow-hint" id="grow-hint">签到、聊天、摸摸、写日记都能攒能量 ⚡</div>
+        </div>
+      </div>
+      <!-- 能量卡 -->
+      <div class="energy-card" id="energy-card">
+        <div class="energy-top">
+          <div class="energy-bal"><span class="e-ico">⚡</span><span class="energy-num" id="energy-bal">0</span><span class="e-unit">瓦奇能量</span></div>
+          <button class="signin-btn" id="btn-signin">签到 +20</button>
+        </div>
+        <div class="energy-srcs">
+          <span>💬 聊天 +5</span><span>🖐 摸摸 +2</span><span>📝 日记 +10</span><span class="e-lifetime">累计 <b id="energy-lifetime">0</b></span>
+        </div>
+      </div>
+      <!-- 饱食度 -->
+      <div class="satiety-card">
+        <div class="satiety-head">
+          <span class="satiety-ico" id="satiety-ico">🙂</span>
+          <span class="satiety-title">饱食度</span>
+          <span class="satiety-val" id="satiety-val">60 / 100</span>
+        </div>
+        <div class="satiety-track"><div class="satiety-fill" id="satiety-fill" style="width:60%"></div></div>
+        <div class="satiety-hint" id="satiety-hint">肚子有点饿了，喂点好吃的吧 🍎</div>
+      </div>
+      <!-- AR 投喂入口 -->
+      <button class="ar-entry" id="btn-ar-feed" onclick="openARFeed()">
+        <span class="ar-entry-ico">🍽️</span>
+        <span class="ar-entry-txt"><b>去投喂瓦奇</b><small>打开摄像头，喂点好吃的</small></span>
+        <span class="ar-entry-arrow">›</span>
+      </button>
+      <!-- 养成子Tab -->
+      <div class="hb-subtabs">
+        <button class="hb-stab active" data-nurtab="games">🎯 小游戏</button>
+        <button class="hb-stab" data-nurtab="closet">👗 衣橱</button>
+      </div>
+      <!-- 小游戏面板 -->
+      <div class="hb-panel active" id="nur-panel-games">
+        <div class="hb-panel-inner" style="padding:8px 0 80px">
+          <div class="game-grid-3">
+            <div class="game-card-3" data-game="jump" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">
+              <span class="gw-i">🦘</span><span class="gw-n">瓦奇跳一跳</span><span class="gw-s">向上跳跃 +10✨</span>
+            </div>
+            <div class="game-card-3" data-game="catch" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);">
+              <span class="gw-i">🍓</span><span class="gw-n">接浆果</span><span class="gw-s">左右移动 +8✨</span>
+            </div>
+            <div class="game-card-3" data-game="run" style="background:linear-gradient(135deg,#FCE4EC,#F8BBD0);">
+              <span class="gw-i">🏃</span><span class="gw-n">瓦奇快跑</span><span class="gw-s">躲避障碍 +12✨</span>
+            </div>
+          </div>
+          <!-- 游戏iframe容器 -->
+          <div class="game-frame-wrap" id="game-frame-wrap" style="display:none;">
+            <button class="game-back-btn" id="game-back-btn">← 返回游戏列表</button>
+            <iframe class="game-frame" id="game-frame" src="" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+      <!-- 衣橱面板 -->
+      <div class="hb-panel" id="nur-panel-closet">
+        <div class="hb-panel-inner" style="padding-bottom:80px">
+          <div class="ward-mini"><video src="/assets/videos/yaya-bored.mp4" autoplay loop muted playsinline class="ward-mini-vid"></video></div>
+          <div class="ward-equipped" id="ward-equipped"></div>
+          <div class="ward-lab">已拥有（点按穿戴）</div>
+          <div class="ward-row" id="owned-skins"></div>
+          <div class="ward-lab" style="margin-top:14px">⚡ 能量兑换商店</div>
+          <div class="ward-row" id="energy-shop"></div>
+          <div class="ward-lab" style="margin-top:14px">🧸 实体娃衣 · 虚实联动</div>
+          <div class="ward-ban"><span>买实体衣服 → 输入兑换码，解锁同款虚拟装扮</span><button id="btn-redeem">输入兑换码</button></div>
+          <div class="ward-row" id="physical-shop"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: 空间 -->
+    <div class="tab-view" id="tab-tongkuang">
+      <!-- 空间列表视图 -->
+      <div id="tk-gallery-view" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+        <div style="padding:12px 16px 8px;">
+          <div style="font-size:17px;font-weight:800;margin-bottom:10px;">我的空间 🏠</div>
+          <button class="tk-add-btn" onclick="tkSelectPhoto()"><span>+</span> 拍一张，让瓦奇来陪你</button>
+        </div>
+        <div class="tk-gallery" id="tk-gallery"></div>
+        <div class="tk-empty" id="tk-empty" style="display:none;">
+          <span style="font-size:48px;">📸</span>
+          <span style="font-size:15px;font-weight:700;">还没有空间</span>
+          <span style="font-size:12px;color:var(--ink2);text-align:center;line-height:1.6;">拍一张你常待的地方<br>瓦奇就会出现在那里陪你</span>
+        </div>
+      </div>
+      <!-- 3D互动视图 -->
+      <div id="tk-3d-view" style="display:none;flex:1;flex-direction:column;min-height:0;">
+        <div class="tk-canvas-wrap" id="tk-canvas-wrap">
+          <div class="tk-loading" id="tk-loading"><span>瓦奇正在赶来…</span></div>
+          <div class="tk-bubble" id="tk-bubble"></div>
+          <button class="tk-back" onclick="tkBackToList()">←</button>
+          <button class="tk-camera" onclick="tkSnapPhoto()">📸</button>
+          <button class="tk-reset" onclick="tkResetCamera()">🔄</button>
+        </div>
+        <div style="font-size:13px;font-weight:700;padding:6px 16px 2px;text-align:center;cursor:pointer" id="tk-current-name" onclick="tkRename()" title="点击重命名"></div>
+        <div class="tk-input-row">
+          <input type="text" id="tk-chat-input" placeholder="和瓦奇说话…" onkeydown="if(event.key==='Enter')tkSendChat()">
+          <button onclick="tkSendChat()">🎤</button>
+        </div>
+      </div>
+      <!-- 3DGS 房间视图 -->
+      <div id="tk-3dgs-view" style="display:none;flex:1;flex-direction:column;min-height:0;">
+        <div class="tk-canvas-wrap" id="tk-3dgs-canvas-wrap" style="position:relative;overflow:hidden;">
+          <div class="tk-loading" id="tk-3dgs-loading"><span>加载 3D 房间…</span></div>
+          <div class="tk-bubble" id="tk-3dgs-bubble"></div>
+          <button class="tk-back" onclick="tkBackToList()">←</button>
+          <button class="tk-camera" onclick="tk3dgsSnapPhoto()">📸</button>
+          <button class="tk-reset" onclick="tk3dgsResetCamera()">🔄</button>
+        </div>
+        <div style="font-size:13px;font-weight:700;padding:6px 16px 2px;text-align:center;cursor:pointer" id="tk-3dgs-name" onclick="if(tk3dgsCurId)tkRename()" title="点击重命名"></div>
+        <div class="tk-input-row">
+          <input type="text" id="tk-3dgs-chat-input" placeholder="和瓦奇说话…" onkeydown="if(event.key==='Enter')tk3dgsTalk()">
+          <button onclick="tk3dgsTalk()">🎤</button>
+        </div>
+      </div>
+      <input type="file" accept="image/*" capture="environment" id="tk-photo-input" style="display:none" onchange="tkOnPhotoSelected(event)">
+    </div>
+
+    <!-- TAB: 手账 -->
+    <div class="tab-view" id="tab-handbook">
+      <!-- 手账子Tab -->
+      <div class="hb-subtabs">
+        <button class="hb-stab active" data-hbtab="diary">📝 日记</button>
+        <button class="hb-stab" data-hbtab="health">💪 健康</button>
+      </div>
+      <!-- 日记Tab -->
+      <div class="hb-panel active" id="hb-panel-diary">
+        <div class="hb-panel-inner">
+          <button class="write-diary-btn" id="btn-write-diary">✎ 写今天的日记</button>
+          <!-- 今日天气 + 情绪 -->
+          <div class="weather-card" id="weather-card">
+            <div class="weather-main">
+              <span class="weather-emoji" id="weather-emoji">☀️</span>
+              <div class="weather-info">
+                <span class="weather-temp" id="weather-temp">31°C</span>
+                <span class="weather-desc" id="weather-desc">晴朗 · 深圳</span>
+              </div>
+            </div>
+            <div class="weather-mood">
+              <span class="weather-label">今天的心情</span>
+              <span class="weather-moodval" id="weather-moodval">😊 还不错</span>
+            </div>
+          </div>
+          <!-- 情绪曲线 -->
+          <div class="spark-card">
+            <div class="spark-head"><span>这两周的情绪</span><span class="spark-hint" id="spark-hint" style="cursor:pointer">点开看详情</span></div>
+            <svg class="spark-svg" viewBox="0 0 300 48" preserveAspectRatio="none">
+              <polyline id="sparkline" fill="none" stroke="var(--coral)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+            </svg>
+          </div>
+          <!-- 日记时间轴 -->
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </div>
+      <!-- 健康Tab -->
+      <div class="hb-panel" id="hb-panel-health">
+        <div class="hb-panel-inner">
+          <!-- 身体数据（自报） -->
+          <div class="health-summary">
+            <div class="health-stat">
+              <span class="hs-emoji">🚶</span>
+              <span class="hs-val" id="hs-steps">—</span>
+              <span class="hs-label">今日步数</span>
+            </div>
+            <div class="health-stat">
+              <span class="hs-emoji">❤️</span>
+              <span class="hs-val" id="hs-hr">—</span>
+              <span class="hs-label">静息心率</span>
+            </div>
+            <div class="health-stat">
+              <span class="hs-emoji">😴</span>
+              <span class="hs-val" id="hs-sleep">—</span>
+              <span class="hs-label">昨晚睡眠</span>
+            </div>
+          </div>
+          <button class="edit-health-btn" id="btn-edit-health">✎ 编辑今日数据（自报）</button>
+
+          <!-- 经期追踪 -->
+          <div class="health-period-card" id="health-period">
+            <div class="hp-head"><span>🩸 经期追踪</span><button class="hp-edit" id="btn-edit-period">编辑</button></div>
+            <div class="hp-body">
+              <div class="hp-row"><span>预计下次经期</span><span class="hp-val" id="period-next"></span></div>
+              <div class="hp-row"><span>当前阶段</span><span class="hp-val" id="period-phase"></span></div>
+              <div class="hp-row"><span>周期天数</span><span class="hp-val" id="period-cycle"></span></div>
+            </div>
+            <div class="hp-tip" id="period-tip"></div>
+          </div>
+
+          <!-- 美甲健康 -->
+          <div class="health-period-card" style="border-left:4px solid #e85d75;">
+            <div class="hp-head"><span>💅 美甲健康</span><button class="hp-edit" id="btn-edit-mani">编辑</button></div>
+            <div class="hp-body">
+              <div class="hp-row"><span>上次美甲</span><span class="hp-val" id="mani-last"></span></div>
+              <div class="hp-row"><span>当前状态</span><span class="hp-val" id="mani-status"></span></div>
+              <div class="hp-row"><span>建议下次</span><span class="hp-val" id="mani-next"></span></div>
+            </div>
+            <div class="mani-photo" id="mani-photo"></div>
+            <div class="hp-tip" style="color:#e85d75;" id="mani-tip"></div>
+          </div>
+          <input type="file" id="mani-photo-input" accept="image/*" capture="environment" style="display:none">
+
+          <!-- 洗头日历 -->
+          <div class="health-period-card" style="border-left:4px solid #4a90d9;">
+            <div class="hp-head"><span>💆‍♀️ 洗头日历</span><button class="hp-edit" id="btn-edit-hair">编辑</button></div>
+            <div class="hp-body">
+              <div class="hp-row"><span>上次洗头</span><span class="hp-val" id="hair-last"></span></div>
+              <div class="hp-row"><span>发质类型</span><span class="hp-val" id="hair-type"></span></div>
+              <div class="hp-row"><span>建议频率</span><span class="hp-val" id="hair-freq"></span></div>
+            </div>
+            <div class="hp-tip" style="color:#4a90d9;" id="hair-tip"></div>
+            <div class="hair-mini-cal" id="hair-mini-cal"></div>
+          </div>
+
+          <!-- 本周步数 -->
+          <div class="health-weekly">
+            <div class="hw-head">📊 本周步数</div>
+            <div class="hw-bars" id="hw-bars"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="yaya"><span class="tab-ico">🧸</span><span class="tab-l">瓦奇</span></button>
+    <button class="tab-btn" data-tab="tongkuang"><span class="tab-ico">🏠</span><span class="tab-l">空间</span></button>
+    <button class="tab-btn" data-tab="nurture"><span class="tab-ico">🌱</span><span class="tab-l">养成</span></button>
+    <button class="tab-btn" data-tab="handbook"><span class="tab-ico">📖</span><span class="tab-l">手账</span></button>
+  </nav>
+
+  <!-- PAGES (hidden until opened) -->
+  <div class="fullpage" id="pg-settings">
+    <div class="pg-head"><button class="pg-back">← 返回</button><span class="pg-title">设置</span><span></span></div>
+    <div class="pg-body">
+      <div class="set-grp"><div class="set-grp-t set-grp-head"><span>设备</span><span class="demo-badge">线上演示</span></div>
+        <div class="set-r"><span>瓦奇连接状态</span><span class="set-v ok" id="device-connection">● 已连接</span></div>
+        <div class="set-r"><span>电量</span><span class="set-v" id="device-battery">87%</span></div>
+        <div class="set-r"><span>网络</span><span class="set-v" id="device-network">WiFi</span></div>
+        <div class="set-r"><span>定位来源</span><span class="set-v">浏览器 / 路线模拟</span></div>
+        <div class="set-r"><span>视觉输入</span><span class="set-v">手机 / 电脑（线上模拟）</span></div>
+        <div class="set-r"><span>位置来源</span><span class="set-v">路线模拟，未接 GPS</span></div>
+        <div class="set-r"><span>守护通知</span><span class="set-v">模拟送达，未真实拨号</span></div>
+      </div>
+      <div class="set-grp demo-console"><div class="set-grp-t">演示控制台</div>
+        <label class="set-r"><span>设备在线</span><input type="checkbox" id="demo-online" checked></label>
+        <label class="set-r"><span>模拟电量</span><span class="demo-range"><input type="range" id="demo-battery" min="1" max="100" value="87"><b id="demo-battery-value">87%</b></span></label>
+        <label class="set-r"><span>模拟网络</span><select id="demo-network"><option>WiFi</option><option>4G</option><option>弱网</option><option>离线</option></select></label>
+        <button class="demo-reset" id="demo-reset-device">恢复默认演示状态</button>
+      </div>
+      <div class="set-grp"><div class="set-grp-t">瓦奇人设</div>
+        <div class="set-r"><span>名字</span><span class="set-v">瓦奇</span></div>
+        <div class="set-r"><span>性格</span><span class="set-v">温柔 + 活泼</span></div>
+        <div class="set-r"><span>语音</span><span class="set-v">女声 · 软萌</span></div>
+      </div>
+      <div class="set-grp hl"><div class="set-grp-t">⚡ 瓦奇能量</div>
+        <div class="set-r"><span>当前能量</span><span class="set-v" id="set-energy">0</span></div>
+        <div class="set-r"><span>获得方式</span><span class="set-v">签到 · 聊天 · 摸摸 · 日记</span></div>
+        <div class="set-r"><span>用途</span><span class="set-v">兑换瓦奇装扮</span></div>
+        <div class="set-r arr" id="set-wardrobe"><span>去衣橱兑换装扮</span></div>
+      </div>
+      <div class="set-grp"><div class="set-grp-t">关系成长</div>
+        <div class="set-r"><span>陪伴天数</span><span class="set-v">23 天</span></div>
+        <div class="set-r"><span>默契度</span><span class="set-v">★★★☆</span></div>
+        <div class="set-r"><span>已解锁互动</span><span class="set-v">3 / 7</span></div>
+      </div>
+      <div class="set-grp"><div class="set-grp-t">记忆管理</div><div class="set-r arr" id="set-memory"><span>查看 / 删除瓦奇记住的内容</span></div></div>
+      <div class="set-grp"><div class="set-grp-t">通知</div>
+        <div class="set-r"><span>经期提醒</span><span class="set-v ok">🔔 开启</span></div>
+        <div class="set-r"><span>喝水提醒</span><span class="set-v off">🔕 关闭</span></div>
+        <div class="set-r"><span>每日关心推送</span><span class="set-v ok">🔔 开启</span></div>
+      </div>
+      <div class="set-grp"><div class="set-grp-t">关于</div>
+        <div class="set-r arr"><span>瓦奇的故事</span></div>
+        <div class="set-r"><span>版本号</span><span class="set-v">v1.2.0</span></div>
+        <div class="set-r arr"><span>帮助与反馈</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fullpage" id="pg-fullchat">
+    <div class="pg-head"><button class="pg-back">← 主页</button><span class="pg-title">和瓦奇的对话</span><span></span></div>
+    <div class="pg-body chat-body"><div class="fullchat-msgs" id="fullchat-msgs"></div></div>
+    <div class="input-row"><div class="input-bar">
+      <textarea class="text-input" id="text-input-fc" rows="1" placeholder="和瓦奇说点什么…" autocomplete="off"></textarea>
+      <button class="btn-mic" id="btn-mic-fc"><span class="mic-icon">🎤</span></button>
+      <button class="btn-send" id="btn-send-fc">➤</button>
+    </div></div>
+  </div>
+
+  <div class="fullpage" id="pg-calendar">
+    <div class="pg-head"><button class="pg-back">← 返回</button><span class="pg-title">女子日历</span><span></span></div>
+    <div class="pg-body cal-body">
+      <div class="cal-mcard"><div class="cal-mhead">2026 年 8 月</div><div class="cal-grid" id="cal-grid"></div></div>
+      <div class="cal-tcard" id="cal-tcard">
+        <div class="cal-tbadge">📅 历史上的今天</div>
+        <div class="cal-thero" id="cal-thero"></div>
+        <div class="cal-tname" id="cal-tname"></div>
+        <div class="cal-tyear" id="cal-tyear"></div>
+        <p class="cal-tdesc" id="cal-tdesc"></p>
+        <div class="cal-tquote" id="cal-tquote"></div>
+      </div>
+      <div class="cal-news-sect"><div class="cal-news-t">🔥 女性热点</div><div class="cal-news-feed" id="cal-news-feed"></div></div>
+    </div>
+  </div>
+
+  <!-- SHEETS / MODALS -->
+  <div class="mask" id="mask"></div>
+  <div class="sheet" id="sheet-shield">
+    <div class="sheet-grip"></div>
+    <div class="sheet-scroll">
+
+      <!-- ── 主页：功能陈列 ── -->
+      <div class="sh-view" id="sh-view-home">
+        <div class="sh-grid">
+          <button class="sh-cell" data-view="learn"><span class="sh-cell-ico">📖</span><span class="sh-cell-t">了解与预防</span><span class="sh-cell-s">场景 · 快讯</span></button>
+          <button class="sh-cell danger" data-view="sos"><span class="sh-cell-ico">🚨</span><span class="sh-cell-t">紧急求助</span><span class="sh-cell-s">长按 3 秒</span></button>
+          <button class="sh-cell" data-view="fakecall"><span class="sh-cell-ico">📞</span><span class="sh-cell-t">模拟来电</span><span class="sh-cell-s">体面脱身</span></button>
+          <button class="sh-cell" data-view="loc"><span class="sh-cell-ico">📍</span><span class="sh-cell-t">位置守护</span><span class="sh-cell-s">深夜偏离预警</span></button>
+          <button class="sh-cell" data-view="hotline"><span class="sh-cell-ico">🆘</span><span class="sh-cell-t">求助热线</span><span class="sh-cell-s">随时拨打</span></button>
+          <button class="sh-cell" data-view="talk"><span class="sh-cell-ico">💬</span><span class="sh-cell-t">只想说说话</span><span class="sh-cell-s">找瓦奇聊聊</span></button>
+        </div>
+      </div>
+
+      <!-- ── 子屏：紧急求助 ── -->
+      <div class="sh-view" id="sh-view-sos" style="display:none">
+        <div class="sh-view-head"><button class="sh-back" data-back="home">‹</button><span class="sh-view-title">紧急求助</span></div>
+        <p class="sh-view-desc">遇到危险时，长按下方按钮 3 秒触发 <span class="inline-demo">演示模式</span></p>
+        <div class="sos-row">
+          <button class="sos-btn" id="btn-call-110"><span class="sos-ico">📞</span><span class="sos-title">拨打 110</span><span class="sos-hint">长按 3 秒</span><span class="sos-fill"></span></button>
+          <button class="sos-btn" id="btn-call-em"><span class="sos-ico">🆘</span><span class="sos-title">紧急联系人</span><span class="sos-hint">长按 3 秒</span><span class="sos-fill"></span></button>
+        </div>
+        <div class="sec-hd"><span class="sec-ico">👥</span><span class="sec-t">紧急联系人</span><button class="sec-add" id="btn-add-ct">+ 添加</button></div>
+        <div class="ct-list" id="ct-list"></div>
+        <div class="ct-editor" id="ct-editor" style="display:none">
+          <input type="text" id="ct-name-input" placeholder="联系人姓名">
+          <select id="ct-relation-input" aria-label="与联系人关系">
+            <option value="家人">家人</option><option value="朋友">朋友</option><option value="伴侣">伴侣</option><option value="室友">室友</option><option value="其他">其他</option>
+          </select>
+          <input type="tel" id="ct-tel-input" placeholder="手机号码">
+          <div class="ct-editor-btns">
+            <button id="btn-ct-save" style="background:var(--go);color:#fff;border:0">保存</button>
+            <button id="btn-ct-cancel" style="border:1px solid var(--line);background:transparent">取消</button>
+          </div>
+        </div>
+        <div class="sec-hd guard-events-head"><span class="sec-ico">◷</span><span class="sec-t">最近守护事件</span></div>
+        <div class="guard-events" id="guard-events"></div>
+      </div>
+
+      <!-- ── 子屏：模拟来电 ── -->
+      <div class="sh-view" id="sh-view-fakecall" style="display:none">
+        <div class="sh-view-head"><button class="sh-back" data-back="home">‹</button><span class="sh-view-title">模拟来电</span><button class="sec-add" id="btn-fc-setting">⚙️ 设置</button></div>
+        <p class="sh-view-desc">瓦奇打给你 · 对方听到的是"家里有事"</p>
+        <div class="fakecall-card">
+          <button class="fc-big" id="btn-fakecall-now"><span class="fc-big-ico">📞</span><span class="fc-big-txt">立即来电<small>让瓦奇找个借口带你离开</small></span></button>
+          <div class="fc-config" id="fc-config" style="display:none">
+            <div class="fc-lbl">谁打给你</div>
+            <div class="fc-scenes" id="fc-roles">
+              <button class="fc-chip active" data-role="mom">👩 妈妈</button>
+              <button class="fc-chip" data-role="bff">👭 闺蜜</button>
+              <button class="fc-chip" data-role="bf">👦 男友</button>
+              <button class="fc-chip" data-role="dad">👨 爸爸</button>
+              <button class="fc-chip" data-role="yaya">🦷 瓦奇</button>
+              <button class="fc-chip" data-role="custom">✏️ 自定义</button>
+            </div>
+            <div class="fc-custom" id="fc-custom" style="display:none">
+              <input type="text" id="fc-custom-name" placeholder="来电人名字，如：室友小周" maxlength="12">
+              <input type="text" id="fc-custom-num" placeholder="显示号码，如：138****1234" maxlength="14">
+              <textarea id="fc-custom-script" rows="3" placeholder="对方说的话（每行一句）&#10;喂，你在哪儿呢？&#10;家里有点急事，能回来一下吗？"></textarea>
+              <div class="fc-custom-tip">📣 台词会由 AI 语音逐句念出来</div>
+            </div>
+            <div class="fc-lbl">语气</div>
+            <div class="fc-scenes" id="fc-moods">
+              <button class="fc-chip active" data-mood="normal">😊 正常</button>
+              <button class="fc-chip" data-mood="urgent">🚨 紧急</button>
+            </div>
+            <button class="fc-btn ghost" id="btn-fakecall-5s">⏱ 5 秒后来电</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 子屏：位置守护 ── -->
+      <div class="sh-view" id="sh-view-loc" style="display:none">
+        <div class="sh-view-head"><button class="sh-back" data-back="home">‹</button><span class="sh-view-title">位置守护</span></div>
+        <div class="loc-card">
+          <div class="loc-switch-row">
+            <div class="loc-switch-txt">
+              <div class="loc-title">深夜偏离预警</div>
+              <div class="loc-sub">深夜时段离常用地点太远，自动把位置发给紧急联系人</div>
+            </div>
+            <button class="loc-toggle" id="btn-loc-toggle"></button>
+          </div>
+
+          <div class="loc-lbl">常用地点（家 / 宿舍）</div>
+          <div class="loc-spot" id="loc-spot"></div>
+          <button class="loc-set-btn" id="btn-loc-set">📍 把当前位置设为常用地点</button>
+
+          <div class="loc-lbl">路线模拟 <span class="inline-demo">线上演示</span></div>
+          <div class="loc-demo-actions">
+            <button class="loc-demo-btn" data-loc-demo="safe"><b>安全范围内</b><small>距常用地点 280 米</small></button>
+            <button class="loc-demo-btn danger" data-loc-demo="danger"><b>模拟深夜偏离</b><small>触发守护通知闭环</small></button>
+          </div>
+
+          <div class="loc-lbl">危险时段</div>
+          <div class="loc-time-row">
+            <input type="time" id="loc-from" value="23:00">
+            <span class="loc-time-sep">至</span>
+            <input type="time" id="loc-to" value="06:00">
+          </div>
+
+          <div class="loc-lbl">偏离多少算危险</div>
+          <div class="loc-chips" id="loc-thresholds">
+            <button class="loc-chip" data-m="1000">1 公里</button>
+            <button class="loc-chip active" data-m="3000">3 公里</button>
+            <button class="loc-chip" data-m="5000">5 公里</button>
+            <button class="loc-chip" data-m="10000">10 公里</button>
+          </div>
+
+          <div class="loc-status" id="loc-status"></div>
+        </div>
+      </div>
+
+      <!-- ── 子屏：了解与预防 ── -->
+      <div class="sh-view" id="sh-view-learn" style="display:none">
+        <div class="sh-view-head"><button class="sh-back" data-back="home">‹</button><span class="sh-view-title">了解与预防</span></div>
+        <div class="sec-hd"><span class="sec-ico">🛡️</span><span class="sec-t">安全快讯</span></div>
+        <div class="snews-list" id="safety-news"></div>
+        <div class="sec-hd"><span class="sec-ico">📋</span><span class="sec-t">应对指南</span></div>
+        <div class="sc-cats" id="sc-cats"></div>
+        <div class="sc-list" id="sc-list"></div>
+      </div>
+
+      <!-- ── 子屏：求助热线 ── -->
+      <div class="sh-view" id="sh-view-hotline" style="display:none">
+        <div class="sh-view-head"><button class="sh-back" data-back="home">‹</button><span class="sh-view-title">求助热线</span></div>
+        <div class="res-list">
+          <a class="res-item" href="#"><span class="res-ico">💗</span><div class="res-bd"><b>全国妇联维权热线</b><i>12338 · 女性权益保护</i></div><span class="res-arrow">›</span></a>
+          <a class="res-item" href="#"><span class="res-ico">⚖️</span><div class="res-bd"><b>法律援助中心</b><i>12348 · 免费法律咨询</i></div><span class="res-arrow">›</span></a>
+          <a class="res-item" href="#"><span class="res-ico">💜</span><div class="res-bd"><b>心理援助热线</b><i>400-161-9995 · 心理支持</i></div><span class="res-arrow">›</span></a>
+        </div>
+      </div>
+
+    </div>
+    <button class="sheet-close" id="btn-sheet-close">收起</button>
+  </div>
+
+  <!-- 模拟来电全屏界面 -->
+  <div class="call-overlay" id="call-overlay">
+    <div class="call-timer" id="call-timer" style="display:none">00:00</div>
+    <div class="call-avatar" id="call-avatar">🦷</div>
+    <div class="call-name" id="call-name">瓦奇</div>
+    <div class="call-number" id="call-number" style="display:none"></div>
+    <div class="call-status" id="call-status">来电…</div>
+    <div class="call-script" id="call-script"></div>
+    <div class="call-actions" id="call-actions">
+      <button class="call-btn decline" id="btn-call-decline">挂断</button>
+      <button class="call-btn accept" id="btn-call-accept">接听</button>
+    </div>
+  </div>
+
+  <div class="popover" id="pop-calendar">
+    <div class="pop-head"><span>📅 女子日历</span><button class="pop-exp" id="btn-cal-expand">查看详情 →</button></div>
+    <div class="pop-body"><p class="pop-hero"></p><p class="pop-desc"></p></div>
+  </div>
+
+  <div class="modal" id="modal-confirm">
+    <div class="modal-head">确认呼叫</div>
+    <p class="modal-desc" id="confirm-desc">确定要呼叫紧急联系人吗？</p>
+    <div class="confirm-actions">
+      <button class="confirm-btn cancel" id="btn-confirm-cancel">再想想</button>
+      <button class="confirm-btn go" id="btn-confirm-go">确认呼叫</button>
+    </div>
+  </div>
+
+  <!-- 兑换码 Sheet -->
+  <div class="sheet" id="sheet-redeem">
+    <div class="sheet-grip"></div>
+    <div class="sheet-scroll">
+      <h3 class="sheet-t" id="redeem-title">解锁实体同款</h3>
+      <p class="sheet-sub">输入实体娃衣附带的兑换码，解锁同款虚拟装扮。</p>
+      <input type="text" id="redeem-input" class="redeem-input" placeholder="请输入 6 位兑换码" autocomplete="off">
+      <p class="sheet-sub" style="font-size:11px;color:var(--ink2)">demo：任意 6 位数字即可解锁</p>
+      <button class="sh-btn" id="redeem-go" style="background:var(--co);color:#fff;font-weight:600">确认解锁</button>
+    </div>
+    <button class="sheet-close" onclick="App.closeMask()">取消</button>
+  </div>
+
+  <!-- 写日记 Sheet -->
+  <div class="sheet" id="sheet-diary">
+    <div class="sheet-grip"></div>
+    <div class="sheet-scroll">
+      <h3 class="sheet-t">写日记</h3>
+      <p class="sheet-sub">今天心情怎么样？</p>
+      <div class="diary-mood" id="diary-mood"></div>
+      <textarea id="diary-text" class="diary-text" placeholder="今天发生了什么，想跟瓦奇说什么…"></textarea>
+      <button class="sh-btn" id="diary-save" style="background:var(--co);color:#fff;font-weight:600;margin-top:14px">保存</button>
+    </div>
+    <button class="sheet-close" onclick="App.closeMask()">取消</button>
+  </div>
+
+  <!-- 通用编辑 Sheet -->
+  <div class="sheet" id="sheet-edit">
+    <div class="sheet-grip"></div>
+    <div class="sheet-scroll">
+      <h3 class="sheet-t" id="edit-title">编辑</h3>
+      <div id="edit-fields"></div>
+      <button class="sh-btn" id="edit-save" style="background:var(--co);color:#fff;font-weight:600;margin-top:16px">保存</button>
+    </div>
+    <button class="sheet-close" onclick="App.closeMask()">取消</button>
+  </div>
+
+  <!-- 记忆管理页 -->
+  <div class="fullpage" id="pg-memory">
+    <div class="pg-head"><button class="pg-back">← 返回</button><span class="pg-title">记忆管理</span><span></span></div>
+    <div class="pg-body">
+      <p class="mem-count" id="memory-count"></p>
+      <div class="mem-list" id="memory-list"></div>
+      <button class="set-btn danger-mem" id="btn-clear-memory">清空全部记忆</button>
+    </div>
+  </div>
+
+  <!-- AR 投喂 -->
+  <div class="fullpage" id="pg-arfeed">
+    <div class="ar-head">
+      <button class="ar-back" onclick="closeARFeed()">←</button>
+      <button class="ar-scan-btn" onclick="arScanFood()">🔍 扫描食物</button>
+      <div class="ar-satiety-mini">
+        <span class="ar-satiety-emoji">🍽️</span>
+        <div class="ar-satiety-track"><div class="ar-satiety-fill" id="ar-satiety-fill" style="width:60%"></div></div>
+        <span class="ar-satiety-val" id="ar-satiety-val">60</span>
+      </div>
+    </div>
+    <div class="ar-canvas-wrap" id="ar-canvas-wrap">
+      <div class="ar-loading" id="ar-loading"><span>打开摄像头…</span></div>
+      <div class="ar-bubble" id="ar-bubble"></div>
+      <div class="ar-scan-loading" id="ar-scan-loading" style="display:none"><span class="spin"></span><span>正在识别食物…</span></div>
+      <div class="ar-scan-card" id="ar-scan-card">
+        <span class="ar-scan-emoji" id="ar-scan-emoji">🍎</span>
+        <div class="ar-scan-info">
+          <span class="ar-scan-name" id="ar-scan-name">苹果</span>
+          <span class="ar-scan-meta" id="ar-scan-meta">+12 饱食 · ⚡+1</span>
+        </div>
+        <div class="ar-scan-btns">
+          <button class="ar-scan-feed" onclick="arScanFeedGo()">投喂 🍽️</button>
+          <button class="ar-scan-close" onclick="arScanClose()">✕</button>
+        </div>
+      </div>
+      <video id="ar-video" playsinline muted autoplay style="display:none"></video>
+    </div>
+    <div class="ar-hotbar" id="ar-hotbar"></div>
+
+    <!-- 饭盒面板 -->
+    <div class="ar-foodbox-panel" id="ar-foodbox-panel">
+      <div class="ar-foodbox-head">
+        <span class="ar-foodbox-title">🍱 饭盒 · 收集的美食</span>
+        <button class="ar-foodbox-close" onclick="arCloseFoodbox()">×</button>
+      </div>
+      <div class="ar-foodbox-grid" id="ar-foodbox-grid"></div>
+      <div class="ar-foodbox-foot">
+        <button class="ar-foodbox-add" onclick="arOpenUpload()">📷 添加食物</button>
+        <span class="ar-foodbox-tip">点食物装备 / 取消 · 快捷栏最多 5 个</span>
+      </div>
+    </div>
+
+    <!-- 上传选择 -->
+    <div class="ar-upload-sheet" id="ar-upload-sheet">
+      <div class="ar-upload-mask" onclick="arCloseUpload()"></div>
+      <div class="ar-upload-body">
+        <div class="ar-upload-title">添加食物到饭盒</div>
+        <button class="ar-upload-opt" onclick="arUploadPhoto()">
+          <span class="ar-upload-ico">📄</span>
+          <span class="ar-upload-txt"><b>贴片</b><small>拍照，照片立起来投喂</small></span>
+        </button>
+        <button class="ar-upload-opt" onclick="arUpload3D()">
+          <span class="ar-upload-ico">🧊</span>
+          <span class="ar-upload-txt"><b>3D</b><small>拍照转 3D 食物（需 GPU 后端）</small></span>
+        </button>
+        <button class="ar-upload-cancel" onclick="arCloseUpload()">取消</button>
+      </div>
+    </div>
+
+    <input type="file" accept="image/*" capture="environment" id="ar-upload-input" onchange="arOnUploadPicked(event)" style="display:none">
+  </div>
+
+  <!-- 瓦奇眼睛：线上摄像头与视觉理解演示 -->
+  <div class="fullpage" id="pg-eyes">
+    <div class="eyes-head">
+      <button class="eyes-icon-btn" onclick="closeEyes()" title="返回" aria-label="返回">←</button>
+      <span class="eyes-title"><b>瓦奇眼睛</b><small>线上演示</small></span>
+      <button class="eyes-icon-btn" id="eyes-switch" onclick="eyesSwitchCamera()" title="切换摄像头" aria-label="切换摄像头">↻</button>
+    </div>
+    <div class="eyes-body" id="eyes-body">
+      <video id="eyes-video" playsinline autoplay muted></video>
+      <img id="eyes-photo" alt="刚刚拍摄的画面">
+      <div class="eyes-vignette"></div>
+      <div class="eyes-source" id="eyes-source"><span></span><b>手机 / 电脑摄像头</b></div>
+      <div class="eyes-focus" id="eyes-focus"><i></i><i></i><i></i><i></i></div>
+
+      <div class="eyes-loading" id="eyes-loading">
+        <span class="eyes-spinner"></span><b id="eyes-loading-text">正在打开摄像头</b>
+      </div>
+
+      <div class="eyes-error" id="eyes-error">
+        <span class="eyes-error-ico">▣</span>
+        <b id="eyes-error-title">摄像头不可用</b>
+        <small id="eyes-error-detail">允许摄像头权限后重试，或从相册选择照片</small>
+        <div class="eyes-error-actions">
+          <button onclick="eyesRetryCamera()">重试</button>
+          <button onclick="eyesPickPhoto()">选择照片</button>
+          <button class="eyes-demo-action" onclick="eyesUseDemoScene()">使用演示画面</button>
+        </div>
+      </div>
+
+      <div class="eyes-result" id="eyes-result">
+        <div class="eyes-result-top"><span class="eyes-result-source" id="eyes-result-source">本地画面分析</span><button onclick="eyesRetake()" title="关闭结果" aria-label="关闭结果">×</button></div>
+        <b class="eyes-observation" id="eyes-observation">画面光线充足</b>
+        <p id="eyes-reply">我看见啦，这个角度很清楚。</p>
+        <div class="eyes-result-actions">
+          <button class="eyes-secondary" onclick="eyesRetake()">重拍</button>
+          <button class="eyes-primary" onclick="eyesSendToChat()">带回聊天</button>
+        </div>
+      </div>
+
+      <div class="eyes-controls" id="eyes-controls">
+        <button class="eyes-gallery" onclick="eyesPickPhoto()" title="从相册选择" aria-label="从相册选择">▧</button>
+        <button class="eyes-shutter" id="eyes-shutter" onclick="eyesCapture()" title="拍摄" aria-label="拍摄"><span></span></button>
+        <button class="eyes-demo-scene" onclick="eyesUseDemoScene()" title="使用演示画面" aria-label="使用演示画面"><img src="yaya-bg.png" alt=""><span>样例</span></button>
+      </div>
+      <input type="file" accept="image/*" id="eyes-file-input" onchange="eyesOnPhotoPicked(event)" hidden>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+</div>
+
+<script src="app.js?v=20261009"></script>
+
+<!-- 空间 3D 互动 -->
+<script>
+const WAKI_TK_KEY='waki_tk';
+if(!localStorage.getItem(WAKI_TK_KEY)&&localStorage.getItem('yaya_tk')) localStorage.setItem(WAKI_TK_KEY,localStorage.getItem('yaya_tk'));
+let tkScene,tkCam,tkRend,tkWaki,tkBgPlane,tkFeedSprite=null,tkSpaces=JSON.parse(localStorage.getItem(WAKI_TK_KEY)||'[]'),tkCurId=null,tkAid=null,tkDrag=false,tkPrev={x:0,y:0},tkAng={th:0,ph:.3},tkTgt={th:0,ph:.3};
+let tkBursts=[];
+let tkPendingFeed=null;
+
+// ── 3DGS 房间 ──
+let tk3dgsViewer=null,tk3dgsScene=null,tk3dgsWaki=null,tk3dgsViolin=null,tk3dgsCurId=null;
+
+function tkSave(){localStorage.setItem(WAKI_TK_KEY,JSON.stringify(tkSpaces))}
+function tkRenderGallery(){
+  const g=document.getElementById('tk-gallery'),h=document.getElementById('tk-empty');
+  if(tkSpaces.length===0){g.innerHTML='';h.style.display='flex';return}
+  h.style.display='none';
+  g.innerHTML=tkSpaces.map((s,i)=>{
+    const thumb=s.type==='3dgs'
+      ? `<img class="tk-thumb" src="${s.thumb||'models/holmes-room.jpg'}" style="object-fit:cover">`
+      : `<img class="tk-thumb" src="${s.dataUrl}">`;
+    const delBtn=(s.id==='tk_3dgs_room')?'':`<button class="tk-del" onclick="event.stopPropagation();tkDel('${s.id}')">✕</button>`;
+    return `<div class="tk-card" onclick="tkEnter('${s.id}')">${thumb}${delBtn}<div class="tk-info"><div class="tk-name">${s.name}</div><div class="tk-date">${s.date}</div></div></div>`;
+  }).join('');
+}
+function tkSelectPhoto(){document.getElementById('tk-photo-input').click()}
+function tkOnPhotoSelected(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=ev=>{
+    const d=new Date(),sp={id:'tk_'+Date.now(),name:'空间'+(tkSpaces.length+1),dataUrl:ev.target.result,date:(d.getMonth()+1)+'月'+d.getDate()+'日'};
+    tkSpaces.unshift(sp);tkSave();tkRenderGallery();tkEnter(sp.id);
+    tkRecognize(sp, ev.target.result);
+  };r.readAsDataURL(f);e.target.value='';
+}
+async function tkRecognize(sp, dataUrl){
+  if(typeof App==='undefined' || !App.getAIReplyVision) return;
+  tkShowBubble('让我看看…👀');
+  const res=await App.getAIReplyVision(dataUrl);
+  if(!res) return;
+  if(res.feed && res.feed.emoji){
+    sp.feed=res.feed; sp.name=res.feed.emoji+' '+res.feed.item_name;
+    tkSave(); tkRenderGallery();
+    document.getElementById('tk-current-name').textContent=sp.name;
+    tkFeed(res.feed);
+  }
+  tkShowBubble(res.reply || '我看到啦～');
+}
+function tkDel(id){if(!confirm('删除这个空间？'))return;tkSpaces=tkSpaces.filter(s=>s.id!==id);tkSave();tkRenderGallery();if(tkCurId===id)tkBackToList()}
+function tkEnter(id){
+  const s=tkSpaces.find(s=>s.id===id);if(!s)return;
+  if(s.type==='3dgs'){tk3dgsEnter(s);return}
+  tkCurId=id;
+  document.getElementById('tk-gallery-view').style.display='none';
+  const v=document.getElementById('tk-3d-view');v.style.display='flex';
+  document.getElementById('tk-current-name').textContent=s.name;
+  tkInit(s.dataUrl, s.feed);
+}
+function tkBackToList(){
+  const s=tkSpaces.find(s=>s.id===tkCurId||s.id===tk3dgsCurId);
+  if(s&&s.type==='3dgs')tk3dgsDestroy();
+  else tkDestroy();
+  tkCurId=null;tk3dgsCurId=null;
+  document.getElementById('tk-gallery-view').style.display='flex';
+  document.getElementById('tk-3d-view').style.display='none';
+  document.getElementById('tk-3dgs-view').style.display='none';
+}
+async function tkInit(dataUrl, feed){
+  const wrap=document.getElementById('tk-canvas-wrap');
+  const loading=document.getElementById('tk-loading');
+  if(loading) loading.style.display='flex';
+  try{
+    tkDestroy();
+    const r=wrap.getBoundingClientRect(),w=r.width,h=r.height;
+    if(!w||!h) throw new Error('空间尺寸为0，请返回后重进');
+    const THREE=await import('three'); window.THREE=THREE;
+    const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js');
+    tkRend=new THREE.WebGLRenderer({antialias:true,alpha:true});tkRend.setSize(w,h,false);tkRend.setPixelRatio(Math.min(devicePixelRatio,2));tkRend.shadowMap.enabled=true;tkRend.shadowMap.type=THREE.PCFSoftShadowMap;wrap.appendChild(tkRend.domElement);
+    tkScene=new THREE.Scene();
+    tkCam=new THREE.PerspectiveCamera(45,w/h,.1,50);tkCam.position.set(0,.5,3.5);tkCam.lookAt(0,-.3,0);
+    tkScene.add(new THREE.AmbientLight(0xfff5f0,2.5));
+    const sun=new THREE.DirectionalLight(0xffffff,3);sun.position.set(3,5,2);sun.castShadow=true;sun.shadow.mapSize.set(512,512);sun.shadow.camera.near=.1;sun.shadow.camera.far=20;sun.shadow.camera.left=-5;sun.shadow.camera.right=5;sun.shadow.camera.top=5;sun.shadow.camera.bottom=-5;tkScene.add(sun);
+    try{
+      const tex=await new Promise(res=>new THREE.TextureLoader().load(dataUrl,res));
+      tex.colorSpace=THREE.SRGBColorSpace;
+      tkScene.background=tex;
+      tkScene.backgroundBlurriness=0.32;
+      tkScene.backgroundIntensity=0.82;
+    }catch(e){console.warn('bg:',e.message)}
+    const gnd=new THREE.Mesh(new THREE.PlaneGeometry(3.4,3.4),new THREE.ShadowMaterial({opacity:.5}));
+    gnd.rotation.x=-Math.PI/2;gnd.position.y=-.62;gnd.receiveShadow=true;tkScene.add(gnd);
+    const dragEl=wrap;
+    dragEl.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('button'))return;tkDrag=true;tkPrev.x=e.clientX;tkPrev.y=e.clientY;try{dragEl.setPointerCapture(e.pointerId)}catch(_){}});
+    dragEl.addEventListener('pointermove',e=>{if(!tkDrag)return;tkTgt.th-=(e.clientX-tkPrev.x)*.006;tkTgt.ph=Math.max(-.6,Math.min(.8,tkTgt.ph+(e.clientY-tkPrev.y)*.006));tkPrev.x=e.clientX;tkPrev.y=e.clientY});
+    dragEl.addEventListener('pointerup',e=>{tkDrag=false;try{dragEl.releasePointerCapture(e.pointerId)}catch(_){}});
+    dragEl.addEventListener('pointercancel',()=>tkDrag=false);
+    dragEl.addEventListener('wheel',e=>{e.preventDefault();if(tkCam)tkCam.position.z=Math.max(1.8,Math.min(6,tkCam.position.z+e.deltaY*.005))},{passive:false});
+    dragEl.addEventListener('dblclick',()=>tkShowBubble());
+    tkStartLoop();
+    new GLTFLoader().load('models/yaya.glb', gltf=>{
+      try{
+        const model=gltf.scene;
+        model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+        const box=new THREE.Box3().setFromObject(model);
+        const c=new THREE.Vector3(),sz=new THREE.Vector3();
+        box.getCenter(c);box.getSize(sz);
+        const s=.85/Math.max(sz.x,sz.y,sz.z);
+        model.position.sub(c);
+        const holder=new THREE.Group();
+        holder.add(model);
+        holder.scale.setScalar(s);
+        holder.position.set(0,-.25,0);
+        tkWaki=holder;tkScene.add(tkWaki);
+      }catch(e){console.warn('GLB:',e.message)}
+      if(loading) loading.style.display='none';
+      if(feed && feed.emoji) tkFeed(feed);
+      if(tkPendingFeed){const f=tkPendingFeed;tkPendingFeed=null;tkFeed(f);}
+    }, undefined, err=>{
+      console.warn('瓦奇模型加载失败:',err&&err.message);
+      if(loading) loading.style.display='none';
+      tkShowBubble('😢 瓦奇模型加载失败，检查 models/yaya.glb');
+    });
+  }catch(e){
+    console.error('空间初始化失败:',e);
+    wrap.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-size:14px;flex-direction:column;gap:10px"><span style="font-size:32px">😢</span><span>空间加载失败</span><span style="font-size:12px;opacity:.6">'+(e&&e.message)+'</span></div>';
+  }
+}
+function tkStartLoop(){
+  (function loop(){tkAid=requestAnimationFrame(loop);if(!tkScene||!tkCam)return;
+    tkAng.th+=(tkTgt.th-tkAng.th)*.08;tkAng.ph+=(tkTgt.ph-tkAng.ph)*.08;
+    const rr=tkCam.position.length();tkCam.position.x=rr*Math.sin(tkAng.th)*Math.cos(tkAng.ph);tkCam.position.y=rr*Math.sin(tkAng.ph);tkCam.position.z=rr*Math.cos(tkAng.th)*Math.cos(tkAng.ph);tkCam.lookAt(0,-.25,0);
+    if(tkWaki){const t=performance.now()*.001;tkWaki.scale.setScalar(1+Math.sin(t*1.74)*.035)}
+    if(tkFeedSprite)tkFeedUpdate(tkFeedSprite);
+    if(tkBursts.length){const now=performance.now();for(let i=tkBursts.length-1;i>=0;i--){const sp=tkBursts[i],k=(now-sp.userData.born)/sp.userData.dur;if(k>=1){tkScene.remove(sp);sp.material.map.dispose();sp.material.dispose();tkBursts.splice(i,1);continue}sp.position.x+=sp.userData.vx*.02;sp.position.y+=sp.userData.vy*.02;sp.scale.setScalar((.12+.14*Math.sin(k*Math.PI))*(1-k*.5));sp.material.opacity=1-k}}
+    tkRend.render(tkScene,tkCam);
+  })();
+}
+function tkFeed(feed){
+  if(!tkScene || !feed || !feed.emoji) return;
+  if(!tkWaki){ tkPendingFeed=feed; return; }  // 瓦奇还没加载完，先存着
+  try{
+    const cv=document.createElement('canvas');cv.width=cv.height=256;
+    const ctx=cv.getContext('2d');ctx.font='190px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(feed.emoji,128,140);
+    const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
+    tkFeedSprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false}));
+    tkFeedSprite.scale.setScalar(0);
+    const mouth=new THREE.Vector3(0,.15,.35);
+    if(tkWaki){const b=new THREE.Box3().setFromObject(tkWaki),c=new THREE.Vector3(),sz=new THREE.Vector3();b.getCenter(c);b.getSize(sz);mouth.set(c.x,c.y+sz.y*.18,b.max.z+.22)}
+    tkFeedSprite.userData={born:performance.now(),item:feed.item_name,phase:'fly',dur:1.5,start:new THREE.Vector3(.85,-.5,1.7),mouth:mouth};
+    tkScene.add(tkFeedSprite);
+  }catch(e){console.warn('feed sprite:',e.message)}
+}
+function tkFeedUpdate(sp){
+  const u=sp.userData,now=performance.now();
+  if(u.phase==='fly'){
+    let k=Math.min(1,(now-u.born)/1000/u.dur);k=k*k*(3-2*k);
+    sp.position.lerpVectors(u.start,u.mouth,k);sp.position.y+=Math.sin(k*Math.PI)*.55;
+    sp.scale.setScalar(.34+.06*Math.sin(k*Math.PI));
+    if(k>=1){u.phase='eat';u.eaten=now}
+  }else if(u.phase==='eat'){
+    const k=Math.min(1,(now-u.eaten)/320);
+    sp.scale.setScalar(.34*(1-k));
+    if(tkWaki)tkWaki.scale.setScalar(1+Math.sin(k*Math.PI)*.22);
+    if(k>=1){tkScene.remove(sp);tkFeedSprite=null;tkFeedBurst(u.mouth)}
+  }
+}
+function tkFeedBurst(pos){
+  const hearts=['💗','💕','✨','💖','💞'];
+  for(let i=0;i<6;i++){
+    try{
+      const cv=document.createElement('canvas');cv.width=cv.height=128;
+      const ctx=cv.getContext('2d');ctx.font='86px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(hearts[i%hearts.length],64,72);
+      const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
+      const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false}));
+      sp.position.copy(pos);sp.scale.setScalar(.12);
+      const a=Math.random()*Math.PI*2;sp.userData={born:performance.now(),dur:900+Math.random()*400,vx:Math.cos(a)*.5,vy:.7+Math.random()*.6};
+      tkScene.add(sp);tkBursts.push(sp);
+    }catch(e){}
+  }
+}
+function tkDestroy(){if(tkAid){cancelAnimationFrame(tkAid);tkAid=null}if(tkRend){const p=tkRend.domElement.parentElement;if(p)p.removeChild(tkRend.domElement);tkRend.dispose();tkRend=null}tkScene=null;tkCam=null;tkWaki=null;tkBgPlane=null;tkFeedSprite=null;tkBursts=[];tkPendingFeed=null}
+function tkShowBubble(msg){
+  const b=document.getElementById('tk-bubble'),msgs=msg?[msg]:['主人～你来啦！🥰','瓦奇在这里陪你呢 ✨','今天也要开心！💕','有瓦奇在什么都不怕 🛡️','摸一下瓦奇的脑袋吧～🧸'];
+  b.textContent=msgs[Math.floor(Math.random()*msgs.length)];b.classList.add('show');clearTimeout(b._t);b._t=setTimeout(()=>b.classList.remove('show'),3500);
+}
+function tkRename(){
+  if(!tkCurId) return;
+  const s=tkSpaces.find(x=>x.id===tkCurId); if(!s) return;
+  const name=prompt('给这个空间起个名字吧：', s.name);
+  if(!name || !name.trim()) return;
+  s.name=name.trim(); tkSave(); tkRenderGallery();
+  document.getElementById('tk-current-name').textContent=s.name;
+}
+function tkSnapPhoto(){if(!tkRend)return;tkRend.render(tkScene,tkCam);const a=document.createElement('a');a.download='瓦奇_空间.png';a.href=tkRend.domElement.toDataURL('image/png');a.click();tkShowBubble('📸 已保存到相册')}
+function tkResetCamera(){tkTgt.th=0;tkTgt.ph=.3;if(tkCam){tkCam.position.set(0,.5,3.5);tkCam.lookAt(0,-.3,0)}tkShowBubble('🔄 视角已重置')}
+function tkSendChat(){const i=document.getElementById('tk-chat-input'),t=i.value.trim();if(!t)return;i.value='';tkShowBubble('💬 '+t)}
+tkRenderGallery();
+
+/* ── AR 投喂（实时摄像头）────────────────────────── */
+let arScene,arCam,arRend,arWaki,arStream=null,arVideo=null,arBgTex=null,arFeedSprite=null,arAid=null,arDrag=false,arPrev={x:0,y:0},arAng={th:0,ph:.3},arTgt={th:0,ph:.3};
+let arBursts=[];
+let arPendingFeed=null;
+
+/* ── 瓦奇眼睛：摄像头 → 截图 → 视觉回应 ── */
+let eyesStream=null,eyesFacing='environment',eyesFrame=null,eyesVisionResult=null,eyesBusy=false,eyesInputKind='camera';
+function eyesStopStream(){
+  if(eyesStream){try{eyesStream.getTracks().forEach(t=>t.stop())}catch(e){}eyesStream=null}
+  const video=document.getElementById('eyes-video');if(video){video.srcObject=null;video.classList.remove('show')}
+}
+function eyesSetLoading(show,text){
+  const loading=document.getElementById('eyes-loading');
+  const label=document.getElementById('eyes-loading-text');
+  if(label&&text)label.textContent=text;
+  if(loading)loading.classList.toggle('show',!!show);
+}
+function eyesShowError(title,detail){
+  eyesSetLoading(false);
+  const panel=document.getElementById('eyes-error');
+  const titleEl=document.getElementById('eyes-error-title');
+  const detailEl=document.getElementById('eyes-error-detail');
+  if(titleEl)titleEl.textContent=title||'摄像头不可用';
+  if(detailEl)detailEl.textContent=detail||'允许摄像头权限后重试，或从相册选择照片';
+  if(panel)panel.classList.add('show');
+}
+function eyesResetPanels(){
+  const error=document.getElementById('eyes-error');if(error)error.classList.remove('show');
+  const result=document.getElementById('eyes-result');if(result)result.classList.remove('show');
+  const photo=document.getElementById('eyes-photo');if(photo)photo.classList.remove('show');
+  const focus=document.getElementById('eyes-focus');if(focus)focus.classList.remove('hidden');
+  const controls=document.getElementById('eyes-controls');if(controls)controls.classList.remove('hidden');
+  eyesFrame=null;eyesVisionResult=null;eyesBusy=false;
+}
+async function openEyes(){
+  const pg=document.getElementById('pg-eyes'); if(pg) pg.classList.add('open');
+  eyesResetPanels();
+  await eyesStartCamera();
+}
+async function eyesStartCamera(){
+  const video=document.getElementById('eyes-video');
+  const source=document.querySelector('#eyes-source b');
+  const switchBtn=document.getElementById('eyes-switch');
+  eyesStopStream();eyesSetLoading(true,'正在打开摄像头');
+  const error=document.getElementById('eyes-error');if(error)error.classList.remove('show');
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    eyesShowError('浏览器不支持摄像头','可以从相册选择一张照片继续体验');return;
+  }
+  try{
+    eyesStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:eyesFacing}},audio:false});
+    video.setAttribute('playsinline',''); video.muted=true; video.autoplay=true;
+    video.srcObject=eyesStream;
+    await video.play().catch(()=>{});
+    eyesSetLoading(false);video.classList.add('show');
+    if(source)source.textContent=eyesFacing==='environment'?'后置摄像头':'前置摄像头';
+    const tracks=eyesStream.getVideoTracks?eyesStream.getVideoTracks():[];
+    const settings=tracks[0]&&tracks[0].getSettings?tracks[0].getSettings():{};
+    if(switchBtn)switchBtn.style.visibility=settings.facingMode||tracks.length?'visible':'hidden';
+  }catch(e){
+    const denied=e&&(e.name==='NotAllowedError'||e.name==='SecurityError');
+    eyesShowError(denied?'没有摄像头权限':'摄像头打开失败',denied?'在浏览器中允许权限，或从相册选择照片':'检查摄像头是否被其他应用占用');
+  }
+}
+function eyesRetryCamera(){eyesResetPanels();eyesStartCamera()}
+function eyesSwitchCamera(){
+  if(eyesBusy)return;
+  eyesFacing=eyesFacing==='environment'?'user':'environment';
+  eyesResetPanels();eyesStartCamera();
+}
+function eyesPickPhoto(){const input=document.getElementById('eyes-file-input');if(input)input.click()}
+function eyesOnPhotoPicked(event){
+  const file=event.target.files&&event.target.files[0];event.target.value='';if(!file)return;
+  if(!file.type.startsWith('image/')){if(typeof App!=='undefined')App.toast('请选择图片文件');return}
+  const reader=new FileReader();reader.onload=()=>eyesAnalyzeImage(reader.result,'album');reader.readAsDataURL(file);
+}
+async function eyesUseDemoScene(){
+  if(eyesBusy)return;
+  try{
+    const res=await fetch('yaya-bg.png',{cache:'no-store'});
+    if(!res.ok)throw Error('demo image unavailable');
+    const blob=await res.blob();
+    const reader=new FileReader();
+    reader.onload=()=>eyesAnalyzeImage(reader.result,'demo');
+    reader.readAsDataURL(blob);
+  }catch(e){
+    eyesAnalyzeImage('yaya-bg.png','demo');
+  }
+}
+function eyesSnapFrame(){
+  const video=document.getElementById('eyes-video');
+  if(!video||!video.videoWidth)return null;
+  const max=720;let width=video.videoWidth,height=video.videoHeight;
+  if(width>max){height=Math.round(height*max/width);width=max}
+  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+  canvas.getContext('2d').drawImage(video,0,0,width,height);
+  return canvas.toDataURL('image/jpeg',0.76);
+}
+function eyesCapture(){
+  if(eyesBusy)return;
+  const frame=eyesSnapFrame();
+  if(!frame){if(typeof App!=='undefined')App.toast('摄像头还没准备好');return}
+  eyesAnalyzeImage(frame,'camera');
+}
+function eyesImageStats(dataUrl){
+  return new Promise((resolve,reject)=>{
+    const image=new Image();image.onload=()=>{
+      const size=48,canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;
+      const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0,size,size);
+      const pixels=ctx.getImageData(0,0,size,size).data;
+      let light=0,red=0,blue=0,variance=0,count=0;
+      for(let i=0;i<pixels.length;i+=16){const r=pixels[i],g=pixels[i+1],b=pixels[i+2],l=.2126*r+.7152*g+.0722*b;light+=l;red+=r;blue+=b;variance+=l*l;count++}
+      const brightness=light/count,spread=Math.sqrt(Math.max(0,variance/count-brightness*brightness));
+      resolve({brightness,warmth:(red-blue)/count,contrast:spread});
+    };image.onerror=reject;image.src=dataUrl;
+  });
+}
+async function eyesAnalyzeImage(dataUrl,inputKind){
+  if(eyesBusy)return;eyesBusy=true;eyesFrame=dataUrl;eyesVisionResult=null;eyesInputKind=inputKind||'camera';
+  eyesStopStream();
+  const error=document.getElementById('eyes-error');if(error)error.classList.remove('show');
+  const result=document.getElementById('eyes-result');if(result)result.classList.remove('show');
+  const photo=document.getElementById('eyes-photo');if(photo){photo.src=dataUrl;photo.classList.add('show')}
+  const focus=document.getElementById('eyes-focus');if(focus)focus.classList.add('hidden');
+  const controls=document.getElementById('eyes-controls');if(controls)controls.classList.add('hidden');
+  const source=document.querySelector('#eyes-source b');
+  if(source)source.textContent=eyesInputKind==='album'?'相册照片':eyesInputKind==='demo'?'内置演示画面':'刚刚拍摄';
+  eyesSetLoading(true,'瓦奇正在看');
+  let response=null;
+  if(eyesInputKind!=='demo'){
+    try{
+      response=await Promise.race([App.getAIReplyVision(dataUrl),new Promise(resolve=>setTimeout(()=>resolve(null),4500))]);
+    }catch(e){}
+  }
+  if(response&&response.reply){
+    eyesVisionResult={reply:response.reply,observation:response.observation||'瓦奇看完了这张画面',source:'AI 视觉识别',isDemo:false};
+  }else{
+    try{eyesVisionResult=App.describeVisionStats(await eyesImageStats(dataUrl))}
+    catch(e){eyesVisionResult={reply:'画面已经收到啦，我们可以回聊天里慢慢说。',observation:'已获取画面',source:'本地画面分析',isDemo:true}}
+  }
+  eyesSetLoading(false);eyesBusy=false;eyesRenderResult();
+}
+function eyesRenderResult(){
+  if(!eyesVisionResult)return;
+  const source=document.getElementById('eyes-result-source');if(source)source.textContent=eyesVisionResult.source+(eyesInputKind==='demo'?' · 演示画面':'');
+  const observation=document.getElementById('eyes-observation');if(observation)observation.textContent=eyesVisionResult.observation;
+  const reply=document.getElementById('eyes-reply');if(reply)reply.textContent=eyesVisionResult.reply;
+  const result=document.getElementById('eyes-result');if(result)result.classList.add('show');
+}
+function eyesRetake(){eyesResetPanels();eyesStartCamera()}
+function eyesSendToChat(){
+  if(!eyesFrame||!eyesVisionResult||typeof App==='undefined')return;
+  const reply=eyesVisionResult.reply;
+  App.addMsgMedia('me',{type:'image',src:eyesFrame});App.addMsg('yy',reply);
+  Store.data.chatHistory.push({who:'me',type:'image',src:eyesFrame,time:Date.now()},{who:'yy',text:reply,time:Date.now()});Store.save();
+  App.award(5,'聊天','chat');closeEyes();App.switchTab('yaya');App.showBubble(reply);App.toast('已带回和瓦奇的聊天');
+}
+function closeEyes(){
+  eyesStopStream();eyesSetLoading(false);eyesResetPanels();
+  const pg=document.getElementById('pg-eyes'); if(pg) pg.classList.remove('open');
+}
+
+function openARFeed(){
+  document.getElementById('pg-arfeed').classList.add('open');
+  if(typeof App!=='undefined') App.renderSatiety();
+  arInit();
+}
+function closeARFeed(){
+  arDestroy();
+  document.getElementById('pg-arfeed').classList.remove('open');
+}
+
+function arRenderHotbar(){
+  if(typeof App!=='undefined') App.renderHotbar();
+}
+
+function arEatFood(id){
+  const it=App.foodboxItems().find(x=>x.id===id); if(!it) return;
+  if(!App.feedFood(it)) return;   // 太饱则 toast 提示并返回
+  arFeedItem(it);
+  const lines=['啊呜～好吃！'+(it.emoji||'😋'),'谢谢主人投喂 💕','好香呀，瓦奇喜欢！','还要还要～'+(it.emoji||'🥰')];
+  arShowBubble(lines[Math.floor(Math.random()*lines.length)]);
+}
+
+function arOpenFoodbox(){
+  const p=document.getElementById('ar-foodbox-panel');
+  if(!p) return;
+  if(typeof App!=='undefined') App.renderFoodbox();
+  p.classList.add('open');
+}
+function arCloseFoodbox(){
+  const p=document.getElementById('ar-foodbox-panel'); if(p) p.classList.remove('open');
+}
+function arOpenUpload(){
+  const s=document.getElementById('ar-upload-sheet'); if(s) s.classList.add('open');
+}
+function arCloseUpload(){
+  const s=document.getElementById('ar-upload-sheet'); if(s) s.classList.remove('open');
+}
+function arUploadPhoto(){ App._arUploadMode='photo'; arCloseUpload(); arPickPhoto(); }
+function arUpload3D(){ App._arUploadMode='mesh'; arCloseUpload(); arPickPhoto(); }
+function arPickPhoto(){ const i=document.getElementById('ar-upload-input'); if(i) i.click(); }
+function arOnUploadPicked(e){
+  const file=e.target.files&&e.target.files[0]; e.target.value='';
+  if(!file || typeof App==='undefined') return;
+  const mode=App._arUploadMode||'photo'; App._arUploadMode=null;
+  const refresh=()=>{ App.renderFoodbox(); App.renderHotbar(); arResumeVideo(); };
+  if(mode==='mesh'){ App.uploadFood3D(file).then(refresh); }
+  else { App.uploadFoodPhoto(file).then(refresh); }
+}
+function arResumeVideo(){ if(arVideo && arStream){ try{ arVideo.srcObject=arStream; arVideo.play().catch(()=>{}); }catch(e){} } }
+
+async function arInit(){
+  const wrap=document.getElementById('ar-canvas-wrap');
+  const loading=document.getElementById('ar-loading');
+  if(loading) loading.style.display='flex';
+  try{
+    arDestroy();
+    const r=wrap.getBoundingClientRect(),w=r.width,h=r.height;
+    if(!w||!h) throw new Error('空间尺寸为0');
+
+    arStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}, audio:false});
+    let video=document.getElementById('ar-video');
+    if(!video){ video=document.createElement('video'); video.id='ar-video'; wrap.appendChild(video); }
+    video.setAttribute('playsinline',''); video.muted=true; video.autoplay=true;
+    video.srcObject=arStream; arVideo=video;
+    await video.play().catch(()=>{});
+
+    const THREE=await import('three'); window.THREE=THREE;
+    const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js');
+    arRend=new THREE.WebGLRenderer({antialias:true,alpha:true});arRend.setSize(w,h,false);arRend.setPixelRatio(Math.min(devicePixelRatio,2));wrap.appendChild(arRend.domElement);
+    arScene=new THREE.Scene();
+    arCam=new THREE.PerspectiveCamera(45,w/h,.1,50);arCam.position.set(0,.5,3.5);arCam.lookAt(0,-.3,0);
+
+    arBgTex=new THREE.VideoTexture(video);arBgTex.colorSpace=THREE.SRGBColorSpace;
+    arScene.background=arBgTex;
+    arScene.backgroundBlurriness=0.12;
+    arScene.backgroundIntensity=0.9;
+
+    arScene.add(new THREE.AmbientLight(0xfff5f0,2.6));
+    const sun=new THREE.DirectionalLight(0xffffff,2.6);sun.position.set(3,5,2);arScene.add(sun);
+
+    wrap.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('button'))return;arDrag=true;arPrev.x=e.clientX;arPrev.y=e.clientY;try{wrap.setPointerCapture(e.pointerId)}catch(_){}});
+    wrap.addEventListener('pointermove',e=>{if(!arDrag)return;arTgt.th-=(e.clientX-arPrev.x)*.006;arTgt.ph=Math.max(-.6,Math.min(.8,arTgt.ph+(e.clientY-arPrev.y)*.006));arPrev.x=e.clientX;arPrev.y=e.clientY});
+    wrap.addEventListener('pointerup',e=>{arDrag=false;try{wrap.releasePointerCapture(e.pointerId)}catch(_){}});
+    wrap.addEventListener('pointercancel',()=>arDrag=false);
+    wrap.addEventListener('wheel',e=>{e.preventDefault();if(arCam)arCam.position.z=Math.max(1.8,Math.min(6,arCam.position.z+e.deltaY*.005))},{passive:false});
+    wrap.addEventListener('dblclick',()=>arShowBubble());
+
+    arStartLoop();
+    arRenderHotbar();
+    new GLTFLoader().load('models/yaya.glb', gltf=>{
+      try{
+        const model=gltf.scene;
+        model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+        const box=new THREE.Box3().setFromObject(model);
+        const c=new THREE.Vector3(),sz=new THREE.Vector3();
+        box.getCenter(c);box.getSize(sz);
+        const s=.85/Math.max(sz.x,sz.y,sz.z);
+        model.position.sub(c);
+        const holder=new THREE.Group();
+        holder.add(model);
+        holder.scale.setScalar(s);
+        holder.position.set(0,-.25,0);
+        arWaki=holder;arScene.add(arWaki);
+      }catch(e){console.warn('GLB:',e.message)}
+      if(loading) loading.style.display='none';
+      if(arPendingFeed){const it=arPendingFeed;arPendingFeed=null;arFeedItem(it);}
+      arShowBubble('主人～瓦奇在这里，喂我吃点好吃的吧 🍎');
+    }, undefined, err=>{
+      console.warn('瓦奇模型加载失败:',err&&err.message);
+      if(loading) loading.style.display='none';
+      arShowBubble('😢 瓦奇模型加载失败');
+    });
+  }catch(e){
+    console.error('AR 初始化失败:',e);
+    arDestroy();
+    const msg=(e && (e.name==='NotAllowedError'||e.name==='SecurityError'))?'没有摄像头权限，请在浏览器里允许摄像头':'摄像头打开失败';
+    wrap.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-size:14px;flex-direction:column;gap:10px;padding:20px;text-align:center"><span style="font-size:32px">📷</span><span>'+msg+'</span><span style="font-size:12px;opacity:.6">请用 http://localhost 打开，并允许摄像头权限</span></div>';
+  }
+}
+
+function arStartLoop(){
+  (function loop(){arAid=requestAnimationFrame(loop);if(!arScene||!arCam)return;
+    if(arBgTex) arBgTex.needsUpdate=true;
+    arAng.th+=(arTgt.th-arAng.th)*.08;arAng.ph+=(arTgt.ph-arAng.ph)*.08;
+    const rr=arCam.position.length();arCam.position.x=rr*Math.sin(arAng.th)*Math.cos(arAng.ph);arCam.position.y=rr*Math.sin(arAng.ph);arCam.position.z=rr*Math.cos(arAng.th)*Math.cos(arAng.ph);arCam.lookAt(0,-.25,0);
+    if(arWaki){const t=performance.now()*.001;arWaki.scale.setScalar(1+Math.sin(t*1.74)*.035)}
+    if(arFeedSprite)arFeedUpdate(arFeedSprite);
+    if(arBursts.length){const now=performance.now();for(let i=arBursts.length-1;i>=0;i--){const sp=arBursts[i],k=(now-sp.userData.born)/sp.userData.dur;if(k>=1){arScene.remove(sp);sp.material.map.dispose();sp.material.dispose();arBursts.splice(i,1);continue}sp.position.x+=sp.userData.vx*.02;sp.position.y+=sp.userData.vy*.02;sp.scale.setScalar((.12+.14*Math.sin(k*Math.PI))*(1-k*.5));sp.material.opacity=1-k}}
+    arRend.render(arScene,arCam);
+  })();
+}
+
+function arRoundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function arMakeEmojiSticker(emoji){
+  const cv=document.createElement('canvas');cv.width=cv.height=256;
+  const ctx=cv.getContext('2d');
+  ctx.shadowColor='rgba(0,0,0,.28)';ctx.shadowBlur=14;ctx.shadowOffsetY=6;
+  ctx.fillStyle='#fff';arRoundRect(ctx,14,14,228,228,34);ctx.fill();
+  ctx.shadowColor='transparent';
+  ctx.font='150px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(emoji,128,138);
+  const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;return tex;
+}
+function arMakePhotoSticker(dataUrl, cb){
+  const img=new Image();
+  img.onload=()=>{
+    try{
+      const cv=document.createElement('canvas');cv.width=cv.height=256;
+      const ctx=cv.getContext('2d');
+      ctx.shadowColor='rgba(0,0,0,.28)';ctx.shadowBlur=14;ctx.shadowOffsetY=6;
+      ctx.fillStyle='#fff';arRoundRect(ctx,14,14,228,228,34);ctx.fill();
+      ctx.shadowColor='transparent';
+      ctx.save();arRoundRect(ctx,24,24,208,208,24);ctx.clip();
+      const s=Math.max(208/img.width,208/img.height),w=img.width*s,h=img.height*s;
+      ctx.drawImage(img,(256-w)/2,(256-h)/2,w,h);ctx.restore();
+      const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;cb(tex);
+    }catch(e){cb(null)}
+  };
+  img.onerror=()=>cb(null);
+  img.src=dataUrl;
+}
+function arSpawnFeedSprite(tex, name, start){
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false}));
+  sp.scale.setScalar(0);
+  const mouth=new THREE.Vector3(0,.15,.35);
+  if(arWaki){const b=new THREE.Box3().setFromObject(arWaki),c=new THREE.Vector3(),sz=new THREE.Vector3();b.getCenter(c);b.getSize(sz);mouth.set(c.x,c.y+sz.y*.18,b.max.z+.22)}
+  sp.userData={born:performance.now(),item:name,phase:'fly',dur:1.5,start:start||new THREE.Vector3(.85,-.5,1.7),mouth:mouth};
+  arFeedSprite=sp;
+  arScene.add(sp);
+}
+function arFeedItem(item){
+  if(!arScene || !item) return;
+  if(!arWaki){ arPendingFeed=item; return; }
+  try{
+    if(item.kind==='photo' && item.img){
+      arMakePhotoSticker(item.img, tex=>{ if(tex&&arScene) arSpawnFeedSprite(tex,item.name); });
+    }else{
+      arSpawnFeedSprite(arMakeEmojiSticker(item.emoji||'🍽️'), item.name);
+    }
+  }catch(e){console.warn('feed sprite:',e.message)}
+}
+
+function arFeedUpdate(sp){
+  const u=sp.userData,now=performance.now();
+  if(u.phase==='fly'){
+    let k=Math.min(1,(now-u.born)/1000/u.dur);k=k*k*(3-2*k);
+    sp.position.lerpVectors(u.start,u.mouth,k);sp.position.y+=Math.sin(k*Math.PI)*.55;
+    sp.scale.setScalar(.34+.06*Math.sin(k*Math.PI));
+    if(k>=1){u.phase='eat';u.eaten=now}
+  }else if(u.phase==='eat'){
+    const k=Math.min(1,(now-u.eaten)/320);
+    sp.scale.setScalar(.34*(1-k));
+    if(arWaki)arWaki.scale.setScalar(1+Math.sin(k*Math.PI)*.22);
+    if(k>=1){arScene.remove(sp);arFeedSprite=null;arFeedBurst(u.mouth)}
+  }
+}
+
+function arFeedBurst(pos){
+  const hearts=['💗','💕','✨','💖','💞'];
+  for(let i=0;i<6;i++){
+    try{
+      const cv=document.createElement('canvas');cv.width=cv.height=128;
+      const ctx=cv.getContext('2d');ctx.font='86px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(hearts[i%hearts.length],64,72);
+      const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
+      const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false}));
+      sp.position.copy(pos);sp.scale.setScalar(.12);
+      const a=Math.random()*Math.PI*2;sp.userData={born:performance.now(),dur:900+Math.random()*400,vx:Math.cos(a)*.5,vy:.7+Math.random()*.6};
+      arScene.add(sp);arBursts.push(sp);
+    }catch(e){}
+  }
+}
+
+function arDestroy(){
+  if(arAid){cancelAnimationFrame(arAid);arAid=null}
+  if(arStream){arStream.getTracks().forEach(t=>t.stop());arStream=null}
+  if(arVideo){arVideo.srcObject=null;arVideo=null}
+  if(arRend){const p=arRend.domElement.parentElement;if(p)p.removeChild(arRend.domElement);arRend.dispose();arRend=null}
+  arScene=null;arCam=null;arWaki=null;arBgTex=null;arFeedSprite=null;arBursts=[];arPendingFeed=null;
+}
+
+function arShowBubble(msg){
+  const b=document.getElementById('ar-bubble'),msgs=msg?[msg]:['主人～喂我一点好吃的吧 🍎','瓦奇在这里陪你呢 ✨','今天也要记得吃饭哦 💕','摸一下瓦奇的脑袋吧～🧸'];
+  if(!b) return;
+  b.textContent=msgs[Math.floor(Math.random()*msgs.length)];b.classList.add('show');clearTimeout(b._t);b._t=setTimeout(()=>b.classList.remove('show'),3500);
+}
+
+/* ── 食物扫描（真实摄像头抽帧 → 识别 → AR 投喂）────── */
+let arScanItem=null;
+
+function arSnapFrame(){
+  const v=arVideo; if(!v || !v.videoWidth) return null;
+  const MAX=720; let w=v.videoWidth,h=v.videoHeight;
+  if(w>MAX){ h=Math.round(h*MAX/w); w=MAX; }
+  const c=document.createElement('canvas'); c.width=w; c.height=h;
+  c.getContext('2d').drawImage(v,0,0,w,h);
+  return c.toDataURL('image/jpeg',0.72);
+}
+
+async function arScanFood(){
+  if(!arVideo || !arVideo.videoWidth){ arShowBubble('摄像头还没准备好哦～'); return; }
+  const card=document.getElementById('ar-scan-card'); if(card) card.classList.remove('show');
+  const loading=document.getElementById('ar-scan-loading'); if(loading) loading.style.display='flex';
+  try{
+    const frame=arSnapFrame();
+    const d=await App.scanFood(frame);
+    if(loading) loading.style.display='none';
+    if(d && d.food){
+      arScanItem=App.addScannedFood(d.food, frame);
+      App.renderFoodbox(); App.renderHotbar();
+      const em=document.getElementById('ar-scan-emoji'); if(em) em.textContent=d.food.emoji||'🍽️';
+      const nm=document.getElementById('ar-scan-name'); if(nm) nm.textContent=d.food.name||'美食';
+      const mt=document.getElementById('ar-scan-meta'); if(mt) mt.textContent='+'+d.food.satiety+' 饱食 · ⚡+'+d.food.energy;
+      if(card) card.classList.add('show');
+    }else{
+      App.toast((d&&d.msg)||'没认出是食物，对准食物再试一次～');
+    }
+  }catch(e){
+    if(loading) loading.style.display='none';
+    App.toast('扫描失败，再试一次～');
+  }
+}
+
+function arScanFeedGo(){
+  if(!arScanItem) return;
+  const it=arScanItem;
+  if(!App.feedFood(it)){ arScanItem=null; const card=document.getElementById('ar-scan-card'); if(card) card.classList.remove('show'); return; }
+  arScanItem=null;
+  const card=document.getElementById('ar-scan-card'); if(card) card.classList.remove('show');
+  arScanFeed(it);
+  arShowBubble('啊呜～'+it.name+'（'+(it.emoji||'😋')+'）好吃！谢谢主人 💕');
+}
+
+function arScanClose(){
+  arScanItem=null;
+  const card=document.getElementById('ar-scan-card'); if(card) card.classList.remove('show');
+}
+
+// 圆形贴片：把扫描帧中心区域裁成圆形（带白圈），模拟"圈选食物"
+function arMakeScanSticker(dataUrl, cb){
+  const img=new Image();
+  img.onload=()=>{
+    try{
+      const cv=document.createElement('canvas');cv.width=cv.height=256;
+      const ctx=cv.getContext('2d');
+      const s=Math.max(256/img.width,256/img.height),w=img.width*s,h=img.height*s;
+      ctx.save();
+      ctx.beginPath();ctx.arc(128,128,120,0,Math.PI*2);ctx.clip();
+      ctx.drawImage(img,(256-w)/2,(256-h)/2,w,h);
+      ctx.restore();
+      ctx.lineWidth=8;ctx.strokeStyle='rgba(255,255,255,.9)';
+      ctx.beginPath();ctx.arc(128,128,120,0,Math.PI*2);ctx.stroke();
+      const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;cb(tex);
+    }catch(e){cb(null)}
+  };
+  img.onerror=()=>cb(null);
+  img.src=dataUrl;
+}
+
+function arScanFeed(item){
+  if(!arScene || !item) return;
+  if(!arWaki){ arPendingFeed=item; return; }
+  arMakeScanSticker(item.img, tex=>{ if(tex && arScene) arSpawnFeedSprite(tex, item.name, new THREE.Vector3(0,-.9,2.4)); });
+}
+
+/* ── 3DGS 房间 ─────────────────────────────────────── */
+/* 依赖：gaussian-splats-3d.module.js（自驱模式）          */
+
+const FLOOR_Y_3DGS = -2.14;
+const WAKI_HEIGHT_3DGS = 0.45;
+
+// 小提琴包围盒在 hitViolin 里用已导入的 THREE 惰性计算
+let VIOLIN_BOX_3DGS = null;
+
+let tk3dgsDrag = false, tk3dgsDragTarget = null, tk3dgsMoved = false;
+let tk3dgsDragVert = false, tk3dgsLastY = 0;
+let tk3dgsDown = { x: 0, y: 0 };
+let tk3dgsDragPlane = null, tk3dgsDragOff = null;
+
+function tk3dgsEnter(sp) {
+  tk3dgsCurId = sp.id;
+  document.getElementById('tk-gallery-view').style.display = 'none';
+  document.getElementById('tk-3dgs-view').style.display = 'flex';
+  document.getElementById('tk-3dgs-name').textContent = sp.name;
+  tk3dgsInit(sp);
+}
+
+async function tk3dgsInit(sp) {
+  const wrap = document.getElementById('tk-3dgs-canvas-wrap');
+  const loading = document.getElementById('tk-3dgs-loading');
+  if (loading) loading.style.display = 'flex';
+
+  try {
+    if (tk3dgsViewer) await tk3dgsDestroy();
+
+    const rect = wrap.getBoundingClientRect();
+    if (!rect.width || !rect.height) throw new Error('画布尺寸为 0');
+
+    const THREE = await import('three');
+    window.THREE = THREE;
+    window._THREE_REF = THREE;
+    const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+    const GaussianSplats3D = await import('./gaussian-splats-3d.module.js');
+
+    tk3dgsScene = new THREE.Scene();
+    tk3dgsScene.add(new THREE.AmbientLight(0xfff5f0, 2.0));
+    const sun = new THREE.DirectionalLight(0xffffff, 2.5);
+    sun.position.set(3, 5, 2);
+    tk3dgsScene.add(sun);
+
+    tk3dgsViewer = new GaussianSplats3D.Viewer({
+      threeScene: tk3dgsScene,
+      cameraUp: [0, 1, 0],
+      initialCameraPosition: [0, 0, 7],
+      initialCameraLookAt: [0, 0, -1],
+      rootElement: wrap,
+      sharedMemoryForWorkers: false,
+      selfDrivenMode: true,
+      dynamicScene: true,
+      useBuiltInControls: true,
+    });
+
+    const ply1 = sp.plyUrl || 'models/room.ply';
+    const ply2 = sp.plyUrl2 || 'models/violin.ply';
+    await tk3dgsViewer.addSplatScene(ply1, { splatAlphaRemovalThreshold: 5, showLoadingUI: true, progressiveLoad: false });
+    if (ply2) {
+      await tk3dgsViewer.addSplatScene(ply2, { splatAlphaRemovalThreshold: 5, showLoadingUI: false, progressiveLoad: false });
+      tk3dgsViolin = tk3dgsViewer.getSplatScene(1);
+    }
+    tk3dgsViewer.start();
+
+    new GLTFLoader().load('models/yaya.glb', gltf => {
+      try {
+        const model = gltf.scene;
+        model.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+        // 居中 + 统一缩放（和 tkInit 照片空间同一套逻辑），避免 GLB 原点偏移导致瓦奇飘在别处
+        const box = new THREE.Box3().setFromObject(model);
+        const c = new THREE.Vector3(), sz = new THREE.Vector3();
+        box.getCenter(c); box.getSize(sz);
+        model.position.sub(c);
+        const holder = new THREE.Group();
+        holder.add(model);
+        const s = WAKI_HEIGHT_3DGS / sz.y;
+        holder.scale.setScalar(s);
+        holder.position.set(0, FLOOR_Y_3DGS + WAKI_HEIGHT_3DGS / 2, 0);
+        holder.userData.isWaki = true;
+        tk3dgsWaki = holder;
+        tk3dgsScene.add(tk3dgsWaki);
+      } catch (e) { console.warn('瓦奇 GLB:', e.message); }
+      if (loading) loading.style.display = 'none';
+      tk3dgsSetupInteraction();
+      tk3dgsShowBubble('主人～瓦奇在这里陪你 ✨');
+    }, undefined, err => {
+      console.warn('瓦奇模型:', err && err.message);
+      if (loading) loading.style.display = 'none';
+      tk3dgsSetupInteraction();
+      tk3dgsShowBubble('😢 瓦奇模型没加载出来～');
+    });
+  } catch (e) {
+    console.error('3DGS 初始化:', e);
+    // 错误提示放在 loading 里，不清空 wrap（保留返回按钮）
+    const loading = document.getElementById('tk-3dgs-loading');
+    if (loading) {
+      loading.innerHTML = '<span>😢 3D 房间加载失败<br><small>' + ((e && e.message) || '') + '</small></span>';
+      loading.style.display = 'flex';
+    }
+  }
+}
+
+function tk3dgsSetupInteraction() {
+  if (!tk3dgsViewer) return;
+  const renderer = tk3dgsViewer.renderer;
+  const camera = tk3dgsViewer.camera;
+  const controls = tk3dgsViewer.controls;
+  const canvas = renderer.domElement;
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+
+  function setMouse(e) {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  }
+  function hitWaki(e) {
+    if (!tk3dgsWaki) return false;
+    setMouse(e);
+    raycaster.setFromCamera(mouse, camera);
+    return raycaster.intersectObject(tk3dgsWaki, true).length > 0;
+  }
+  function hitViolin(e) {
+    if (!tk3dgsViolin) return false;
+    setMouse(e);
+    raycaster.setFromCamera(mouse, camera);
+    if (!VIOLIN_BOX_3DGS) {
+      const T = window._THREE_REF || THREE;
+      VIOLIN_BOX_3DGS = new T.Box3(new T.Vector3(0.948, -0.928, 0.504), new T.Vector3(1.556, -0.419, 1.258));
+    }
+    const box = VIOLIN_BOX_3DGS.clone().translate(tk3dgsViolin.position);
+    return raycaster.ray.intersectBox(box, new THREE.Vector3()) !== null;
+  }
+
+  canvas.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    let target = null;
+    if (tk3dgsWaki && hitWaki(e)) target = 'yaya';
+    else if (hitViolin(e)) target = 'violin';
+    if (!target) return;
+    tk3dgsDrag = true;
+    tk3dgsDragTarget = target;
+    tk3dgsMoved = false;
+    tk3dgsDown.x = e.clientX; tk3dgsDown.y = e.clientY;
+    tk3dgsDragVert = e.shiftKey;
+    const obj = target === 'yaya' ? tk3dgsWaki : tk3dgsViolin;
+    if (tk3dgsDragVert) {
+      tk3dgsLastY = e.clientY;
+    } else {
+      tk3dgsDragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -obj.position.y);
+      const pt = new THREE.Vector3();
+      raycaster.ray.intersectPlane(tk3dgsDragPlane, pt);
+      if (pt) tk3dgsDragOff = obj.position.clone().sub(pt);
+    }
+    if (controls) controls.enabled = false;
+    canvas.style.cursor = 'grabbing';
+    e.stopPropagation();
+  });
+
+  canvas.addEventListener('pointermove', e => {
+    if (!tk3dgsDrag) return;
+    const obj = tk3dgsDragTarget === 'yaya' ? tk3dgsWaki : tk3dgsViolin;
+    if (!obj) return;
+    if (Math.abs(e.clientX - tk3dgsDown.x) > 4 || Math.abs(e.clientY - tk3dgsDown.y) > 4) tk3dgsMoved = true;
+    if (tk3dgsDragVert) {
+      const dy = e.clientY - tk3dgsLastY;
+      tk3dgsLastY = e.clientY;
+      obj.position.y -= dy * 0.004;
+    } else {
+      setMouse(e);
+      raycaster.setFromCamera(mouse, camera);
+      const pt = new THREE.Vector3();
+      if (raycaster.ray.intersectPlane(tk3dgsDragPlane, pt)) {
+        obj.position.copy(pt.add(tk3dgsDragOff));
+      }
+    }
+  });
+
+  canvas.addEventListener('pointerup', e => {
+    if (!tk3dgsDrag) return;
+    tk3dgsDrag = false;
+    if (controls) controls.enabled = true;
+    canvas.style.cursor = 'default';
+    if (tk3dgsDragTarget === 'yaya' && !tk3dgsMoved) tk3dgsTalk();
+    tk3dgsDragTarget = null;
+  });
+
+  const keyHandler = e => {
+    if (!tk3dgsWaki) return;
+    if (e.key === 'r' || e.key === 'R') tk3dgsWaki.rotateX(Math.PI / 2);
+    else if (e.key === 't' || e.key === 'T') tk3dgsWaki.rotateY(Math.PI / 2);
+  };
+  window.addEventListener('keydown', keyHandler);
+  tk3dgsViewer._keydownHandler = keyHandler;
+}
+
+async function tk3dgsTalk() {
+  const input = document.getElementById('tk-3dgs-chat-input');
+  const text = (input && input.value.trim()) ? input.value.trim() : '你好呀瓦奇，我在看你呢～';
+  if (input) input.value = '';
+  tk3dgsShowBubble('瓦奇：嗯…');
+  try {
+    let reply;
+    if (typeof App !== 'undefined' && App.getAIReply) {
+      reply = await App.getAIReply(text);
+    } else {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [{ role: 'user', content: text }] })
+      });
+      const data = await res.json();
+      reply = data.reply;
+    }
+    tk3dgsShowBubble('瓦奇：' + (reply || '……'));
+  } catch (e) {
+    tk3dgsShowBubble('瓦奇：没连上我的大脑，确认 node server.js 在跑哦～');
+  }
+}
+
+function tk3dgsShowBubble(msg) {
+  const b = document.getElementById('tk-3dgs-bubble');
+  if (!b) return;
+  b.textContent = msg;
+  b.classList.add('show');
+  clearTimeout(b._t);
+  b._t = setTimeout(() => b.classList.remove('show'), 6000);
+}
+
+function tk3dgsSnapPhoto() {
+  if (!tk3dgsViewer || !tk3dgsViewer.renderer) return;
+  const a = document.createElement('a');
+  a.download = '瓦奇_房间.png';
+  a.href = tk3dgsViewer.renderer.domElement.toDataURL('image/png');
+  a.click();
+  tk3dgsShowBubble('📸 已保存');
+}
+
+function tk3dgsResetCamera() {
+  if (!tk3dgsViewer || !tk3dgsViewer.camera) return;
+  tk3dgsViewer.camera.position.set(0, 0, 7);
+  if (tk3dgsViewer.controls) {
+    tk3dgsViewer.controls.target.set(0, 0, -1);
+    tk3dgsViewer.controls.update();
+  }
+  tk3dgsShowBubble('🔄 视角已重置');
+}
+
+async function tk3dgsDestroy() {
+  if (tk3dgsViewer) {
+    if (tk3dgsViewer._keydownHandler) {
+      window.removeEventListener('keydown', tk3dgsViewer._keydownHandler);
+    }
+    try { tk3dgsViewer.stop(); } catch (e) { /* ignore */ }
+    try {
+      const canvas = tk3dgsViewer.renderer && tk3dgsViewer.renderer.domElement;
+      if (canvas && canvas.parentElement) canvas.parentElement.removeChild(canvas);
+    } catch (e) { /* ignore */ }
+    try { await tk3dgsViewer.dispose(); } catch (e) { /* ignore */ }
+    tk3dgsViewer = null;
+  }
+  tk3dgsScene = null;
+  tk3dgsWaki = null;
+  tk3dgsViolin = null;
+  tk3dgsDrag = false;
+  tk3dgsDragTarget = null;
+}
+
+(function initDefaultRoom() {
+  let room = tkSpaces.find(s => s.id === 'tk_3dgs_room');
+  if (!room) {
+    room = {
+      id: 'tk_3dgs_room',
+      name: '初始房间',
+      dataUrl: '',
+      date: '预设房间',
+      type: '3dgs',
+      plyUrl: 'models/room.ply',
+      plyUrl2: 'models/violin.ply'
+    };
+    tkSpaces.unshift(room);
+  }
+  // 强制同步名称 + 缩略图（老数据可能还是旧名字/缺 thumb）
+  room.name = '初始房间';
+  if (!room.thumb) room.thumb = 'models/holmes-room.jpg';
+  tkSave();
+  tkRenderGallery();
+})();
+</script>
+</body>
+</html>
