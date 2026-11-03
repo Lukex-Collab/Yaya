@@ -35,10 +35,14 @@ async function run() {
     assert.equal((await request('/')).headers.location, '/app/');
     assert.equal((await request('/app/')).status, 200);
     for (const [url, relative, type] of [
-      ['/app/yaya-bg.png', 'yaya-bg.png', 'image/png'],
-      ['/app/models/yaya.glb', 'assets/pets/yaya.glb', 'model/gltf-binary'],
+      ['/app/yaya-bg.png', 'waki-online/app/yaya-bg.png', 'image/png'],
+      ['/app/models/yaya.glb', 'waki-online/app/models/yaya.glb', 'model/gltf-binary'],
       ...['bored', 'headpat', 'tickle'].map(name => [
-        `/assets/videos/yaya-${name}.mp4`, `yaya-${name}.mp4`, 'video/mp4',
+        `/assets/videos/yaya-${name}.mp4`, `waki-online/app/assets/videos/yaya-${name}.mp4`, 'video/mp4',
+      ]),
+      ...['room.ply', 'violin.ply', 'holmes-room.jpg'].map(name => [
+        `/app/models/${name}`, `waki-online/app/models/${name}`,
+        name.endsWith('.jpg') ? 'image/jpeg' : 'application/octet-stream',
       ]),
     ]) {
       const result = await request(url);

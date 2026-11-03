@@ -25,6 +25,7 @@ data.db
 
 # 宠物展示视频（本地资源，不上传仓库）
 assets/videos/
+waki-online/assets/videos/
 
 # 高精度原始宠物模型（68~87MB/个，需 Git LFS，暂不上传）
 assets/pets/src/

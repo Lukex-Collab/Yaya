@@ -3,14 +3,10 @@ const fs = require('fs');
 const path = require('path');
 
 const root = __dirname;
-// Reuse only explicitly named repository assets; never expose the parent tree.
-const repositoryRoot = path.resolve(root, '..');
 const sharedAssets = new Map([
-  ['/app/yaya-bg.png', 'yaya-bg.png'],
-  ['/app/models/yaya.glb', 'assets/pets/yaya.glb'],
-  ['/assets/videos/yaya-bored.mp4', 'yaya-bored.mp4'],
-  ['/assets/videos/yaya-headpat.mp4', 'yaya-headpat.mp4'],
-  ['/assets/videos/yaya-tickle.mp4', 'yaya-tickle.mp4'],
+  ['/assets/videos/yaya-bored.mp4', 'app/assets/videos/yaya-bored.mp4'],
+  ['/assets/videos/yaya-headpat.mp4', 'app/assets/videos/yaya-headpat.mp4'],
+  ['/assets/videos/yaya-tickle.mp4', 'app/assets/videos/yaya-tickle.mp4'],
 ]);
 const port = Number(process.env.PORT || 4173);
 const types = {
@@ -39,7 +35,7 @@ const server = http.createServer((req, res) => {
   const relative = pathname.replace(/^\/+/, '');
   const sharedAsset = sharedAssets.get(pathname);
   const file = sharedAsset
-    ? path.resolve(repositoryRoot, sharedAsset)
+    ? path.resolve(root, sharedAsset)
     : path.resolve(root, relative);
 
   if (!sharedAsset && !file.startsWith(root + path.sep)) {

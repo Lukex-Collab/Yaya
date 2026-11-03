@@ -25,8 +25,9 @@ npm test
 ## 仓库集成与限制
 
 - 本目录是独立运行的瓦奇原型，使用本目录的 `server.js` 启动。启动和测试仅使用 Node.js 内置模块，无需 `npm install`。
-- 背景图、宠物 GLB 及三段视频通过服务器的明确路径映射复用仓库已有文件，不重复提交二进制素材。视频采用仓库版本，与本地旧原型视频并非逐字节相同；未覆盖原有视频。
-- 本地副本没有 `room.ply`、`violin.ply` 和 `holmes-room.jpg`，本次也没有新增这些素材。相应 3DGS 房间演示不完整；通过烟雾测试不代表这些视觉场景已验证。
+- 背景图、宠物 GLB、三段瓦奇原版视频和福尔摩斯房间素材统一位于 `app/` 内，便于将 `waki-online/app` 作为 Netlify 发布目录。视频与仓库根目录的其他版本分开保存。
+- 福尔摩斯房间的 `room.ply`、`violin.ply` 和 `holmes-room.jpg` 位于 `app/models/`；其中 `room.ply` 约 65 MB。自动检查只确认文件可访问，不代表已验证浏览器中的 3DGS 渲染。
+- Netlify 从 GitHub 导入时，Base directory、Build command 留空，Publish directory 使用 `waki-online/app`。发布后房间扫描、图片及视频均可通过站点公开访问；静态部署不提供 `/api/*` 后端接口。
 - 静态服务器不实现 `/api/chat`、`/api/vision` 或语音后端。真实 AI 对话与视觉识别需要另行接入服务，前端本地画面分析不是语义识物能力。
 - 联系人验证、定位路线、SOS 送达和设备状态属于模拟。不能将此页面作为真实紧急求助系统。
 - 原有 `yaya` 资源名和旧存储迁移逻辑保留，以兼容历史数据；未导入任何用户的实际浏览器数据。
